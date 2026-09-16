@@ -1,0 +1,74 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-text">
+        <span class="login-brand-title">M&amp;E Dashboard</span>
+      </div>
+    </div>
+
+    <div class="login-divider"></div>
+
+    <h1 class="login-heading">Sign in</h1>
+
+    <form class="login-form" (submit)="$event.preventDefault(); submit()">
+      <div class="login-field">
+        <label class="login-label" for="email">Username</label>
+        <div class="login-input-wrap">
+          <tabler-icon class="login-input-icon" icon="mail" [size]="16" />
+          <input
+            id="email"
+            class="login-input"
+            type="text"
+            placeholder="Username"
+            [(ngModel)]="email"
+            name="email"
+            autocomplete="email"
+            [class.has-error]="error()"
+          />
+        </div>
+      </div>
+
+      <div class="login-field">
+        <label class="login-label" for="password">Password</label>
+        <div class="login-input-wrap">
+          <tabler-icon class="login-input-icon" icon="lock" [size]="16" />
+          <input
+            id="password"
+            class="login-input"
+            [type]="showPw() ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password"
+            autocomplete="current-password"
+            [class.has-error]="error()"
+          />
+          <button
+            type="button"
+            class="login-pw-toggle"
+            (click)="showPw.set(!showPw())"
+            [attr.aria-label]="showPw() ? 'Hide password' : 'Show password'"
+          >
+            <tabler-icon [icon]="showPw() ? 'eye-off' : 'eye'" [size]="16" />
+          </button>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="login-error">
+          <tabler-icon icon="alert-circle" [size]="14" />
+          {{ error() }}
+        </div>
+      }
+
+      <button class="login-btn" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <span class="login-spinner"></span>
+          Signing in…
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+  </div>
+
+</div>

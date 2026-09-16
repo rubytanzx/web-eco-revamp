@@ -1,0 +1,304 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-wrap: nowrap;
+}
+
+.page-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-neutral-solid-90);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-neutral-solid-60);
+}
+
+/* ── Donut chart ─────────────────────────────────────────────────────────── */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.donut-svg {
+  width: 160px;
+  height: 160px;
+  flex: 0 0 160px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.donut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 10px;
+}
+
+.donut-legend-label {
+  color: var(--color-neutral-solid-60);
+  flex: 1 1 auto;
+}
+
+.donut-legend-val {
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  font-variant-numeric: tabular-nums;
+}
+
+.engagement-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-60);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Journey KPI row ─────────────────────────────────────────────────────── */
+.journey-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.journey-kpi-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 20px;
+  border-right: 1px solid var(--color-neutral-solid-10);
+}
+
+.journey-kpi-item:first-child {
+  padding-left: 0;
+}
+
+.journey-kpi-item:last-child {
+  border-right: none;
+}
+
+.journey-kpi-item--highlight .journey-kpi-value {
+  color: var(--color-primary-50);
+}
+
+.journey-kpi-value {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.journey-kpi-label {
+  font-size: 12px;
+  color: var(--color-neutral-solid-50);
+}
+
+/* ── Funnel panel ────────────────────────────────────────────────────────── */
+.funnel-panel {
+  padding: 16px 20px 20px;
+}
+
+.funnel-title {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-70);
+}
+
+.funnel-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.funnel-stage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.funnel-bar-wrap {
+  flex: 1 1 auto;
+  height: 10px;
+  background: var(--color-neutral-solid-10);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.funnel-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #449DF7, #2c8aff);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.funnel-stage-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.funnel-stage-name {
+  font-size: 12.5px;
+  color: var(--color-neutral-solid-70);
+}
+
+.funnel-stage-pct {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Intent KPI strip ────────────────────────────────────────────────────── */
+.intent-kpi-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  padding: 18px 24px;
+}
+
+.intent-kpi-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.intent-kpi-sep {
+  width: 1px;
+  height: 40px;
+  background: var(--color-neutral-solid-10);
+  margin: 0 28px;
+  flex: 0 0 1px;
+}
+
+.intent-kpi-value {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.intent-kpi-value--warn {
+  color: #c2410c;
+}
+
+.intent-kpi-label {
+  font-size: 12px;
+  color: var(--color-neutral-solid-50);
+}
+
+/* ── Feedback source cards ───────────────────────────────────────────────── */
+.feedback-source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-source-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-60);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.feedback-source-val {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.feedback-source-pos-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-neutral-solid-60);
+  letter-spacing: 0;
+}
+
+.feedback-pos-bar {
+  height: 6px;
+  background: var(--color-neutral-solid-10);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.feedback-pos-fill {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 3px;
+}
+
+.feedback-source-count {
+  font-size: 12px;
+  color: var(--color-neutral-solid-40);
+}
+
+/* ── Feedback search input ───────────────────────────────────────────────── */
+.feedback-search {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-neutral-solid-80);
+  background: #fff;
+  outline: none;
+  min-width: 180px;
+  transition: border-color 0.15s;
+}
+
+.feedback-search:focus {
+  border-color: var(--color-primary-50);
+}
+
+.feedback-search::placeholder {
+  color: var(--color-neutral-solid-30);
+}

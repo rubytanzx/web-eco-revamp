@@ -1,0 +1,626 @@
+<app-site-header (heightChange)="headerHeight.set($event)"></app-site-header>
+<app-ai-chat-panel
+  [query]="regionChatQuery()"
+  [seedText]="regionChatSeed()"
+  [relatedQueries]="regionChatRelated()"
+  [open]="chatOpen()"
+  (close)="chatOpen.set(false)"
+></app-ai-chat-panel>
+<div [style.height.px]="headerHeight()"></div>
+
+<main>
+
+  <!-- ── 1. Top Stories ───────────────────────────────────────────────────── -->
+  <section class="topbox">
+    <div class="container">
+      <ul class="topbox-list">
+        <!-- Hero card: full image, text overlaid -->
+        <li class="topbox-main">
+          <a href="https://www.adb.org/news/masato-kanda-reelected-adb-president-5-year-term" class="topbox-main-link">
+            <img src="/adb-home/topbox-main-president-kanda-reelection-v1.jpg" alt="" />
+            <div class="topbox-main-overlay">
+              <h1>Masato Kanda Reelected ADB President for 5-Year Term</h1>
+              <p>Receives unanimous support for a second term from the members of ADB's Board of Governors voting in the recently concluded election. His new term runs for 5 years beginning 24 November 2026.</p>
+              <span class="btn btn-white btn-sm topbox-cta">LEARN MORE</span>
+            </div>
+          </a>
+        </li>
+        <!-- Sub cards: full image, text overlaid at bottom -->
+        <li class="topbox-sub">
+          <a href="https://www.adb.org/news/adb-backs-palau-fiscal-and-energy-resilience-amid-global-shocks-expands-north-pacific" class="topbox-sub-link">
+            <img src="/adb-home/topbox-sub-palau-president-mission.jpg" alt="" />
+            <div class="topbox-sub-overlay">
+              <span class="item-meta">Partnerships</span>
+              <h2>ADB Backs Palau's Fiscal and Energy Resilience, Expands North Pacific Presence</h2>
+            </div>
+          </a>
+        </li>
+        <li class="topbox-sub">
+          <a href="https://www.adb.org/news/adb-responds-immediately-nepal-floods-5-million-grant" class="topbox-sub-link">
+            <img src="/adb-home/topbox-sub-black.jpg" alt="" />
+            <div class="topbox-sub-overlay">
+              <span class="item-meta">Crisis Response</span>
+              <h2>ADB Responds Immediately to Nepal Floods with $5 Million Grant</h2>
+            </div>
+          </a>
+        </li>
+        <li class="topbox-sub">
+          <a href="https://www.adb.org/news/adb-accelerates-disaster-response-and-recovery-vanuatu" class="topbox-sub-link">
+            <img src="/adb-home/topbox-sub-van-3rdo-me-conflict-v2.jpg" alt="" />
+            <div class="topbox-sub-overlay">
+              <span class="item-meta">Resilience</span>
+              <h2>ADB Accelerates Disaster Response and Recovery for Vanuatu</h2>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 2. Feature: Crisis Response ─────────────────────────────────────── -->
+  <section class="feature-section">
+    <div class="container feature-grid">
+      <div class="feature-img">
+        <img src="/adb-home/img-homepage-me-conflict.jpg" alt="" />
+      </div>
+      <div class="feature-copy">
+        <span class="tag tag--red">ADB Crisis Response</span>
+        <h2>Middle East Conflict</h2>
+        <p>ADB is helping its developing member countries manage the impacts of the Middle East conflict while strengthening long-term resilience to future shocks.</p>
+        <a class="btn btn-primary" href="https://www.adb.org/crisis-response/middle-east-conflict">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. In Focus ──────────────────────────────────────────────────────── -->
+  <section class="infocus-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">In Focus</h2>
+        <a class="btn btn-primary btn-sm" href="https://www.adb.org/news">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h16M4 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          News and Events
+        </a>
+      </div>
+      <!-- Horizontal feature card: image left, text right -->
+      <div class="infocus-feature-card">
+        <div class="infocus-feature-img">
+          <img src="/adb-home/topbox-sub-palau-president-mission.jpg" alt="" />
+        </div>
+        <div class="infocus-feature-body">
+          <h3><a href="https://www.adb.org/news/videos/how-technology-could-help-restore-palau-s-coral-reefs">How Technology Could Help Restore Palau's Coral Reefs</a></h3>
+          <p>Coral reefs in Palau are a sacred part of the country's natural beauty, and an important part of the country's food chain and tourism industry. A pilot project spearheaded by ADB is aiming to ensure they remain healthy and vibrant into the future.</p>
+          <div class="card-actions">
+            <a class="btn btn-primary btn-sm" href="https://www.adb.org/news/videos/how-technology-could-help-restore-palau-s-coral-reefs">Learn more</a>
+            <a class="btn btn-secondary btn-sm" href="https://www.adb.org/where-we-work/palau">Palau and ADB</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3b. President + Quote band (full-width, edge-to-edge) ────────────── -->
+  <div class="president-quote-band">
+    <div class="container president-quote-inner">
+      <!-- President card (white card floating on green bg) -->
+      <div class="president-card">
+        <img src="/adb-home/profile-adb-president-kanda.jpg" alt="ADB President Masato Kanda" />
+        <div class="president-card-body">
+          <h3>ADB President</h3>
+          <p><strong>Masato Kanda</strong> is the President of ADB and Chairperson of ADB's Board of Directors. He was elected President by ADB's Board of Governors and assumed office on 24 February 2025.</p>
+          <div class="card-actions">
+            <a class="btn btn-primary btn-sm" href="https://www.adb.org/who-we-are/management/masato-kanda">See profile</a>
+            <a class="btn btn-secondary btn-sm" href="https://twitter.com/ADBPresident" target="_blank" rel="noopener noreferrer">&#x58; Follow on</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quote carousel (transparent, on top of the green band bg) -->
+      <div class="quote-area">
+        <div class="quote-sep"></div>
+        <div class="quote-row">
+          <button class="quote-nav-btn" aria-label="Previous">&#x2039;</button>
+          <blockquote>
+            <p>ASEAN cannot wait for the next shock to expose its weakest links. Every connection delayed is resilience deferred. From power grids to digital networks, the connections our economies depend on are no longer a convenience. They are the foundation of economic security.</p>
+          </blockquote>
+          <button class="quote-nav-btn" aria-label="Next">&#x203A;</button>
+        </div>
+        <div class="quote-sep"></div>
+        <a class="btn btn-outline-white quote-cta" href="https://www.adb.org/news/adb-president-urges-faster-delivery-southeast-asia-connectivity">Read the news release</a>
+      </div>
+    </div>
+    <!-- Dots sit at bottom of the full-width band -->
+    <div class="quote-dots">
+      <span class="quote-dot active"></span>
+      <span class="quote-dot"></span>
+      <span class="quote-dot"></span>
+      <span class="quote-dot"></span>
+      <span class="quote-dot"></span>
+    </div>
+  </div>
+
+  <!-- ── 4. Connect with Us ────────────────────────────────────────────────── -->
+  <section class="connect-section">
+    <div class="container connect-inner">
+      <a class="connect-sub" href="https://alerts.adb.org/">
+        <img class="connect-thumb" src="/adb-home/key-pubs-annual-report-2025.png" alt="" />
+        <div>
+          <h3>Subscriber Services</h3>
+          <p>Subscribe to ADB's Newsletters, Alerts and RSS feeds.</p>
+        </div>
+      </a>
+      <div class="connect-social">
+        <span>Connect with Us:</span>
+        <div class="social-links">
+          <a href="https://twitter.com/ADB_HQ" aria-label="X" target="_blank" rel="noopener noreferrer">𝕏</a>
+          <a href="https://www.youtube.com/user/AsianDevelopmentBank" aria-label="YouTube" target="_blank" rel="noopener noreferrer">▶</a>
+          <a href="https://www.facebook.com/AsianDevBank" aria-label="Facebook" target="_blank" rel="noopener noreferrer">f</a>
+          <a href="https://flickr.com/asiandevelopmentbank" aria-label="Flickr" target="_blank" rel="noopener noreferrer">✿</a>
+          <a href="https://www.instagram.com/adb_hq" aria-label="Instagram" target="_blank" rel="noopener noreferrer">◎</a>
+          <a href="https://www.linkedin.com/company/asian-development-bank" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">in</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. Projects ──────────────────────────────────────────────────────── -->
+  <section class="projects-section">
+    <div class="container projects-grid">
+      <!-- Left: search -->
+      <div class="projects-search-col">
+        <h2 class="section-title">Projects</h2>
+        <p class="projects-desc">Browse for ADB projects, project documents, procurement information, and awarded contracts.</p>
+        <form class="project-search-form" action="https://www.adb.org/search0/type/project" method="get">
+          <input type="text" name="keywords" placeholder="Search for a project" />
+          <button type="submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14"/></svg>
+          </button>
+        </form>
+        <div class="project-links">
+          <a href="https://www.adb.org/projects/documents">Project Documents</a>
+          <span class="divider">|</span>
+          <a href="https://www.adb.org/projects/tenders">Tenders</a>
+        </div>
+        <hr class="projects-hr" />
+        <h3 class="projects-funds-heading">Funds and Resources</h3>
+        <p class="projects-desc">ADB offers loans, grants, and technical assistance from Special Funds, Trust Funds, and other sources to help reduce poverty in Asia and the Pacific.</p>
+        <div class="fund-search">
+          <input type="text" placeholder="Search for an ADB-administered fund" />
+        </div>
+        <div class="project-links">
+          <strong>Browse by:</strong>
+          <a href="https://www.adb.org/what-we-do/funds/funds-administered-adb#special-funds">Special Funds</a>
+          <span class="divider">|</span>
+          <a href="https://www.adb.org/what-we-do/funds/funds-administered-adb#trust-funds">Trust Funds</a>
+          <span class="divider">|</span>
+          <a href="https://www.adb.org/what-we-do/funds/funds-administered-adb#financing-partnerships">Partnership Facilities</a>
+        </div>
+      </div>
+
+      <!-- Right: featured card -->
+      <div class="projects-featured-col">
+        <div class="projects-featured-card">
+          <div class="projects-featured-label">Featured</div>
+          <div class="projects-featured-img">
+            <img src="/adb-home/blog-disasters-strike.jpg" alt="" />
+          </div>
+          <div class="projects-featured-body">
+            <h3><a href="https://www.adb.org/news/videos/resilient-vanuatu">From Crisis to Food Security: Building Resilience in Vanuatu</a></h3>
+            <p>With support from the Asian Development Fund and the governments of Japan and Ireland, ADB is helping vulnerable communities in disaster-prone Vanuatu strengthen food security and resilience.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. Where We Work — interactive map ───────────────────────────────── -->
+  <div class="gradient-bar-outer">
+    <div class="section-gradient-bar-wrap">
+      <div class="section-gradient-bar"></div>
+    </div>
+  </div>
+  <section class="wwwork-section">
+    <div class="wwwork-map-area">
+      <div class="wwwork-hero" #wwworkHero>
+        <h2 class="wwwork-title">Advancing Economies,<strong>Elevating Lives</strong></h2>
+        <p class="wwwork-sub">Learn about ADB activities in member countries and regional offices.</p>
+      </div>
+      <app-adb-map
+        [selectedId]="selectedRegionId()"
+        [hoveredId]="hoveredRegionId()"
+        [viewBoxOffsetX]="mapViewBoxOffsetX()"
+        (regionSelect)="onRegionSelect($event)"
+        (regionHover)="onRegionHover($event)"
+      />
+      <div class="wwwork-panel" #wwworkPanel>
+        <div class="wwwork-panel__header">
+          <span class="panel-label">Region</span>
+          <h3 class="wwwork-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h3>
+          @if (regionContent(); as content) {
+            <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+          }
+          <button class="wwwork-panel__close" (click)="closePanel()" aria-label="Close panel">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        @if (regionContent(); as content) {
+          <div class="panel-body">
+
+            <!-- Region Pulse -->
+            <div class="panel-section">
+              <div class="panel-section-label">
+                <span class="panel-section-text">Region Pulse</span>
+              </div>
+              <a class="pulse-card" [href]="content.regionPulse.href" target="_blank" rel="noopener noreferrer">
+                <div class="pulse-card__img">
+                  <img [src]="content.regionPulse.image" alt="" />
+                </div>
+                <div class="pulse-card__body">
+                  <p class="pulse-date">{{ content.regionPulse.date }}</p>
+                  <h4 class="pulse-title">{{ content.regionPulse.title }}</h4>
+                  <p class="pulse-desc">{{ content.regionPulse.description }}</p>
+                  <div class="pulse-footer">
+                    <div class="pulse-tags">
+                      @for (tag of content.regionPulse.tags; track tag) {
+                        <span class="pulse-tag">{{ tag }}</span>
+                      }
+                    </div>
+                    <span class="pulse-arrow">›</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Impact Stories -->
+            <div class="panel-section">
+              <div class="panel-section-label">
+                <span class="panel-section-text">Impact Stories</span>
+                <div class="story-nav">
+                  <span class="story-counter">{{ storyIndex() + 1 }} / {{ content.impactStories.length }}</span>
+                  <button class="story-nav-btn" aria-label="Previous" (click)="prevStory()">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 9L4.5 6l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="story-nav-btn" aria-label="Next" (click)="nextStory()">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </div>
+              @if (currentStory(); as story) {
+                <div class="story-card">
+                  <div class="story-card__img">
+                    <img [src]="story.image" alt="" />
+                  </div>
+                  <div class="story-card__body">
+                    <span class="story-category" [style.background]="story.categoryColor">{{ story.category }}</span>
+                    <p class="story-quote">{{ story.quote }}</p>
+                    <p class="story-person">{{ story.person }}</p>
+                    <div class="story-stats">
+                      @if (story.stats[2]; as proj) {
+                        <div class="story-stat-col story-stat-col--project">
+                          <p class="story-stat-meta">Project</p>
+                          <p class="story-stat-value">{{ proj.value }}</p>
+                          <p class="story-stat-label">{{ proj.label }}</p>
+                        </div>
+                      }
+                      <div class="story-stat-col story-stat-col--impact">
+                        <p class="story-stat-meta">Impact</p>
+                        <div class="story-stat-impact-row">
+                          @for (stat of story.stats.slice(0, 2); track stat.label) {
+                            <div class="story-stat">
+                              <p class="story-stat-value">{{ stat.value }}</p>
+                              <p class="story-stat-label">{{ stat.label }}</p>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    <div class="story-read-row">
+                      @if (story.internalRoute) {
+                        <a [routerLink]="story.internalRoute" class="story-read-link">
+                          Read full story
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                      } @else {
+                        <a [href]="story.href" target="_blank" rel="noopener noreferrer" class="story-read-link">
+                          Read full story
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Related Country News -->
+            <div class="panel-section">
+              <div class="panel-section-label">
+                <span class="panel-section-text">Related Country News</span>
+              </div>
+              <div class="from-region-cards">
+                @for (article of content.fromTheRegion; track article.title) {
+                  <a class="from-card" [href]="article.href" target="_blank" rel="noopener noreferrer">
+                    <div class="from-card__img"><img [src]="article.image" alt="" /></div>
+                    <div class="from-card__body">
+                      <span class="from-card__country">{{ article.country }}</span>
+                      <h5 class="from-card__title">{{ article.title }}</h5>
+                      <p class="from-card__date">{{ article.date }}</p>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+
+            <!-- Shorts -->
+            <div class="panel-section">
+              <div class="panel-section-label">
+                <span class="panel-section-text">Shorts</span>
+              </div>
+              <div class="shorts-cards">
+                @for (short of content.shorts; track short.caption) {
+                  <a class="short-card" [href]="short.href" target="_blank" rel="noopener noreferrer">
+                    <img [src]="short.image" alt="" class="short-card__img" />
+                    <div class="short-card__overlay">
+                      <p class="short-card__caption">{{ short.caption }}</p>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+
+            <!-- AI follow-up prompts -->
+            <div class="ai-followup">
+              @for (prompt of regionChatRelated(); track prompt) {
+                <button class="ai-followup__btn" type="button" (click)="chatOpen.set(true)">
+                  <span class="ai-followup__border" aria-hidden="true">
+                    <span class="ai-followup__blob ai-followup__blob--1"></span>
+                    <span class="ai-followup__blob ai-followup__blob--2"></span>
+                  </span>
+                  <span class="ai-followup__label">{{ prompt }}</span>
+                  <span class="ai-followup__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <defs>
+                        <linearGradient id="lp-ai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#68c5ea"/>
+                          <stop offset="100%" stop-color="#ae5ded"/>
+                        </linearGradient>
+                      </defs>
+                      <path stroke="url(#lp-ai-grad)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+                    </svg>
+                  </span>
+                </button>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <div class="wwwork-carousel" #wwworkCarousel>
+        <app-adb-region-carousel
+          [selectedId]="selectedRegionId()"
+          (regionSelect)="onRegionSelect($event)"
+          (regionHover)="onRegionHover($event)"
+        />
+      </div>
+      <div class="carousel-fade-r" #carouselFadeR></div>
+    </div>
+  </section>
+
+  <!-- ── 7. SCCT Banner ────────────────────────────────────────────────────── -->
+  <section class="scct-banner">
+    <div class="container scct-inner">
+      <h2>How ADB and Its Partners Are Working to <strong>Solve Complex Challenges Together for 60 Years</strong></h2>
+      <div class="scct-actions">
+        <a class="btn btn-white" href="https://www.adb.org/solving-complex-challenges-together/creating-pathways-private-sector-growth">Focus on Private Sector Development</a>
+        <a class="btn btn-outline-white" href="https://www.adb.org/solving-complex-challenges-together">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8. Data as Drivers of Change ─────────────────────────────────────── -->
+  <section class="data-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><strong>Data</strong> as Drivers of Change</h2>
+          <p class="section-blurb">Data and statistical analysis in the Asia and Pacific region contributes to knowledge generation in ADB, helping strengthen its institutional priorities and operational effectiveness in its developing member countries.</p>
+        </div>
+        <a class="btn btn-primary btn-sm" href="https://www.adb.org/what-we-do/data">Data and Statistics</a>
+      </div>
+      <div class="data-cards">
+        <div class="data-card">
+          <div class="data-card-header data-card-header--blue">
+            <span class="data-card-label">People</span>
+            <img src="/adb-home/icon-data-people.png" alt="" />
+          </div>
+          <div class="data-card-body">
+            <p class="data-figure">135 million</p>
+            <p class="data-blurb">are living in extreme poverty,<br />or on $3.00 a day<br />in 2021 purchasing power parity</p>
+          </div>
+          <div class="data-card-footer">
+            <p><strong>Source:</strong> Asian Development Bank estimates based on World Bank's Poverty and Inequality Platform.</p>
+          </div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-header data-card-header--green">
+            <span class="data-card-label">Planet</span>
+            <img src="/adb-home/icon-data-planet.png" alt="" />
+          </div>
+          <div class="data-card-body">
+            <p class="data-figure">4 billion people</p>
+            <p class="data-blurb">exposed to harmful air pollution</p>
+          </div>
+          <div class="data-card-footer">
+            <p><strong>Source:</strong> Asian Development Bank. 2026. <em>2025 ADB Results Report</em></p>
+          </div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-header data-card-header--yellow">
+            <span class="data-card-label">Prosperity</span>
+            <img src="/adb-home/icon-data-prosperity.png" alt="" />
+          </div>
+          <div class="data-card-body">
+            <p class="data-figure">4.9%</p>
+            <p class="data-blurb">GDP growth forecast for 2026</p>
+          </div>
+          <div class="data-card-footer">
+            <p><strong>Source:</strong> Asian Development Bank. 2026. <em>Asian Development Outlook July 2026</em></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 9. Publications and Documents ────────────────────────────────────── -->
+  <section class="pubs-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><strong>Publications</strong> and Documents</h2>
+          <p class="section-blurb">Explore our data-rich research, policy analysis, toolkits, guidelines, and other resources on economics and key development topics.</p>
+        </div>
+        <a class="btn btn-primary btn-sm" href="https://www.adb.org/publications">Publications and Documents</a>
+      </div>
+      <div class="pub-cards">
+        <a class="pub-card" href="https://www.adb.org/publications/series/key-indicators-for-asia-and-the-pacific">
+          <div class="pub-card-img"><img src="/adb-home/key-pubs-key-indicators-2026.png" alt="" /></div>
+          <h3>Key Indicators for Asia and the Pacific</h3>
+          <p>Data on the economic, financial, social, and environmental situations in the region.</p>
+        </a>
+        <a class="pub-card" href="https://www.adb.org/outlook">
+          <div class="pub-card-img"><img src="/adb-home/key-pubs-ado-july2026.png" alt="" /></div>
+          <h3>Asian Development Outlook</h3>
+          <p>Analyzes economic and development issues in Asia and the Pacific, including GDP growth rates and inflation forecasts.</p>
+        </a>
+        <a class="pub-card" href="https://www.adb.org/publications/series/fact-sheets">
+          <div class="pub-card-img"><img src="/adb-home/key-pubs-fact-sheets-2026.png" alt="" /></div>
+          <h3>ADB Fact Sheets</h3>
+          <p>Updated yearly, the Fact Sheets summarize ADB's partnerships with its members.</p>
+        </a>
+        <a class="pub-card" href="https://www.adb.org/documents/series/adb-annual-reports">
+          <div class="pub-card-img"><img src="/adb-home/key-pubs-annual-report-2025.png" alt="" /></div>
+          <h3>Annual Report</h3>
+          <p>Yearly reviews and analysis of ADB's operations, projects, internal administration, and financial management.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 10. Tracking Impact ───────────────────────────────────────────────── -->
+  <section class="impact-section">
+    <div class="container impact-grid">
+      <div class="impact-copy">
+        <h2><strong>Tracking Impact,</strong><br />Driving Progress</h2>
+        <p>Outcomes delivered by ADB's completed operations in 2025.</p>
+        <a class="btn btn-primary" href="https://www.adb.org/multimedia/adbresults-2025">See the latest ADB scorecard</a>
+      </div>
+      <ul class="impact-list">
+        <li class="impact-item">
+          <img src="/adb-home/icon-adbresults2025-people.png" alt="" />
+          <div>
+            <p class="impact-figure">77.4 million</p>
+            <p class="impact-label">poor and vulnerable people with improved living standards</p>
+          </div>
+        </li>
+        <li class="impact-item">
+          <img src="/adb-home/icon-adbresults2025-planet-renewable.png" alt="" />
+          <div>
+            <p class="impact-figure">1,500 megawatts</p>
+            <p class="impact-label">renewable energy capacity installed</p>
+          </div>
+        </li>
+        <li class="impact-item">
+          <img src="/adb-home/icon-adbresults2025-prosperity.png" alt="" />
+          <div>
+            <p class="impact-figure">1.5 million jobs</p>
+            <p class="impact-label">directly generated</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 11. Discovering Development ──────────────────────────────────────── -->
+  <section class="blogs-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title section-title--white">Discovering Development</h2>
+          <p class="section-blurb section-blurb--white">High-quality commentary and insights from development experts.</p>
+        </div>
+        <a class="btn btn-outline-white btn-sm" href="https://blogs.adb.org/" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Read the latest blogs
+        </a>
+      </div>
+      <div class="blog-cards">
+        <a class="blog-card" href="https://www.adb.org/node/1173401">
+          <div class="blog-card-img"><img src="/adb-home/blog-disasters-strike.jpg" alt="" /></div>
+          <h3>When Disasters Strike, Mental Health Care Must Be Ready Too</h3>
+        </a>
+        <a class="blog-card blog-card--featured" href="https://www.adb.org/node/1172501">
+          <div class="blog-card-img"><img src="/adb-home/blog-mongolia-rangelands.jpg" alt="" /></div>
+          <h3>Mongolia's Rangelands Can Bounce Back–If the Livestock Model Changes</h3>
+        </a>
+        <a class="blog-card" href="https://www.adb.org/node/1171776">
+          <div class="blog-card-img"><img src="/adb-home/blog-digital-transformation.jpg" alt="" /></div>
+          <h3>Digital Transformation in Asia and the Pacific: Why Digital Is the New Concrete</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="container footer-cols">
+    <div class="footer-about">
+      <h4>About ADB</h4>
+      <p>ADB is a leading multilateral development bank supporting sustainable, inclusive, and resilient growth across Asia and the Pacific. Working with its members and partners to solve complex challenges together, ADB harnesses innovative financial tools and strategic partnerships to transform lives, build quality infrastructure, and safeguard our planet.</p>
+      <p>Founded in 1966, ADB is owned by 69 members—50 from the region.</p>
+      <h5>Headquarters</h5>
+      <p>6 ADB Avenue, Mandaluyong City 1550, Metro Manila, Philippines</p>
+      <p>+63 2 8632 4444 &nbsp;&nbsp; +63 2 8636 2444 (fax)</p>
+    </div>
+    <div class="footer-links">
+      <h4>Browse ADB.org</h4>
+      <ul>
+        <li><a href="https://www.adb.org/business">Business Center</a></li>
+        <li><a href="https://www.adb.org/projects">Projects &amp; Tenders</a></li>
+        <li><a href="https://www.adb.org/work-with-us/investors/main">Investor Relations</a></li>
+        <li><a href="https://www.adb.org/data">Data &amp; Research</a></li>
+        <li><a href="https://www.adb.org/news">News &amp; Events</a></li>
+        <li><a href="https://www.adb.org/site/evaluation/main">Independent Evaluation</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Other ADB Sites</h4>
+      <ul>
+        <li><a href="https://blogs.adb.org/" target="_blank" rel="noopener noreferrer">ADB Blogs</a></li>
+        <li><a href="https://aric.adb.org/" target="_blank" rel="noopener noreferrer">Asia Regional Integration Center</a></li>
+        <li><a href="https://asianbondsonline.adb.org/" target="_blank" rel="noopener noreferrer">Asian Bonds Online</a></li>
+        <li><a href="https://data.adb.org/" target="_blank" rel="noopener noreferrer">ADB Data Library</a></li>
+        <li><a href="https://development.asia/" target="_blank" rel="noopener noreferrer">Development Asia</a></li>
+        <li><a href="https://events.development.asia/" target="_blank" rel="noopener noreferrer">ADB Knowledge Events</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-hr" />
+  <div class="container footer-legal">
+    <span>© 2026 Asian Development Bank.</span>
+    <a href="https://www.adb.org/contacts">ADB Contacts</a>
+    <a href="https://www.adb.org/who-we-are/integrity">Anticorruption and Integrity</a>
+    <a href="https://www.adb.org/who-we-are/integrity/advisories">Scams</a>
+    <a href="https://www.adb.org/who-we-are/cybersecurity">Cybersecurity</a>
+    <a href="https://www.adb.org/site-index">Sitemap</a>
+    <a href="https://www.adb.org/terms-use">Terms of Use</a>
+  </div>
+  <div class="container footer-sub">
+    <p>ADB encourages websites and blogs to link to its web pages.</p>
+  </div>
+</footer>

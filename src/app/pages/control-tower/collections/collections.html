@@ -1,0 +1,273 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Collections</h1>
+    <p class="page-subtitle">Knowledge base collection health and utilization</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<section class="kpi-grid kpi-grid--4">
+  @for (k of overviewKpis; track k.title) {
+    <article class="kpi-card">
+      <div class="kpi-card-title-row">
+        <h3 class="kpi-card-title">{{ k.title }}</h3>
+        @if (k.tooltip) {
+          <span class="kpi-info-wrap">
+            <tabler-icon icon="info-circle" [size]="13" class="kpi-info-icon" />
+            <span class="kpi-info-tooltip">{{ k.tooltip }}</span>
+          </span>
+        }
+      </div>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">{{ k.value }}</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ k.sub }}</p>
+    </article>
+  }
+</section>
+
+<section class="registry-card">
+  <header class="registry-head">
+    <h2 class="registry-title">Collection Registry</h2>
+  </header>
+  <table class="registry-table">
+    <thead>
+      <tr>
+        @for (col of [
+          { key: 'name',        label: 'Name'             },
+          { key: 'lastUpdated', label: 'Last Updated'     },
+          { key: 'utilization', label: 'Utilization Rate' },
+          { key: 'queries',     label: 'Total Queries'    }
+        ]; track col.key) {
+          <th>
+            <button type="button" class="reg-sort-th" (click)="toggleRegSort($any(col.key))">
+              {{ col.label }}
+              <tabler-icon
+                class="reg-sort-caret"
+                [class.is-active]="regSortKey() === col.key"
+                [icon]="regSortKey() === col.key && regSortDir() === 'asc' ? 'arrow-up' : 'arrow-down'"
+                [size]="12"
+              />
+            </button>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of sortedRegistry(); track r.name) {
+        <tr class="registry-row" (click)="openCollection(r)">
+          <td>
+            <span class="reg-cell-name">{{ r.name }}</span>
+          </td>
+          <td>{{ r.lastUpdatedDisplay }}</td>
+          <td>{{ r.utilization }}%</td>
+          <td>{{ formatNum(r.queries) }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>
+
+<!-- Collection Registry Drawer -->
+@if (drawerOpen()) {
+  <div class="col-drawer-backdrop" (click)="closeCollection()"></div>
+  @if (selectedCollection(); as col) {
+    <aside class="col-drawer" [style.width.px]="drawerWidth()">
+      <div class="col-drawer-resizer" (mousedown)="onResizerMouseDown($event)"></div>
+      <header class="col-drawer-hd">
+        <div class="col-drawer-hd-left">
+          <span class="reg-domain-badge reg-domain-badge--{{ domainSlug(col.domain) }}">{{ col.domain }}</span>
+          <h2 class="col-drawer-name">{{ col.name }}</h2>
+        </div>
+        <button class="col-drawer-close" type="button" (click)="closeCollection()">
+          <tabler-icon icon="x" [size]="18" />
+        </button>
+      </header>
+
+      @if (drawerData(); as dd) {
+
+        <!-- Meta row -->
+        <div class="col-drawer-meta-row">
+          <span class="col-drawer-meta-item">
+            <tabler-icon icon="calendar" [size]="13" />
+            Last updated {{ col.lastUpdatedDisplay }}
+          </span>
+        </div>
+
+        <!-- Description -->
+        <p class="col-drawer-desc">{{ dd.description }}</p>
+
+        <!-- KPI cards -->
+        <div class="col-drawer-kpis">
+          <div class="col-drawer-kpi">
+            <tabler-icon icon="folder" [size]="22" class="col-drawer-kpi-icon" />
+            <div class="col-drawer-kpi-body">
+              <span class="col-drawer-kpi-val">{{ formatNum(dd.fileCount) }}</span>
+              <span class="col-drawer-kpi-label">Files</span>
+            </div>
+          </div>
+          <div class="col-drawer-kpi">
+            <tabler-icon icon="trending-up" [size]="22" class="col-drawer-kpi-icon" />
+            <div class="col-drawer-kpi-body">
+              <span class="col-drawer-kpi-val">{{ col.utilization }}%</span>
+              <span class="col-drawer-kpi-label">Utilization</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-drawer-body">
+
+          @if (selectedDonutSeg()) {
+            <!-- File list view -->
+            <div class="col-seg-view">
+              <button class="col-seg-back" type="button" (click)="backFromSegment()">
+                <tabler-icon icon="arrow-left" [size]="14" /> Back to overview
+              </button>
+              <div class="col-seg-header">
+                <span class="col-seg-dot" [style.background]="drawerSegmentColor()"></span>
+                <h3 class="col-seg-title">{{ drawerSegmentLabel() }} Files</h3>
+                <span class="col-seg-count">{{ drawerSegmentFileCount() | number }} total</span>
+              </div>
+              <table class="col-seg-table">
+                <thead>
+                  <tr>
+                    <th class="col-seg-th">File Name</th>
+                    <th class="col-seg-th">Type</th>
+                    <th class="col-seg-th">Size</th>
+                    <th class="col-seg-th">Last Accessed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (f of drawerSegmentFiles(); track $index) {
+                    <tr class="col-seg-tr">
+                      <td class="col-seg-td col-seg-td--name">{{ f.name }}</td>
+                      <td class="col-seg-td"><span class="col-seg-type-badge">{{ f.type }}</span></td>
+                      <td class="col-seg-td col-seg-td--size">{{ f.size }}</td>
+                      <td class="col-seg-td col-seg-td--date">{{ f.lastAccessed }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              <p class="col-seg-footer">Showing {{ drawerSegmentFiles().length }} of {{ drawerSegmentFileCount() | number }} files</p>
+            </div>
+          } @else {
+            <div class="col-overview-grid">
+
+              <!-- Feedback Health Summary -->
+              @if (drawerFeedback(); as fb) {
+                <div class="col-ov-card col-ov-feedback">
+                  <div class="col-ov-title-row">
+                    <h3 class="col-ov-title">Feedback</h3>
+                  </div>
+                  <div class="col-fb-positive-row">
+                    <span class="col-fb-positive-pct">{{ fb.positivePct }}% positive</span>
+                    <span class="col-fb-delta" [class.col-fb-delta--up]="fb.vsPreiousPct >= 0" [class.col-fb-delta--dn]="fb.vsPreiousPct < 0">
+                      @if (fb.vsPreiousPct >= 0) { <tabler-icon icon="arrow-up" [size]="13" /> } @else { <tabler-icon icon="arrow-down" [size]="13" /> } {{ fb.vsPreiousPct < 0 ? -fb.vsPreiousPct : fb.vsPreiousPct }}% vs previous period
+                    </span>
+                  </div>
+                  <div class="col-fb-sent-bar">
+                    <span class="col-fb-sent-pos" [style.width.%]="fb.positivePct"></span>
+                    <span class="col-fb-sent-neg" [style.width.%]="100 - fb.positivePct"></span>
+                  </div>
+                  <p class="col-fb-counts">{{ fb.totalCount }} feedback received · {{ fb.negativeCount }} negative</p>
+                  <div class="col-fb-top-issue">
+                    <span class="col-fb-top-issue-label">Top issue</span>
+                    <span class="col-fb-top-issue-value">{{ fb.topIssue }} · {{ fb.topIssueCount }} reports</span>
+                  </div>
+                  <button class="col-fb-link" type="button" (click)="navigateToFeedback(selectedCollection()!.name)">
+                    View feedback analysis <tabler-icon icon="chevron-right" [size]="13" />
+                  </button>
+                </div>
+              }
+
+
+              <!-- Source Utilisation -->
+              <div class="col-ov-card">
+                <div class="col-ov-title-row">
+                  <h3 class="col-ov-title">Source Utilisation</h3>
+                  <tabler-icon icon="info-circle" [size]="14" class="col-ov-info" />
+                </div>
+                <div class="col-donut-wrap">
+                  <div class="col-donut-svg-wrap">
+                  @if (donutTooltipData(); as tip) {
+                    <div class="col-donut-tooltip">
+                      <span class="col-donut-tip-dot" [style.background]="tip.color"></span>
+                      <span class="col-donut-tip-label">{{ tip.label }}</span>
+                      <span class="col-donut-tip-pct">{{ tip.pct }}%</span>
+                      <span class="col-donut-tip-files">· {{ tip.files | number }} files</span>
+                    </div>
+                  }
+                  <svg class="col-donut-svg" viewBox="0 0 100 100" style="overflow:visible">
+                    <circle class="col-donut-segment" cx="50" cy="50" r="40" fill="none"
+                      stroke="#34D399"
+                      [attr.stroke-width]="hoveredDonutSeg() === 'cited' ? 17 : 14"
+                      [attr.stroke-dasharray]="drawerDonutCited() + ' ' + donutCirc"
+                      stroke-dashoffset="0"
+                      transform="rotate(-90 50 50)"
+                      (mouseenter)="onSegmentHover('cited')"
+                      (mouseleave)="onSegmentLeave()"
+                      (click)="onSegmentClick('cited')" />
+                    <circle class="col-donut-segment" cx="50" cy="50" r="40" fill="none"
+                      stroke="#0EA5E9"
+                      [attr.stroke-width]="hoveredDonutSeg() === 'referenced' ? 17 : 14"
+                      [attr.stroke-dasharray]="drawerDonutReferenced() + ' ' + donutCirc"
+                      [attr.stroke-dashoffset]="drawerDonutOffsetRef()"
+                      transform="rotate(-90 50 50)"
+                      (mouseenter)="onSegmentHover('referenced')"
+                      (mouseleave)="onSegmentLeave()"
+                      (click)="onSegmentClick('referenced')" />
+                    <circle class="col-donut-segment" cx="50" cy="50" r="40" fill="none"
+                      stroke="#F59E0B"
+                      [attr.stroke-width]="hoveredDonutSeg() === 'not-retrieved' ? 17 : 14"
+                      [attr.stroke-dasharray]="drawerDonutNotRetrieved() + ' ' + donutCirc"
+                      [attr.stroke-dashoffset]="drawerDonutOffsetNot()"
+                      transform="rotate(-90 50 50)"
+                      (mouseenter)="onSegmentHover('not-retrieved')"
+                      (mouseleave)="onSegmentLeave()"
+                      (click)="onSegmentClick('not-retrieved')" />
+                    @if (segmentCenterPct() !== null) {
+                      <text x="50" y="44" text-anchor="middle" class="col-donut-val">{{ segmentCenterPct() }}%</text>
+                      <text x="50" y="56" text-anchor="middle" class="col-donut-lbl">{{ segmentCenterLabel() }}</text>
+                    } @else {
+                      <text x="50" y="46" text-anchor="middle" class="col-donut-val">{{ formatNum(dd.fileCount) }}</text>
+                      <text x="50" y="57" text-anchor="middle" class="col-donut-lbl">Files</text>
+                    }
+                  </svg>
+                  </div>
+                  <ul class="col-donut-legend">
+                    <li>
+                      <span class="col-donut-dot" style="background:#34D399"></span>
+                      <div>
+                        <div class="col-donut-legend-main">{{ dd.sourceUtil.cited }}% Cited</div>
+                        <div class="col-donut-legend-sub">{{ drawerCitedFiles() }} files</div>
+                      </div>
+                    </li>
+                    <li>
+                      <span class="col-donut-dot" style="background:#0EA5E9"></span>
+                      <div>
+                        <div class="col-donut-legend-main">{{ dd.sourceUtil.referenced }}% Referenced</div>
+                        <div class="col-donut-legend-sub">{{ drawerReferencedFiles() }} files</div>
+                      </div>
+                    </li>
+                    <li>
+                      <span class="col-donut-dot" style="background:#F59E0B"></span>
+                      <div>
+                        <div class="col-donut-legend-main">{{ dd.sourceUtil.notRetrieved }}% Not Retrieved</div>
+                        <div class="col-donut-legend-sub">{{ drawerNotRetrFiles() }} files</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+
+            </div>
+          } <!-- end @else overview -->
+
+        </div>
+      }
+    </aside>
+  }
+}

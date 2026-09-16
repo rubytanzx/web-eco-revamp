@@ -1,0 +1,810 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ============= Header ============= */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-wrap: nowrap;
+}
+
+.page-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-neutral-solid-90);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-neutral-solid-60);
+}
+
+.modules-filter-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============= Module select (header) ============= */
+.mod-module-select {
+  height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+  appearance: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-80);
+  cursor: pointer;
+  outline: none;
+  min-width: 160px;
+}
+.mod-module-select:focus {
+  border-color: var(--color-primary-40);
+}
+
+/* ============= KPI strip ============= */
+.mods-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.mods-kpi-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mods-kpi-label {
+  font-size: 12px;
+  color: var(--color-neutral-solid-50);
+  font-weight: 400;
+}
+
+.mods-kpi-value {
+  font-size: 26px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============= Card base ============= */
+.card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  padding: 20px 22px;
+}
+
+.card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-neutral-solid-90);
+}
+
+/* ============= Layout ============= */
+.mods-trend-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mods-grid-2 {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.mods-grid-3 {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.mods-all-table {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ============= Card header ============= */
+.mods-card-hd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.mods-card-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-neutral-solid-50);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.mods-card-title-sm {
+  font-size: 15px;
+}
+
+/* ============= Trend chart controls ============= */
+.mods-trend-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--color-neutral-solid-08, #f1f5f9);
+  margin-bottom: 14px;
+}
+
+.mods-metric-tabs {
+  display: inline-flex;
+  background: var(--color-neutral-solid-05, #f8fafc);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.mods-metric-tab {
+  border: none;
+  background: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: var(--color-neutral-solid-60);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.mods-metric-tab.is-active {
+  background: #fff;
+  color: var(--color-neutral-solid-90);
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ============= Service dropdown ============= */
+.mods-dd-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.mods-dd-wrap {
+  position: relative;
+  z-index: 41;
+}
+
+.mods-dd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: var(--color-neutral-solid-80);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mods-dd-btn:hover {
+  border-color: var(--color-neutral-solid-30);
+}
+
+.mods-dd-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: 240px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+  z-index: 41;
+  overflow: hidden;
+}
+
+.mods-dd-search-row {
+  padding: 8px;
+  border-bottom: 1px solid var(--color-neutral-solid-08, #f1f5f9);
+}
+
+.mods-dd-search-input {
+  width: 100%;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-neutral-solid-80);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.mods-dd-list {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.mods-dd-group-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-40);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px 3px;
+}
+
+.mods-dd-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.mods-dd-item:hover { background: var(--color-neutral-solid-05, #f8fafc); }
+
+.mods-dd-item.is-selected {
+  background: var(--color-primary-05, #eff6ff);
+  color: var(--color-primary-70);
+  font-weight: 500;
+}
+.mods-dd-item.is-selected .mods-dd-val { color: var(--color-primary-50); }
+
+.mods-dd-item--all {
+  font-weight: 500;
+  color: var(--color-neutral-solid-80);
+}
+
+.mods-dd-val {
+  font-size: 11.5px;
+  color: var(--color-neutral-solid-50);
+  font-variant-numeric: tabular-nums;
+}
+
+.mods-dd-divider {
+  height: 1px;
+  background: var(--color-neutral-solid-08, #f1f5f9);
+  margin: 4px 0;
+}
+
+.mods-dd-empty {
+  padding: 12px;
+  font-size: 12.5px;
+  color: var(--color-neutral-solid-50);
+}
+
+/* ============= SVG chart ============= */
+.mods-trend-svg {
+  width: 100%;
+  display: block;
+}
+
+.mods-grid-line {
+  stroke: var(--color-neutral-solid-08, #f1f5f9);
+  stroke-width: 1;
+}
+
+.mods-y-label {
+  font-size: 10px;
+  fill: var(--color-neutral-solid-40);
+  font-family: inherit;
+  text-anchor: end;
+}
+
+.mods-x-label {
+  font-size: 10px;
+  fill: var(--color-neutral-solid-50);
+  font-family: inherit;
+}
+
+.mods-hover-vline {
+  stroke: var(--color-neutral-solid-20);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
+
+.mods-hover-dot {
+  fill: #FFFFFF;
+  stroke: #2c8aff;
+  stroke-width: 2.5;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(44, 138, 255, 0.45));
+}
+
+.mods-tooltip-bg {
+  fill: #FFFFFF;
+  stroke: var(--color-neutral-solid-12, rgba(0,0,0,0.1));
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.10));
+}
+
+.mods-tooltip-period {
+  font-size: 10px;
+  fill: var(--color-neutral-solid-50);
+  font-family: inherit;
+}
+
+.mods-tooltip-value {
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--color-neutral-solid-90);
+  font-family: inherit;
+}
+
+/* ============= Row lists ============= */
+.mods-row-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mods-row-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-neutral-solid-05, #f8fafc);
+  font-size: 13px;
+}
+
+.mods-row-item:first-child {
+  border-top: none;
+}
+
+.mods-row-rank {
+  width: 16px;
+  font-size: 11.5px;
+  color: var(--color-neutral-solid-40);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 16px;
+  text-align: center;
+}
+
+.mods-row-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-neutral-solid-80);
+}
+
+.mods-row-val {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--color-neutral-solid-90);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.mods-heat-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-70);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+.mods-trend-icon {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 16px;
+  justify-content: center;
+}
+
+/* ============= Inner tabs (top services) ============= */
+.mods-inner-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-neutral-solid-08, #f1f5f9);
+}
+
+.mods-inner-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-neutral-solid-50);
+  font-size: 13px;
+  padding: 4px 0 8px;
+  margin-right: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: -1px;
+}
+
+.mods-inner-tab.is-active {
+  color: var(--color-neutral-solid-90);
+  border-bottom-color: var(--color-neutral-solid-90);
+  font-weight: 500;
+}
+
+/* ============= Module pills ============= */
+.mods-mod-select {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.mods-mod-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.mods-mod-pill {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  background: #fff;
+  font-size: 11.5px;
+  padding: 3px 10px;
+  color: var(--color-neutral-solid-60);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mods-mod-pill:hover {
+  background: var(--color-neutral-solid-05);
+}
+
+.mods-mod-pill.is-active {
+  background: var(--color-neutral-solid-90);
+  border-color: var(--color-neutral-solid-90);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* ============= Star icon ============= */
+.mods-star-icon {
+  color: #f59e0b;
+  flex: 0 0 auto;
+}
+
+/* ============= Table controls ============= */
+.mods-tbl-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mods-tbl-select {
+  height: 32px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-neutral-solid-80);
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+.mods-tbl-search-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #fff;
+}
+
+.mods-tbl-search {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-neutral-solid-80);
+  background: transparent;
+  width: 160px;
+}
+
+.mods-search-icon {
+  color: var(--color-neutral-solid-40);
+  flex: 0 0 auto;
+}
+
+/* ============= Table ============= */
+.mod-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mod-th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-50);
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--color-neutral-solid-10);
+}
+
+.mod-th--num {
+  text-align: right;
+  padding-right: 24px;
+}
+
+.mod-tr {
+  border-bottom: 1px solid var(--color-neutral-solid-05);
+  transition: background 0.12s ease;
+}
+
+.mod-tr:last-child {
+  border-bottom: none;
+}
+
+.mod-tr:hover {
+  background: var(--color-neutral-solid-05);
+}
+
+.mod-td {
+  padding: 11px 0;
+  font-size: 13.5px;
+  color: var(--color-neutral-solid-80);
+  vertical-align: middle;
+}
+
+.mod-td--service {
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  padding-right: 20px;
+}
+
+.mod-td--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 24px;
+}
+
+.mod-td--date {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral-solid-60);
+  padding-left: 8px;
+}
+
+/* ---- Module name badge ---- */
+.mod-module-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-primary-20);
+  color: var(--color-primary-70);
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* ---- Status badges ---- */
+.mod-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.mod-status-badge--active {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.mod-status-badge--low {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.mod-status-badge--stale {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+/* ---- Low-activity chip ---- */
+.mod-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--color-neutral-solid-05);
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-60);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* ============= Pagination ============= */
+.mods-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-neutral-solid-08, #f1f5f9);
+}
+
+.mods-page-range {
+  font-size: 12.5px;
+  color: var(--color-neutral-solid-50);
+}
+
+.mods-page-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mods-page-info {
+  font-size: 13px;
+  color: var(--color-neutral-solid-70);
+  min-width: 44px;
+  text-align: center;
+}
+
+.mods-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-neutral-solid-15);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--color-neutral-solid-70);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.mods-page-btn:hover:not(:disabled) {
+  background: var(--color-neutral-solid-05, #f8fafc);
+  border-color: var(--color-neutral-solid-25);
+}
+
+.mods-page-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+/* ============= Bar chart card containers ============= */
+.mods-bar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 360px;
+}
+
+/* ============= Bar chart SVGs ============= */
+.mods-bar-svg {
+  display: block;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 0;
+  overflow: visible;
+}
+
+.mods-hbar-label {
+  font-size: 13px;
+  fill: var(--color-neutral-solid-70);
+  font-family: inherit;
+}
+
+.mods-hbar-track {
+  fill: var(--color-neutral-solid-05, #f8fafc);
+}
+
+.mods-hbar-fill {
+  fill: #2c8aff;
+}
+
+.mods-star-fill {
+  fill: #e5a028;
+}
+
+.mods-hbar-val {
+  font-size: 13px;
+  fill: var(--color-neutral-solid-60);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.mods-vbar-fill {
+  fill: #0F6E56;
+}
+
+.mods-vbar-ytick {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-40);
+  font-family: inherit;
+  text-anchor: end;
+}
+
+.mods-vbar-xlabel {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-60);
+  font-family: inherit;
+}
+
+/* ============= Responsive ============= */
+
+@media (max-width: 900px) {
+  .mods-grid-2,
+  .mods-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .mod-th,
+  .mod-td {
+    font-size: 12px;
+  }
+}

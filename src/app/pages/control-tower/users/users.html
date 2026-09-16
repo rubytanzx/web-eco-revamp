@@ -1,0 +1,189 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Users</h1>
+    <p class="page-subtitle">Who is using the platform — adoption, engagement, and segmentation across ADB staff and Departments.</p>
+  </div>
+
+  <div class="users-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- KPI row (3 cards) -->
+<section class="kpi-grid kpi-grid--3">
+  @for (k of userKpis; track k.title) {
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">{{ k.title }}</h3>
+      <div class="kpi-metrics">
+        @for (m of k.metrics; track $index; let i = $index) {
+          @if (i > 0) { <span class="kpi-metric-sep" aria-hidden="true">|</span> }
+          <div class="kpi-metric">
+            <span class="kpi-metric-value">{{ m.value }}</span>
+            @if (m.label) { <span class="kpi-metric-label">{{ m.label }}</span> }
+            @if (m.delta) { <span class="kpi-metric-delta">{{ m.delta }}</span> }
+          </div>
+        }
+      </div>
+      @if (k.sub) {
+        <p class="kpi-card-sub">{{ k.sub }}</p>
+      }
+    </article>
+  }
+</section>
+
+<!-- Top row: adoption chart + new vs returning -->
+<section class="users-top-row">
+
+  <article class="card at-card">
+    <header class="at-card-head">
+      <h3 class="card-title">Adoption Rate Over Time</h3>
+      <div class="at-legend">
+        <span class="at-leg-item"><span class="at-leg-swatch at-leg-swatch--curr"></span>Current</span>
+        <span class="at-leg-item"><span class="at-leg-swatch at-leg-swatch--prev"></span>Previous period</span>
+      </div>
+    </header>
+    <div class="at-inner">
+      <svg #atSvgEl class="at-svg" [attr.viewBox]="'0 0 ' + atSvgW + ' ' + atSvgH"
+           (mousemove)="onAtMouseMove($event)" (mouseleave)="onAtMouseLeave()">
+        <defs>
+          <linearGradient id="at-fill-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#00C48C" stop-opacity="0.20" />
+            <stop offset="100%" stop-color="#00C48C" stop-opacity="0.01" />
+          </linearGradient>
+        </defs>
+        @for (tick of atYTicks; track tick.label) {
+          <line class="at-grid" [attr.x1]="atPadL" [attr.x2]="atSvgW - atPadR" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+          <text class="at-y-label" [attr.x]="atPadL - 5" [attr.y]="tick.y + 3.5" [attr.font-size]="atFontSize()">{{ tick.label }}</text>
+        }
+        @for (xl of atXLabels; track xl.label) {
+          <text class="at-x-label" [attr.x]="xl.x" [attr.y]="atSvgH - 6" [attr.font-size]="atFontSize()">{{ xl.label }}</text>
+        }
+        <path class="at-area"      [attr.d]="atAreaPath" />
+        <path class="at-prev-line" [attr.d]="atPrevLinePath" />
+        <path class="at-line"      [attr.d]="atLinePath" />
+        @if (hoveredAtPt(); as hp) {
+          <line class="at-hover-vline"
+                [attr.x1]="hp.x" [attr.x2]="hp.x"
+                [attr.y1]="atPadT" [attr.y2]="atBottom" />
+          <circle class="at-hover-dot" [attr.cx]="hp.x" [attr.cy]="hp.y" r="4.5" />
+          <rect class="at-tooltip-bg"
+                [attr.x]="atTooltipX()" [attr.y]="atTooltipY()"
+                width="110" height="44" rx="7" />
+          <text class="at-tooltip-period"
+                [attr.x]="atTooltipX() + 10" [attr.y]="atTooltipY() + 16">{{ hp.period }}</text>
+          <text class="at-tooltip-value"
+                [attr.x]="atTooltipX() + 10" [attr.y]="atTooltipY() + 33">{{ hp.pct }}%</text>
+        }
+      </svg>
+    </div>
+  </article>
+
+  <article class="card nrt-card">
+    <div class="nrt-head">
+      <h3 class="card-title">New vs Returning Users</h3>
+      <div class="nrt-legend">
+        <span class="nrt-leg-item"><span class="nrt-leg-dot nrt-leg-dot--ret"></span>Returning</span>
+        <span class="nrt-leg-item"><span class="nrt-leg-dot nrt-leg-dot--new"></span>New</span>
+      </div>
+    </div>
+    <svg #nrtSvgEl class="nrt-svg" [attr.viewBox]="'0 0 ' + nrtSvgW + ' ' + nrtSvgH" preserveAspectRatio="none">
+      <defs>
+        @for (b of nrtBarsComputed; track b.month) {
+          <clipPath [id]="'nrt-clip-' + b.month">
+            <rect [attr.x]="b.barX" [attr.y]="b.newY"
+                  [attr.width]="nrtBarW" [attr.height]="b.totalH" rx="3" />
+          </clipPath>
+        }
+      </defs>
+      @for (b of nrtBarsComputed; track b.month) {
+        <g [attr.clip-path]="'url(#nrt-clip-' + b.month + ')'">
+          <rect class="nrt-bar-ret"
+                [attr.x]="b.barX" [attr.y]="b.retY"
+                [attr.width]="nrtBarW" [attr.height]="b.retH" />
+          <rect class="nrt-bar-new"
+                [attr.x]="b.barX" [attr.y]="b.newY"
+                [attr.width]="nrtBarW" [attr.height]="b.newH" />
+        </g>
+        <text class="nrt-x-label" [attr.x]="b.cx" [attr.y]="b.labelY" [attr.font-size]="nrtFontSize()">{{ b.month }}</text>
+      }
+    </svg>
+  </article>
+
+</section>
+
+<!-- Department Adoption table / bar chart -->
+<article class="card dept-adoption-section">
+  <div class="da-header">
+    <h3 class="card-title">Department Adoption</h3>
+    <button class="da-view-toggle" type="button"
+            [title]="deptView() === 'table' ? 'Switch to bar chart' : 'Switch to table'"
+            (click)="deptView.set(deptView() === 'table' ? 'bar' : 'table')">
+      @if (deptView() === 'table') {
+        <tabler-icon icon="chart-bar" [size]="16" />
+      } @else {
+        <tabler-icon icon="table" [size]="16" />
+      }
+    </button>
+  </div>
+
+  @if (deptView() === 'table') {
+    <table class="dept-adoption-table">
+      <thead>
+        <tr>
+          <th class="da-th">Department</th>
+          <th class="da-th da-th--num">Active users</th>
+          <th class="da-th da-th--num">Total staff</th>
+          <th class="da-th da-th--bar">Adoption rate</th>
+          <th class="da-th da-th--num">{{ vsPrevLabel() }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of deptAdoptionRows; track d.code) {
+          <tr class="da-tr">
+            <td class="da-td">
+              <span class="da-code">{{ d.code }}</span>
+              <span class="da-name">{{ d.name }}</span>
+            </td>
+            <td class="da-td da-td--num">{{ d.activeUsers | number }}</td>
+            <td class="da-td da-td--num">{{ d.eligibleStaff | number }}</td>
+            <td class="da-td da-td--bar">
+              <div class="da-bar-cell">
+                <div class="da-inline-bar">
+                  <span class="da-inline-bar-fill" [style.width.%]="d.adoptionPct"></span>
+                </div>
+                <span class="da-pct-label">{{ d.adoptionPct }}%</span>
+              </div>
+            </td>
+            <td class="da-td da-td--num">
+              <span class="da-delta"
+                    [class.da-delta--pos]="d.vsPrevPositive"
+                    [class.da-delta--neg]="!d.vsPrevPositive">{{ d.vsPrev }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="da-bar-view">
+      <div class="da-bar-col-hdr">
+        <span>Department</span>
+        <span class="ref-col-hdr">Adoption Rate</span>
+      </div>
+      <ul class="ref-list">
+        @for (d of deptAdoptionRows; track d.code) {
+          <li class="ref-item">
+            <div class="ref-item-bar da-bar-view-fill" [style.width.%]="d.adoptionPct"></div>
+            <span class="da-code ref-item-rank">{{ d.code }}</span>
+            <span class="ref-item-label">{{ d.name }}</span>
+            <span class="ref-item-val"
+                  [class.da-delta--pos]="d.vsPrevPositive"
+                  [class.da-delta--neg]="!d.vsPrevPositive">{{ d.adoptionPct }}%</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</article>
+
+
+

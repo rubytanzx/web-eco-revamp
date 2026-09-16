@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-wrap: nowrap;
+}
+
+.page-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-neutral-solid-90);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-neutral-solid-60);
+}
+
+/* ── Chart with axes ── */
+.chart-outer {
+  user-select: none;
+}
+
+.chart-wrap {
+  display: flex;
+  height: 170px;
+  cursor: crosshair;
+}
+
+.y-axis {
+  width: 42px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.y-tick {
+  position: absolute;
+  right: 8px;
+  transform: translateY(-50%);
+  font-size: 10.5px;
+  color: var(--color-neutral-solid-40);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.chart-area svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.chart-tooltip {
+  position: absolute;
+  top: 6px;
+  transform: translateX(-50%);
+  background: #1c2033;
+  color: #fff;
+  padding: 5px 10px 6px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+}
+
+.chart-tooltip-val {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.chart-tooltip-date {
+  opacity: 0.6;
+  font-size: 10.5px;
+}
+
+.x-axis-row {
+  display: flex;
+  margin-top: 5px;
+}
+
+.y-axis-gap {
+  width: 42px;
+  flex-shrink: 0;
+}
+
+.x-axis {
+  flex: 1;
+  position: relative;
+  height: 16px;
+}
+
+.x-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 10.5px;
+  color: var(--color-neutral-solid-40);
+  white-space: nowrap;
+  line-height: 1;
+}

@@ -1,0 +1,32 @@
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 32px 20px;
+}
+
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--th-muted);
+  text-decoration: none;
+  margin-bottom: 6px;
+  &:hover { color: var(--adb-blue); }
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--th-text);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--th-muted);
+  margin-top: 4px;
+}
+
+.kpi-metric-value--bad { color: var(--adb-red); }

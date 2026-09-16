@@ -1,0 +1,200 @@
+<app-ai-chat-panel
+  [query]="regionChatQuery()"
+  [seedText]="regionChatSeed()"
+  [relatedQueries]="regionChatRelated()"
+  [open]="chatOpen()"
+  (close)="chatOpen.set(false)"
+></app-ai-chat-panel>
+
+<div class="map-section">
+    <div class="hero-overlay" #heroOverlay>
+      <h1 class="hero-heading">Advancing Economies,<strong>Elevating Lives</strong></h1>
+      <p class="hero-sub">Learn about ADB activities in member countries and regional offices.</p>
+    </div>
+
+    <app-adb-map
+      [selectedId]="selectedRegionId()"
+      [hoveredId]="hoveredRegionId()"
+      [viewBoxOffsetX]="mapViewBoxOffsetX()"
+      [viewBoxBaseX]="440"
+      [viewBoxW]="700"
+      [viewBoxY]="75"
+      [viewBoxH]="200"
+      (regionSelect)="onRegionSelect($event)"
+      (regionHover)="onRegionHover($event)"
+    />
+
+    <div class="region-panel" #regionPanel>
+      <div class="region-panel__header">
+        <span class="panel-label">Region</span>
+        <h2 class="region-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h2>
+        @if (regionContent(); as content) {
+          <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+        }
+        <button class="region-panel__close" (click)="closePanel()" aria-label="Close panel">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      @if (regionContent(); as content) {
+        <div class="panel-body">
+
+          <!-- Region Pulse -->
+          <div class="panel-section">
+            <div class="panel-section-label">
+              <span class="panel-section-text">Region Pulse</span>
+            </div>
+            <a class="pulse-card" [href]="content.regionPulse.href" target="_blank" rel="noopener noreferrer">
+              <div class="pulse-card__img">
+                <img [src]="content.regionPulse.image" alt="" />
+              </div>
+              <div class="pulse-card__body">
+                <p class="pulse-date">{{ content.regionPulse.date }}</p>
+                <h4 class="pulse-title">{{ content.regionPulse.title }}</h4>
+                <p class="pulse-desc">{{ content.regionPulse.description }}</p>
+                <div class="pulse-footer">
+                  <div class="pulse-tags">
+                    @for (tag of content.regionPulse.tags; track tag) {
+                      <span class="pulse-tag">{{ tag }}</span>
+                    }
+                  </div>
+                  <span class="pulse-arrow">›</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Impact Stories -->
+          <div class="panel-section">
+            <div class="panel-section-label">
+              <span class="panel-section-text">Impact Stories</span>
+              <div class="story-nav">
+                <span class="story-counter">{{ storyIndex() + 1 }} / {{ content.impactStories.length }}</span>
+                <button class="story-nav-btn" aria-label="Previous" (click)="prevStory()">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 9L4.5 6l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="story-nav-btn" aria-label="Next" (click)="nextStory()">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            @if (currentStory(); as story) {
+              <div class="story-card">
+                <div class="story-card__img">
+                  <img [src]="story.image" alt="" />
+                </div>
+                <div class="story-card__body">
+                  <span class="story-category" [style.background]="story.categoryColor">{{ story.category }}</span>
+                  <p class="story-quote">{{ story.quote }}</p>
+                  <p class="story-person">{{ story.person }}</p>
+                  <div class="story-stats">
+                    @if (story.stats[2]; as proj) {
+                      <div class="story-stat-col story-stat-col--project">
+                        <p class="story-stat-meta">Project</p>
+                        <p class="story-stat-value">{{ proj.value }}</p>
+                        <p class="story-stat-label">{{ proj.label }}</p>
+                      </div>
+                    }
+                    <div class="story-stat-col story-stat-col--impact">
+                      <p class="story-stat-meta">Impact</p>
+                      <div class="story-stat-impact-row">
+                        @for (stat of story.stats.slice(0, 2); track stat.label) {
+                          <div class="story-stat">
+                            <p class="story-stat-value">{{ stat.value }}</p>
+                            <p class="story-stat-label">{{ stat.label }}</p>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="story-read-row">
+                    @if (story.internalRoute) {
+                      <a [routerLink]="story.internalRoute" class="story-read-link">
+                        Read full story
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </a>
+                    } @else {
+                      <a [href]="story.href" target="_blank" rel="noopener noreferrer" class="story-read-link">
+                        Read full story
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Related Country News -->
+          <div class="panel-section">
+            <div class="panel-section-label">
+              <span class="panel-section-text">Related Country News</span>
+            </div>
+            <div class="from-region-cards">
+              @for (article of content.fromTheRegion; track article.title) {
+                <a class="from-card" [href]="article.href" target="_blank" rel="noopener noreferrer">
+                  <div class="from-card__img"><img [src]="article.image" alt="" /></div>
+                  <div class="from-card__body">
+                    <span class="from-card__country">{{ article.country }}</span>
+                    <h5 class="from-card__title">{{ article.title }}</h5>
+                    <p class="from-card__date">{{ article.date }}</p>
+                  </div>
+                </a>
+              }
+            </div>
+          </div>
+
+          <!-- Shorts -->
+          <div class="panel-section">
+            <div class="panel-section-label">
+              <span class="panel-section-text">Shorts</span>
+            </div>
+            <div class="shorts-cards">
+              @for (short of content.shorts; track short.caption) {
+                <a class="short-card" [href]="short.href" target="_blank" rel="noopener noreferrer">
+                  <img [src]="short.image" alt="" class="short-card__img" />
+                  <div class="short-card__overlay">
+                    <p class="short-card__caption">{{ short.caption }}</p>
+                  </div>
+                </a>
+              }
+            </div>
+          </div>
+
+          <!-- AI follow-up -->
+          <div class="ai-followup">
+            <button class="ai-followup__btn" type="button" (click)="chatOpen.set(true)">
+              <span class="ai-followup__border" aria-hidden="true">
+                <span class="ai-followup__blob ai-followup__blob--1"></span>
+                <span class="ai-followup__blob ai-followup__blob--2"></span>
+              </span>
+              <span class="ai-followup__label">Follow-up with AI</span>
+              <span class="ai-followup__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <defs>
+                    <linearGradient id="rp-ai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#68c5ea"/>
+                      <stop offset="100%" stop-color="#ae5ded"/>
+                    </linearGradient>
+                  </defs>
+                  <path stroke="url(#rp-ai-grad)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    <div class="carousel-overlay" #carouselOverlay>
+      <app-adb-region-carousel
+        [selectedId]="selectedRegionId()"
+        (regionSelect)="onRegionSelect($event)"
+        (regionHover)="onRegionHover($event)"
+      />
+    </div>
+    <div class="carousel-fade-r" #carouselFadeR style="display:none"></div>
+  </div>

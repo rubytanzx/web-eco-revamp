@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.pv-svg {
+  display: block;
+  width: 100%;
+  height: 220px;
+  overflow: visible;
+  cursor: crosshair;
+}
+
+.pv-grid {
+  stroke: var(--color-neutral-solid-08, #f1f5f9);
+  stroke-width: 1;
+}
+
+.pv-y-label {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-40);
+  font-family: inherit;
+  text-anchor: end;
+}
+
+.pv-x-label {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-50);
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.pv-area { fill: url(#pv-trend-grad); }
+
+.pv-line {
+  fill: none;
+  stroke: #449DF7;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pv-hover-vline {
+  stroke: var(--color-neutral-solid-30);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+.pv-hover-dot {
+  fill: #449DF7;
+  stroke: #ffffff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.pv-tooltip-bg {
+  fill: #ffffff;
+  stroke: #e2e8f0;
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+  pointer-events: none;
+}
+
+.pv-tooltip-period {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  fill: #64748b;
+  pointer-events: none;
+}
+
+.pv-tooltip-value {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  fill: #1e293b;
+  pointer-events: none;
+}
+
+.pv-tooltip-pct {
+  font-family: inherit;
+  font-size: 10.5px;
+  pointer-events: none;
+}
+
+.pv-tooltip-pct--up { fill: #16a34a; }
+.pv-tooltip-pct--dn { fill: #dc2626; }

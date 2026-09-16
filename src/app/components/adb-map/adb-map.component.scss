@@ -1,0 +1,122 @@
+:host { display: block; width: 100%; }
+
+.map-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 700 / 275;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  container-type: inline-size;
+}
+
+.map-wrap--loading { aspect-ratio: 960 / 500; }
+
+.map-skeleton {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #edf4fa 25%, #fafcfe 50%, #edf4fa 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-card);
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.map-svg { display: block; width: 100%; height: 100%; overflow: hidden; }
+
+.country {
+  fill: url(#adb-land);
+  stroke: rgba(130, 185, 175, 0.2);
+  stroke-width: 0.25;
+  transition: fill 0.3s ease, opacity 0.3s ease;
+}
+
+// Non-ADB countries — translucent blue wash
+.country--none {
+  fill: rgba(168, 208, 228, 0.22);
+  stroke: rgba(120, 170, 200, 0.1);
+}
+
+// Active — very light washes + thin soft traced border
+.country--cwrd.country--active { fill: #dce8f4; stroke: #a8c8e0; }
+.country--eard.country--active { fill: #daeac4; stroke: #b0d080; }
+.country--sard.country--active { fill: #f6ecc8; stroke: #e0c878; }
+.country--serd.country--active { fill: #c8eaf4; stroke: #88cce4; }
+.country--pard.country--active { fill: #f2dace; stroke: #e4a888; }
+
+.country--active {
+  opacity: 1;
+  stroke-width: 0.4;
+  animation: trace-in 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes trace-in {
+  from {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+  }
+  to {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 0;
+  }
+}
+
+.country--dimmed {
+  fill: url(#adb-land);
+  opacity: 0.35;
+}
+
+.country--rlo {
+  opacity: 0.45;
+}
+
+// Liaison office markers — square+label at top, stem goes down to coordinate
+.liaison-marker {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+  opacity: 0; // GSAP animates opacity and x; translateY is handled via GSAP y
+}
+
+.liaison-marker__square {
+  width: clamp(3px, 0.6cqw, 5px);
+  height: clamp(3px, 0.6cqw, 5px);
+  border: 1px solid #3a4a5a;
+  background: transparent;
+  flex-shrink: 0;
+  margin-left: 0;
+}
+
+// Stem + label row, text flush with bottom of stem
+.liaison-marker__bottom {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(3px, 0.5cqw, 5px);
+}
+
+.liaison-marker__stem {
+  width: 1px;
+  height: clamp(14px, 3cqw, 30px);
+  background: #3a4a5a;
+  opacity: 0.4;
+  flex-shrink: 0;
+  margin-left: clamp(1px, 0.2cqw, 2px);
+}
+
+.liaison-marker__name {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: clamp(7px, 1cqw, 9.5px);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: #3a4a5a;
+  white-space: normal;
+  max-width: clamp(60px, 9cqw, 88px);
+  line-height: 1.3;
+}

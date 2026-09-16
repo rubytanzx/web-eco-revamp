@@ -1,0 +1,43 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DataNext · Typography Scale
+// Compiled from all component SCSS files — do not hand-edit sizes here;
+// update the source components and re-run the audit instead.
+//
+// Font      : 'Ideal Sans', 'Helvetica Neue', Arial, sans-serif → var(--font)
+// Weights   : 300 Light · 400 Book · 500 Medium   (max: 500)
+// Sizes     : px values only; no rem/em in component SCSS
+// ─────────────────────────────────────────────────────────────────────────────
+
+:root {
+
+  // ── Display ──────────────────────────────────────────  fw: 500
+  --fs-hero:          38px;   // home greeting, major hero headings
+
+  // ── Headings ─────────────────────────────────────────  fw: 500
+  --fs-h1:            28px;   // page-level titles, whats-new hero sub
+  --fs-h2:            22px;   // large section headings
+  --fs-h3:            20px;   // catalogue / home section titles
+  --fs-h4:            18px;   // notebook panel headings, widget titles
+  --fs-h5:            16px;   // card headings, sub-section labels
+
+  // ── Body ─────────────────────────────────────────────  fw: 400
+  --fs-body-1:        16px;   // primary reading text
+  --fs-body-2:        14px;   // default UI text (most common)
+  --fs-body-3:        12px;   // secondary / supporting text
+
+  // ── Accent ───────────────────────────────────────────  fw: 400
+  --fs-accent-1:      16px;   // large-format labels, nav items
+  --fs-accent-2:      15px;   // search inputs, interactive fields
+  --fs-accent-3:      12px;   // tag text, muted category labels
+
+  // ── Emphasis ─────────────────────────────────────────  fw: 500
+  --fs-emphasis-1:    16px;   // strong UI labels at body-1 size
+  --fs-emphasis-2:    14px;   // row names, semibold table values
+  --fs-emphasis-3:    12px;   // badge labels, small strong text
+
+  // ── Subtitle ─────────────────────────────────────────  fw: 300–400
+  --fs-subtitle-1:    14px;   // light secondary metadata  (fw 300)
+  --fs-subtitle-2:    12px;   // light captions / helper text (fw 300)
+  --fs-subtitle-3:    10px;   // smallest: tab badges, micro-caps (fw 400)
+
+}

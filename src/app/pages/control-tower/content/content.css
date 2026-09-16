@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Health alert banner ── */
+.health-alert-bar {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.health-alert-count {
+  font-size: 32px;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1;
+}
+
+.health-alert-text {
+  font-size: 14px;
+  color: var(--color-neutral-solid-70);
+  line-height: 1.4;
+}
+
+/* ── Content type ref-list columns ── */
+.content-col-labels {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.content-col-lbl {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-40);
+  width: 64px;
+  text-align: right;
+}
+
+.content-type-item {
+  display: grid;
+  grid-template-columns: 1fr 64px 72px 48px 52px;
+  align-items: center;
+  gap: 0;
+  position: relative;
+}
+
+.content-col-val {
+  font-size: 12.5px;
+  color: var(--color-neutral-solid-70);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.content-col-val--bold {
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+}
+
+/* ── Colored ref item bars for health ── */
+.ref-item-bar--high {
+  background: rgba(220, 38, 38, 0.18);
+}
+
+.ref-item-bar--medium {
+  background: rgba(251, 146, 60, 0.22);
+}
+
+/* ── Health breakdown item ── */
+.health-breakdown-item {
+  display: grid;
+  grid-template-columns: 1fr auto 52px 36px;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* ── Severity summary ── */
+.severity-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.severity-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.severity-count {
+  font-size: 12.5px;
+  color: var(--color-neutral-solid-60);
+  white-space: nowrap;
+  min-width: 68px;
+  text-align: right;
+}
+
+/* ── Coverage gaps ── */
+.coverage-gap-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--color-neutral-solid-10);
+  font-size: 13px;
+  color: var(--color-neutral-solid-70);
+}
+
+.coverage-gap-item:last-child {
+  border-bottom: none;
+}
+
+.coverage-gap-val {
+  flex-shrink: 0;
+}
+
+/* ── Inventory published bar colors ── */
+.ref-item-bar--published {
+  background: rgba(22, 163, 74, 0.15);
+}
+
+.ref-item-bar--review {
+  background: rgba(251, 146, 60, 0.22);
+}
+
+.ref-item-bar--draft {
+  background: rgba(100, 116, 139, 0.15);
+}

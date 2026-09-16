@@ -1,0 +1,628 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Feedback</h1>
+    <p class="page-subtitle">Understand how users are responding to AI-generated answers.</p>
+  </div>
+  <div class="feedback-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- 4 KPI cards -->
+<div class="signal-strip">
+  @for (k of feedbackKpis; track k.title) {
+    <div class="signal-item">
+      <span class="signal-label">{{ k.title }}</span>
+      <span class="signal-value">{{ k.value }}</span>
+      @if (k.sub) {
+        <span class="signal-sub">{{ k.sub }}</span>
+      }
+    </div>
+  }
+</div>
+
+<!-- Combined Feedback Trend Chart -->
+<section class="card fb-section fb-chart-card">
+  <div class="fb-chart-hd">
+    <h2 class="fb-section-title">Feedback Trend</h2>
+    <div class="fb-chart-hd-right">
+      <div class="fb-chart-legend">
+        @if (showReceivedLine()) {
+          <span class="fb-legend-item">
+            <span class="fb-legend-swatch" style="background:#086ED3"></span>Feedback Received
+          </span>
+        }
+        <span class="fb-legend-item">
+          <span class="fb-legend-swatch" style="background:#22c55e"></span>Positive
+        </span>
+        <span class="fb-legend-item">
+          <span class="fb-legend-swatch" style="background:#ef4444"></span>Negative
+        </span>
+      </div>
+      <select class="fb-ctrl-select" (change)="trendCollectionFilter.set($any($event.target).value)">
+        <option value="all">All collections</option>
+        @for (c of flaggedCollections; track c.title) {
+          <option [value]="c.title">{{ c.title }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <svg class="fb-chart-svg" [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="fb-grad-received" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#086ED3" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#086ED3" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="fb-grad-positive" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="fb-grad-negative" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#ef4444" stop-opacity="0.14" />
+        <stop offset="100%" stop-color="#ef4444" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+
+    @for (t of yTicks(); track t.label) {
+      <line class="fb-chart-grid" [attr.x1]="padL" [attr.x2]="chartW - padR" [attr.y1]="t.y" [attr.y2]="t.y" />
+      <text class="fb-chart-label" [attr.x]="padL - 6" [attr.y]="t.y + 4" text-anchor="end">{{ t.label }}</text>
+    }
+
+    <!-- Area fills -->
+    @if (showReceivedLine()) {
+      <path class="fb-chart-area" [attr.d]="receivedAreaPath()" fill="url(#fb-grad-received)" />
+    }
+    <path class="fb-chart-area" [attr.d]="positiveAreaPath()" fill="url(#fb-grad-positive)" />
+    <path class="fb-chart-area" [attr.d]="negativeAreaPath()" fill="url(#fb-grad-negative)" />
+
+    <!-- Lines -->
+    @if (showReceivedLine()) {
+      <path class="fb-chart-line" [attr.d]="receivedLinePath()" style="stroke:#086ED3" />
+    }
+    <path class="fb-chart-line" [attr.d]="positiveLinePath()" style="stroke:#22c55e" />
+    <path class="fb-chart-line" [attr.d]="negativeLinePath()" style="stroke:#ef4444" />
+
+    @for (t of xTicks(); track t.label) {
+      <text class="fb-chart-label" [attr.x]="t.x" [attr.y]="chartH - 6" text-anchor="middle">{{ t.label }}</text>
+    }
+
+    <!-- Hover hit areas -->
+    @for (t of xTicks(); track $index) {
+      <rect
+        [attr.x]="t.x - 28" [attr.y]="padT"
+        [attr.width]="56" [attr.height]="chartH - padT - padB"
+        fill="transparent"
+        style="cursor:crosshair"
+        (mouseenter)="hoveredMonth.set($index)"
+        (mouseleave)="hoveredMonth.set(null)"
+      />
+    }
+
+    <!-- Hover tooltip -->
+    @if (fbTooltipData(); as tip) {
+      <line class="fb-hover-line" [attr.x1]="tip.x" [attr.x2]="tip.x" [attr.y1]="tip.lineY1" [attr.y2]="tip.lineY2" />
+      @for (item of tip.items; track item.label) {
+        <circle [attr.cx]="tip.x" [attr.cy]="item.y" r="5" [attr.fill]="item.color" class="fb-hover-dot" />
+      }
+      <rect class="fb-tooltip-box" [attr.x]="tip.boxX" [attr.y]="tip.boxY" width="130" [attr.height]="tip.boxH" rx="5" />
+      <text class="fb-tooltip-week" [attr.x]="tip.boxX + 10" [attr.y]="tip.boxY + 16">{{ tip.month }}</text>
+      @for (item of tip.items; track item.label; let idx = $index) {
+        <circle [attr.cx]="tip.boxX + 10" [attr.cy]="tip.boxY + 30 + idx * 15" r="4" [attr.fill]="item.color" />
+        <text class="fb-tooltip-label" [attr.x]="tip.boxX + 20" [attr.y]="tip.boxY + 34 + idx * 15">{{ item.label }}: {{ item.val }}</text>
+      }
+    }
+  </svg>
+</section>
+
+<!-- Written Feedback (now first) -->
+<section class="card fb-section">
+  <div class="fb-section-hd">
+    <div class="fb-section-text">
+      <h2 class="fb-section-title">Written Feedback</h2>
+      <p class="fb-section-sub">{{ filteredRecords().length }} written responses</p>
+    </div>
+    <div class="fb-wf-controls">
+      <label class="fb-search-wrap">
+        <tabler-icon icon="search" [size]="14" />
+        <input
+          class="fb-search-input"
+          type="text"
+          placeholder="Search feedback..."
+          [value]="feedbackSearch()"
+          (input)="feedbackSearch.set($any($event.target).value)"
+        />
+      </label>
+      <select class="fb-ctrl-select" (change)="sentimentFilter.set($any($event.target).value)">
+        <option value="all">Sentiment</option>
+        <option value="positive">Positive</option>
+        <option value="negative">Negative</option>
+      </select>
+      <select class="fb-ctrl-select" (change)="categoryFilter.set($any($event.target).value)">
+        <option value="all">Category</option>
+        @for (c of feedbackCategories; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      <select class="fb-ctrl-select" (change)="collectionFilterWF.set($any($event.target).value)">
+        <option value="all">Collection</option>
+        @for (c of flaggedCollections; track c.title) {
+          <option [value]="c.title">{{ c.title }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="fb-table-wrap" [class.is-scrolled]="wfTableScrolled()" (scroll)="onWfTableScroll($event)">
+  <table class="fb-records-table">
+    <thead>
+      <tr>
+        <th class="fb-th fb-th--sticky-p">Prompt</th>
+        <th class="fb-th fb-th--sticky-r"
+            [style.box-shadow]="wfTableScrolled() ? '6px 0 16px rgba(0,0,0,0.10)' : 'none'"
+            [style.border-right]="wfTableScrolled() ? '1px solid rgba(0,0,0,0.06)' : 'none'">Response</th>
+        <th class="fb-th">Sentiment</th>
+        <th class="fb-th">Category</th>
+        <th class="fb-th">Collection</th>
+        <th class="fb-th">Role</th>
+        <th class="fb-th">Dept</th>
+        <th class="fb-th">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of filteredRecords(); track r.id) {
+        <tr class="fb-tr fb-tr--clickable" (click)="openRecord(r)">
+          <td class="fb-td fb-td--prompt"><span class="fb-cell-clamp">{{ r.promptText }}</span></td>
+          <td class="fb-td fb-td--excerpt"
+              [style.box-shadow]="wfTableScrolled() ? '6px 0 16px rgba(0,0,0,0.10)' : 'none'"
+              [style.border-right]="wfTableScrolled() ? '1px solid rgba(0,0,0,0.06)' : 'none'"><span class="fb-cell-clamp">{{ r.responseExcerpt }}</span></td>
+          <td class="fb-td">
+            <span class="fb-sentiment" [class.fb-sentiment--pos]="r.sentiment === 'positive'" [class.fb-sentiment--neg]="r.sentiment === 'negative'">
+              <tabler-icon [icon]="r.sentiment === 'positive' ? 'thumb-up' : 'thumb-down'" [size]="14" />
+              {{ r.sentiment }}
+            </span>
+          </td>
+          <td class="fb-td">
+            <span class="fb-cat-badge fb-cat-badge--{{ catSlug(r.feedbackCategory) }}">
+              {{ r.feedbackCategory }}
+            </span>
+          </td>
+          <td class="fb-td">{{ r.collection ?? '—' }}</td>
+          <td class="fb-td">{{ r.userRole }}</td>
+          <td class="fb-td"><span class="mod-module-badge">{{ r.department }}</span></td>
+          <td class="fb-td fb-td--time">{{ r.timestamp }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- Collection Feedback (hidden) -->
+@if (false) {
+<section class="card fb-section">
+  <div class="fb-section-hd">
+    <div class="fb-section-text">
+      <h2 class="fb-section-title">Collection Feedback</h2>
+      <p class="fb-section-sub">Compare user feedback and reliability across collections.</p>
+    </div>
+    <div class="fb-col-controls">
+      <div class="fb-sort-group">
+        <span class="fb-ctrl-label">Sort</span>
+        <select class="fb-ctrl-select" (change)="collectionSort.set($any($event.target).value)">
+          @for (opt of sortOptions; track opt.key) {
+            <option [value]="opt.key">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <a class="fb-view-all" routerLink="/collections">View all collections</a>
+    </div>
+  </div>
+
+  <table class="fb-col-table">
+    <thead>
+      <tr>
+        <th class="fb-col-th fb-col-th--rank"></th>
+        <th class="fb-col-th">Collection</th>
+        <th class="fb-col-th fb-col-th--num">Feedback</th>
+        <th class="fb-col-th fb-col-th--sentiment">
+          Sentiment
+          <span class="fb-th-info">
+            <tabler-icon icon="info-circle" [size]="12" class="fb-col-th-icon" />
+            <span class="fb-th-tooltip">Split of positive vs. negative ratings submitted by users.</span>
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of sortedCollections(); track c.title; let i = $index) {
+        <tr class="fb-col-tr fb-col-tr--clickable" (click)="openFbDrawer(c)">
+          <td class="fb-col-td fb-col-td--rank">{{ i + 1 }}</td>
+          <td class="fb-col-td fb-col-td--name">{{ c.title }}</td>
+          <td class="fb-col-td fb-col-td--num">{{ c.prompts }}</td>
+          <td class="fb-col-td fb-col-td--sentiment">
+            <div class="fb-sent-bar">
+              <span class="fb-sent-pos" [style.width.%]="c.positivePct"></span>
+              <span class="fb-sent-neg" [style.width.%]="c.negativePct"></span>
+            </div>
+            <p class="fb-sent-summary">
+              <span class="fb-sent-lbl--pos">{{ c.positivePct }}%</span> positive
+              · <span class="fb-sent-lbl--neg">{{ c.negativePct }}%</span> negative
+            </p>
+          </td>
+        </tr>
+
+      }
+    </tbody>
+  </table>
+</section>
+} <!-- end @if (false) -->
+
+<!-- Feedback Details Drawer -->
+@if (drawerOpen()) {
+  <div class="fb-drawer-backdrop" (click)="closeRecord()"></div>
+  @if (selectedRecord(); as rec) {
+    <aside class="fb-drawer">
+      <header class="fb-drawer-hd">
+        <h2 class="fb-drawer-title">Feedback Details</h2>
+        <button class="fb-drawer-close" type="button" (click)="closeRecord()">
+          <tabler-icon icon="x" [size]="18" />
+        </button>
+      </header>
+      <div class="fb-drawer-meta">
+        <div class="fb-drawer-meta-cell">
+          <span class="fb-drawer-meta-label">Feedback User</span>
+          <span class="fb-drawer-meta-value">{{ rec.userName }}</span>
+        </div>
+        <div class="fb-drawer-meta-cell">
+          <span class="fb-drawer-meta-label">Date Submitted</span>
+          <span class="fb-drawer-meta-value">
+            <tabler-icon icon="calendar" [size]="13" class="fb-drawer-cal-icon" />
+            {{ rec.date }}
+          </span>
+        </div>
+      </div>
+      <div class="fb-drawer-sentiment-block"
+           [class.fb-drawer-sentiment-block--pos]="rec.sentiment === 'positive'"
+           [class.fb-drawer-sentiment-block--neg]="rec.sentiment === 'negative'">
+        <div class="fb-drawer-sentiment-row">
+          <div class="fb-drawer-sentiment-icon-wrap">
+            <tabler-icon [icon]="rec.sentiment === 'positive' ? 'thumb-up' : 'thumb-down'" [size]="16" class="fb-drawer-sentiment-icon" />
+          </div>
+          <span class="fb-drawer-sentiment-label">
+            User rated this response as {{ rec.sentiment === 'positive' ? 'Good' : 'Poor' }}
+          </span>
+        </div>
+        @if (rec.feedbackNote) {
+          <p class="fb-drawer-note">{{ rec.feedbackNote }}</p>
+        }
+      </div>
+      <div class="fb-drawer-cat-row">
+        <span class="fb-cat-badge fb-cat-badge--{{ catSlug(rec.feedbackCategory) }}">{{ rec.feedbackCategory }}</span>
+      </div>
+      <section class="fb-drawer-section">
+        <div class="fb-drawer-section-hd">
+          <div class="fb-drawer-section-title-row">
+            <tabler-icon icon="user" [size]="14" class="fb-drawer-section-icon" />
+            <h3 class="fb-drawer-section-title">User Prompt</h3>
+          </div>
+          <button class="fb-copy-btn" type="button" (click)="copyPrompt(rec.promptText)">
+            <tabler-icon icon="copy" [size]="13" />
+            Copy Prompt
+          </button>
+        </div>
+        <div class="fb-drawer-prompt-box">{{ rec.promptText }}</div>
+      </section>
+      <section class="fb-drawer-section">
+        <div class="fb-drawer-section-title-row">
+          <tabler-icon icon="sparkles" [size]="14" class="fb-drawer-section-icon fb-drawer-section-icon--ai" />
+          <h3 class="fb-drawer-section-title">AI Output</h3>
+        </div>
+        <div class="fb-drawer-response">{{ rec.fullResponse }}</div>
+      </section>
+    </aside>
+  }
+}
+
+<!-- Collection Feedback Detail Drawer -->
+@if (fbDrawerOpen()) {
+  <div class="fbd-backdrop" (click)="closeFbDrawer()"></div>
+  @if (selectedFbCollection(); as col) {
+    <aside class="fbd-drawer" [style.width.px]="fbDrawerWidth()">
+      <div class="fbd-resizer" (mousedown)="onFbResizerMouseDown($event)"></div>
+
+      <!-- Header -->
+      <header class="fbd-hd">
+        <div class="fbd-hd-left">
+          <span class="fbd-context">Collection Feedback</span>
+          <h2 class="fbd-name">{{ col.title }}</h2>
+          <span class="reg-domain-badge reg-domain-badge--{{ domainSlug(fbDrawerDomain()) }}">{{ fbDrawerDomain() }}</span>
+        </div>
+        <button class="fbd-close" type="button" (click)="closeFbDrawer()">
+          <tabler-icon icon="x" [size]="18" />
+        </button>
+      </header>
+
+      <!-- Summary KPIs -->
+      <div class="fbd-kpis">
+        <div class="fbd-kpi">
+          <span class="fbd-kpi-val">{{ col.prompts }}</span>
+          <span class="fbd-kpi-label">Total feedback</span>
+        </div>
+        <div class="fbd-kpi fbd-kpi--pos">
+          <span class="fbd-kpi-val fbd-kpi-val--pos">{{ col.positivePct }}%</span>
+          <span class="fbd-kpi-label">{{ col.positiveCount }} positive</span>
+        </div>
+        <div class="fbd-kpi fbd-kpi--neg">
+          <span class="fbd-kpi-val fbd-kpi-val--neg">{{ col.negativePct }}%</span>
+          <span class="fbd-kpi-label">{{ col.negativeCount }} negative</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="fbd-tabs">
+        <button class="fbd-tab" [class.is-active]="fbDrawerTab() === 'overview'"
+                (click)="fbDrawerTab.set('overview')">Overview</button>
+        <button class="fbd-tab" [class.is-active]="fbDrawerTab() === 'records'"
+                (click)="fbDrawerTab.set('records')">Feedback Records</button>
+      </div>
+
+      <div class="fbd-body">
+
+        @if (fbDrawerTab() === 'overview') {
+
+          <!-- Sentiment -->
+          <div class="fbd-card">
+            <h3 class="fbd-card-title">Feedback Sentiment</h3>
+            <div class="fbd-sent-headline">{{ col.positivePct }}% positive</div>
+            <div class="fbd-sent-bar">
+              <span class="fbd-sent-pos" [style.width.%]="col.positivePct"></span>
+              <span class="fbd-sent-neg" [style.width.%]="col.negativePct"></span>
+            </div>
+            <p class="fbd-sent-counts">
+              <span class="fbd-sent-pos-lbl">{{ col.positiveCount }} positive</span>
+              · <span class="fbd-sent-neg-lbl">{{ col.negativeCount }} negative</span>
+            </p>
+            @if (fbDrawerTrendDelta(); as td) {
+              <p class="fbd-sent-delta" [class.fbd-sent-delta--good]="td.improving" [class.fbd-sent-delta--bad]="!td.improving">
+                @if (td.improving) { <tabler-icon icon="arrow-down" [size]="13" /> } @else { <tabler-icon icon="arrow-up" [size]="13" /> } {{ td.pct }}% negative feedback vs previous period
+              </p>
+            }
+          </div>
+
+          <!-- Feedback Trend -->
+          <div class="fbd-card">
+            <h3 class="fbd-card-title">Feedback Trend</h3>
+            <div class="fbd-trend-legend">
+              <span class="fbd-trend-leg-item"><span class="fbd-trend-dot fbd-trend-dot--pos"></span>Positive</span>
+              <span class="fbd-trend-leg-item"><span class="fbd-trend-dot fbd-trend-dot--neg"></span>Negative</span>
+            </div>
+            <svg class="fbd-trend-svg"
+                 [attr.viewBox]="'0 0 ' + fbTrendChartW + ' ' + fbTrendChartH"
+                 preserveAspectRatio="xMidYMid meet"
+                 (mouseleave)="fbTrendHoveredIdx.set(null)">
+              @for (bar of fbDrawerTrendBars(); track bar.label; let i = $index) {
+                <rect class="fbd-trend-bar-neg"
+                      [attr.x]="bar.x" [attr.y]="bar.negY"
+                      [attr.width]="bar.width" [attr.height]="bar.negH" rx="2" />
+                <rect class="fbd-trend-bar-pos"
+                      [attr.x]="bar.x" [attr.y]="bar.posY"
+                      [attr.width]="bar.width" [attr.height]="bar.posH" />
+                <text class="fbd-trend-x-label" [attr.x]="bar.cx" [attr.y]="bar.labelY"
+                      text-anchor="middle">{{ bar.label }}</text>
+                <!-- Hit area -->
+                <rect [attr.x]="bar.cx - bar.width" [attr.y]="fbTrendPadT"
+                      [attr.width]="bar.width * 2" [attr.height]="fbTrendChartH - fbTrendPadT - fbTrendPadB"
+                      fill="transparent" style="cursor:crosshair"
+                      (mouseenter)="fbTrendHoveredIdx.set(i)" />
+              }
+              @if (fbTrendTooltip(); as tip) {
+                <rect [attr.x]="tip.x" [attr.y]="tip.y"
+                      [attr.width]="tip.tooltipW" [attr.height]="tip.tooltipH"
+                      rx="5" class="fbd-trend-tip-box" />
+                <text class="fbd-trend-tip-month" [attr.x]="tip.x + 10" [attr.y]="tip.y + 16">{{ tip.bar.label }}</text>
+                <circle cx="0" cy="0" r="3.5" fill="#BBF7D0"
+                        [attr.transform]="'translate(' + (tip.x + 10) + ',' + (tip.y + 30) + ')'" />
+                <text class="fbd-trend-tip-val" [attr.x]="tip.x + 20" [attr.y]="tip.y + 34">Positive: {{ tip.bar.pos }}</text>
+                <circle cx="0" cy="0" r="3.5" fill="#FECACA"
+                        [attr.transform]="'translate(' + (tip.x + 10) + ',' + (tip.y + 45) + ')'" />
+                <text class="fbd-trend-tip-val" [attr.x]="tip.x + 20" [attr.y]="tip.y + 49">Negative: {{ tip.bar.neg }}</text>
+              }
+            </svg>
+            @if (fbDrawerTrendDelta(); as td) {
+              <p class="fbd-trend-footer">
+                <span [class.fbd-trend-delta--good]="td.improving" [class.fbd-trend-delta--bad]="!td.improving">
+                  Negative feedback @if (td.improving) { <tabler-icon icon="arrow-down" [size]="13" /> } @else { <tabler-icon icon="arrow-up" [size]="13" /> } {{ td.pct }}% vs previous period
+                </span>
+              </p>
+            }
+          </div>
+
+          <!-- Feedback Drivers -->
+          <div class="fbd-card">
+            <h3 class="fbd-card-title">Feedback Drivers</h3>
+            <div class="fbd-drivers">
+              @for (d of fbDrawerDrivers(); track d.category) {
+                <div class="fbd-driver" [class.fbd-driver--neg]="d.sentiment === 'negative'"
+                     (click)="filterByDriver(d.category)">
+                  <span class="fbd-driver-name">{{ d.category }}</span>
+                  <div class="fbd-driver-bar-wrap">
+                    <div class="fbd-driver-bar">
+                      <span class="fbd-driver-fill"
+                            [class.fbd-driver-fill--neg]="d.sentiment === 'negative'"
+                            [class.fbd-driver-fill--pos]="d.sentiment === 'positive'"
+                            [style.width.%]="d.pct"></span>
+                    </div>
+                  </div>
+                  <span class="fbd-driver-count">{{ d.count }}</span>
+                  <span class="fbd-driver-pct">{{ d.pct }}%</span>
+                  <tabler-icon icon="chevron-right" [size]="12" class="fbd-driver-arrow" />
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Top Issue -->
+          @if (fbDrawerTopIssue(); as top) {
+            <div class="fbd-card fbd-top-issue-card">
+              <h3 class="fbd-card-title">Top Reported Issue</h3>
+              <div class="fbd-top-issue-body">
+                <span class="fbd-top-issue-name">{{ top.category }}</span>
+                <span class="fbd-top-issue-count">{{ top.count }} reports</span>
+              </div>
+              <p class="fbd-top-issue-desc">
+                {{ top.category }} is the most frequently reported issue, accounting for {{ top.pct }}% of negative feedback.
+              </p>
+              <button class="fbd-top-issue-link" type="button" (click)="filterByDriver(top.category)">
+                View related feedback →
+              </button>
+            </div>
+          }
+
+        }
+
+        @if (fbDrawerTab() === 'records') {
+
+          <!-- Filter controls -->
+          <div class="fbd-records-controls">
+            <select class="fbd-filter-select"
+                    [value]="fbRecordsTypeFilter()"
+                    (change)="fbRecordsTypeFilter.set($any($event.target).value)">
+              <option value="all">All feedback types</option>
+              <option value="Incorrect Sources">Incorrect Sources</option>
+              <option value="Irrelevant Response">Irrelevant Response</option>
+              <option value="Unclear Answer">Unclear Answer</option>
+              <option value="Other Feedback">Other Feedback</option>
+            </select>
+            <select class="fbd-filter-select"
+                    [value]="fbRecordsSentimentFilter()"
+                    (change)="fbRecordsSentimentFilter.set($any($event.target).value)">
+              <option value="all">All sentiment</option>
+              <option value="positive">Positive</option>
+              <option value="negative">Negative</option>
+            </select>
+            <label class="fbd-search-wrap">
+              <tabler-icon icon="search" [size]="13" class="fbd-search-icon" />
+              <input class="fbd-search-input" type="text" placeholder="Search…"
+                     [value]="fbRecordsSearch()"
+                     (input)="fbRecordsSearch.set($any($event.target).value)" />
+            </label>
+          </div>
+          <p class="fbd-records-count">{{ fbDrawerFilteredRecords().length }} records</p>
+
+          <div class="fbd-table-wrap">
+          <table class="fb-records-table fbd-col-table">
+            <thead>
+              <tr>
+                <th class="fb-th">Prompt</th>
+                <th class="fb-th">Response</th>
+                <th class="fb-th">Sentiment</th>
+                <th class="fb-th">Category</th>
+                <th class="fb-th">Role</th>
+                <th class="fb-th">Dept</th>
+                <th class="fb-th">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rec of fbDrawerFilteredRecords(); track rec.id) {
+                <tr class="fb-tr fb-tr--clickable" (click)="openFbDrawerRecord(rec)">
+                  <td class="fb-td fb-td--prompt">{{ rec.promptText }}</td>
+                  <td class="fb-td fb-td--excerpt">{{ rec.responseExcerpt }}</td>
+                  <td class="fb-td">
+                    <span class="fb-sentiment" [class.fb-sentiment--pos]="rec.sentiment === 'positive'" [class.fb-sentiment--neg]="rec.sentiment === 'negative'">
+                      <tabler-icon [icon]="rec.sentiment === 'positive' ? 'thumb-up' : 'thumb-down'" [size]="14" />
+                      {{ rec.sentiment }}
+                    </span>
+                  </td>
+                  <td class="fb-td">
+                    <span class="fb-cat-badge fb-cat-badge--{{ catSlug(rec.feedbackCategory) }}">{{ rec.feedbackCategory }}</span>
+                  </td>
+                  <td class="fb-td">{{ rec.userRole }}</td>
+                  <td class="fb-td"><span class="mod-module-badge">{{ rec.department }}</span></td>
+                  <td class="fb-td fb-td--time">{{ rec.timestamp }}</td>
+                </tr>
+              }
+              @if (fbDrawerFilteredRecords().length === 0) {
+                <tr><td colspan="7" class="fbd-records-empty">No records match the current filters.</td></tr>
+              }
+            </tbody>
+          </table>
+          </div>
+
+        }
+
+      </div>
+
+      <!-- Footer: cross-navigation -->
+      <div class="fbd-footer">
+        <button class="fbd-footer-link" type="button"
+                (click)="openCollectionDetailFromFeedback(col.title)">
+          View collection →
+        </button>
+      </div>
+
+      <!-- Record Detail Overlay -->
+      @if (fbDrawerRecord(); as rec) {
+        <div class="fbd-record-overlay">
+          <header class="fb-drawer-hd fbd-overlay-hd">
+            <button class="fbd-close" type="button" (click)="fbDrawerRecord.set(null)">
+              <tabler-icon icon="chevron-left" [size]="18" />
+            </button>
+            <h2 class="fb-drawer-title">Feedback Details</h2>
+          </header>
+          <div class="fb-drawer-meta">
+            <div class="fb-drawer-meta-cell">
+              <span class="fb-drawer-meta-label">Feedback User</span>
+              <span class="fb-drawer-meta-value">{{ rec.userName }}</span>
+            </div>
+            <div class="fb-drawer-meta-cell">
+              <span class="fb-drawer-meta-label">Date Submitted</span>
+              <span class="fb-drawer-meta-value">
+                <tabler-icon icon="calendar" [size]="13" class="fb-drawer-cal-icon" />
+                {{ rec.date }}
+              </span>
+            </div>
+          </div>
+          <div class="fb-drawer-sentiment-block"
+               [class.fb-drawer-sentiment-block--pos]="rec.sentiment === 'positive'"
+               [class.fb-drawer-sentiment-block--neg]="rec.sentiment === 'negative'">
+            <div class="fb-drawer-sentiment-row">
+              <div class="fb-drawer-sentiment-icon-wrap">
+                <tabler-icon [icon]="rec.sentiment === 'positive' ? 'thumb-up' : 'thumb-down'" [size]="16" class="fb-drawer-sentiment-icon" />
+              </div>
+              <span class="fb-drawer-sentiment-label">
+                User rated this response as {{ rec.sentiment === 'positive' ? 'Good' : 'Poor' }}
+              </span>
+            </div>
+            @if (rec.feedbackNote) {
+              <p class="fb-drawer-note">{{ rec.feedbackNote }}</p>
+            }
+          </div>
+          <div class="fb-drawer-cat-row">
+            <span class="fb-cat-badge fb-cat-badge--{{ catSlug(rec.feedbackCategory) }}">{{ rec.feedbackCategory }}</span>
+          </div>
+          <section class="fb-drawer-section">
+            <div class="fb-drawer-section-hd">
+              <div class="fb-drawer-section-title-row">
+                <tabler-icon icon="user" [size]="14" class="fb-drawer-section-icon" />
+                <h3 class="fb-drawer-section-title">User Prompt</h3>
+              </div>
+              <button class="fb-copy-btn" type="button" (click)="copyPrompt(rec.promptText)">
+                <tabler-icon icon="copy" [size]="13" />
+                Copy Prompt
+              </button>
+            </div>
+            <div class="fb-drawer-prompt-box">{{ rec.promptText }}</div>
+          </section>
+          <section class="fb-drawer-section">
+            <div class="fb-drawer-section-title-row">
+              <tabler-icon icon="sparkles" [size]="14" class="fb-drawer-section-icon fb-drawer-section-icon--ai" />
+              <h3 class="fb-drawer-section-title">AI Output</h3>
+            </div>
+            <div class="fb-drawer-response">{{ rec.fullResponse }}</div>
+          </section>
+        </div>
+      }
+
+    </aside>
+  }
+}

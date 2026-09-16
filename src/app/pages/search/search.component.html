@@ -1,0 +1,493 @@
+<app-site-header></app-site-header>
+<app-ai-chat-panel [query]="query()" [open]="chatOpen()" (close)="chatOpen.set(false)"></app-ai-chat-panel>
+<div class="search-page">
+
+  <!-- 1. Search bar -->
+  <div class="search-bar-section">
+    <div class="container">
+      <div class="search-input-bar">
+        <input #searchInput type="search" class="search-input-bar__field" placeholder="SEARCH FOR..." aria-label="search" [value]="query()" (keydown.enter)="onSearch()" />
+        <button type="button" class="search-input-bar__icon" aria-label="Search" (click)="onSearch()">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. AI Overview -->
+  <div class="ai-overview-section">
+    <div class="container">
+      <div class="ai-overview" [class.ai-overview--expanded]="aiExpanded()">
+        <div class="ai-overview__header">
+          <span class="ai-overview__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#ai-ov-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <linearGradient id="ai-ov-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4285f4"/>
+                  <stop offset="50%" stop-color="#a855f7"/>
+                  <stop offset="100%" stop-color="#ec4899"/>
+                </linearGradient>
+              </defs>
+              <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+            </svg>
+          </span>
+          <h2 class="ai-overview__title">AI Summary</h2>
+        </div>
+
+        <div class="ai-overview__body">
+          @if (isMyanmarQuery()) {
+            <p>
+              <strong>ADB has been a development partner in Myanmar since 1973</strong>, with a portfolio spanning transport, water supply,
+              agriculture, finance, and health. As of 2024, ADB's active portfolio in Myanmar includes <strong>over 40 projects</strong> totalling
+              approximately <strong>$3 billion</strong>, focused on rural connectivity, urban services, and financial inclusion.
+            </p>
+            <ul>
+              <li><strong>Transport:</strong> Rural roads and bridges in Shan, Sagaing, and Mandalay regions are reducing travel times and connecting communities to markets.</li>
+              <li><strong>Water & Urban:</strong> ADB is improving water supply for over 400,000 households in the Dry Zone and upgrading urban infrastructure in Mandalay.</li>
+              <li><strong>Finance:</strong> Financial inclusion programs are expanding access to credit, savings, and digital finance for underserved populations.</li>
+            </ul>
+          } @else {
+            <p>
+              The <strong>Asian Development Bank (ADB)</strong> is a leading provider of climate finance in Asia and the Pacific, committing
+              <strong>$100 billion in climate financing</strong> from 2019 to 2030. ADB's climate projects span renewable energy, clean transport,
+              resilient infrastructure, and nature-based solutions across 68 member countries.
+            </p>
+            <ul>
+              <li><strong>Mitigation:</strong> ADB funds solar, wind, and hydropower projects to reduce greenhouse gas emissions across the region.</li>
+              <li><strong>Adaptation:</strong> Programs address flood protection, drought resilience, and climate-smart agriculture for vulnerable communities.</li>
+              <li><strong>Private sector:</strong> ADB leverages co-financing and guarantees to mobilize private climate capital at scale.</li>
+            </ul>
+          }
+        </div>
+
+        <div class="ai-overview__cit">
+          <button type="button" class="ai-overview__cit-trigger" [class.ai-overview__cit-trigger--open]="sourcesOpen()" (click)="sourcesOpen.update(v => !v)" aria-expanded="{{ sourcesOpen() }}">
+            <span class="ai-overview__cit-avatars" aria-hidden="true">
+              <span class="ai-overview__cit-avatar" style="left:0;z-index:3"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+              <span class="ai-overview__cit-avatar" style="left:10px;z-index:2"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+              <span class="ai-overview__cit-avatar" style="left:20px;z-index:1"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+            </span>
+            <span class="ai-overview__cit-label">3 Sources</span>
+            <svg class="ai-overview__cit-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+
+          @if (sourcesOpen()) {
+            <div class="ai-overview__cit-cards">
+              @if (isMyanmarQuery()) {
+                <a href="https://www.adb.org/countries/myanmar/main" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Myanmar Country Page</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a href="https://www.adb.org/countries/myanmar/projects" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Myanmar Projects</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a href="https://www.adb.org/countries/myanmar/overview" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Country Overview</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              } @else {
+                <a href="https://www.adb.org/what-we-do/topics/climate-change" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Climate Change</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a href="https://www.adb.org/publications/adb-climate-finance" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Climate Finance Report</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a href="https://www.adb.org/projects" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                  <span class="ai-overview__cit-card-body">
+                    <span class="ai-overview__cit-domain">adb.org</span>
+                    <span class="ai-overview__cit-title">Projects</span>
+                  </span>
+                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              }
+            </div>
+          }
+        </div>
+
+        @if (aiExpanded()) {
+          <div class="ai-overview__extra">
+            @if (isMyanmarQuery()) {
+              <p>
+                ADB's <strong>Myanmar Country Partnership Strategy 2021–2025</strong> focuses on inclusive growth, climate resilience, and
+                regional connectivity. Key sectors include transport infrastructure to unlock market access in border regions, water and
+                sanitation services in underserved townships, and financial sector development to support SME growth.
+              </p>
+              <ul>
+                <li>ADB approved its first loan to Myanmar in 1986 for irrigation development.</li>
+                <li>Rural roads projects have benefited over 2 million people in remote regions.</li>
+                <li>ADB's Dry Zone water supply project is a model for climate-adapted rural water delivery.</li>
+              </ul>
+            } @else {
+              <p>
+                ADB's <strong>Climate Change Action Plan 2023–2030</strong> sets out a comprehensive strategy for embedding climate
+                considerations across all operations. Key priorities include expanding access to climate finance for Pacific island nations,
+                supporting just energy transitions in coal-dependent economies, and scaling up biodiversity and ecosystem finance.
+              </p>
+              <ul>
+                <li>ADB raised its climate finance target from $80B to $100B through 2030.</li>
+                <li>50% of ADB's financing is targeted for climate adaptation in the most vulnerable countries.</li>
+                <li>ADB co-leads the Climate Investment Funds alongside other multilateral development banks.</li>
+              </ul>
+            }
+          </div>
+        }
+
+        <button class="ai-overview__show-more" [class.ai-overview__show-more--expanded]="aiExpanded()" (click)="aiExpanded.update(v => !v)" type="button">
+          {{ aiExpanded() ? 'Show less' : 'Show more' }}
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Follow up with AI -->
+  <div class="followup-bar">
+    <div class="container">
+      <button type="button" class="followup-btn" (click)="chatOpen.set(true)">
+        <span class="followup-btn__border-glow" aria-hidden="true">
+          <span class="followup-btn__blob followup-btn__blob--1"></span>
+          <span class="followup-btn__blob followup-btn__blob--2"></span>
+        </span>
+        <span class="followup-btn__label">Follow up with AI</span>
+        <span class="followup-btn__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <linearGradient id="followup-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#68c5ea"/>
+                <stop offset="100%" stop-color="#ae5ded"/>
+              </linearGradient>
+            </defs>
+            <path stroke="url(#followup-icon-grad)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Scope tabs -->
+  <div class="search-tabs-section">
+    <ul class="search-tabs">
+      <li class="search-tab" [class.search-tab--active]="activeTab() === 'general'">
+        <button type="button" (click)="setTab('general')">General Search</button>
+      </li>
+      <li class="search-tab" [class.search-tab--active]="activeTab() === 'projects'">
+        <button type="button" (click)="setTab('projects')">Projects</button>
+      </li>
+      <li class="search-tab" [class.search-tab--active]="activeTab() === 'documents'">
+        <button type="button" (click)="setTab('documents')">Project Documents</button>
+      </li>
+      <li class="search-tab" [class.search-tab--active]="activeTab() === 'tenders'">
+        <button type="button" (click)="setTab('tenders')">Tenders</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 4. Results with filter sidebar -->
+  <div class="container search-layout">
+    <div class="search-body">
+
+      <!-- Facets sidebar -->
+      <aside class="search-sidebar">
+
+        @if (activeChips().length) {
+          <div class="facet-chips">
+            @for (chip of activeChips(); track chip.label) {
+              <button class="facet-chip" (click)="removeChip(chip.facetKey, chip.label)">
+                {{ chip.label }}
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M7.5 2.5l-5 5M2.5 2.5l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            }
+            <button class="facet-clear-all" (click)="clearAll()">Clear All</button>
+          </div>
+        }
+
+        @for (facet of facets(); track facet.key; let fi = $index) {
+          <div class="facet-group" [class.facet-group--collapsed]="!facet.expanded">
+            <button class="facet-group__header" (click)="toggleFacet(fi)">
+              <span>{{ facet.title }}</span>
+              <svg class="facet-arrow" [class.facet-arrow--open]="facet.expanded" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            @if (facet.expanded) {
+              <div class="facet-values">
+                @for (val of facet.values; track val.label; let vi = $index) {
+                  <label class="facet-value">
+                    <input type="checkbox" class="facet-checkbox" [checked]="val.checked" (change)="toggleValue(fi, vi)" />
+                    <span class="facet-value__label">{{ val.label }}</span>
+                    <span class="facet-value__count">({{ formatCount(val.count) }})</span>
+                  </label>
+                }
+                <button class="facet-more">more</button>
+              </div>
+            }
+          </div>
+        }
+      </aside>
+
+      <!-- Results -->
+      <main class="search-results">
+
+        <!-- Meta bar -->
+        <div class="results-meta">
+          <button type="button" class="mobile-filter-btn" (click)="filterOpen.set(true)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+            Filter
+          </button>
+          <div class="results-count">
+            Showing <strong>{{ startResult() }} - {{ endResult() }}</strong> of <strong>{{ formatCount(activeTotal()) }}</strong> results
+            <span> for "<strong>{{ query() }}</strong>"</span>
+          </div>
+          <div class="results-meta__right">
+            <div class="results-sort">
+              <label for="sort-select">Sort By</label>
+              <select id="sort-select" [value]="sortBy()" (change)="sortBy.set(($any($event.target)).value)">
+                <option value="">Relevance</option>
+                <option value="date">Most Recent</option>
+              </select>
+            </div>
+            @if (activeTab() === 'general') {
+              <div class="view-toggle">
+                <button type="button" class="view-toggle__btn" [class.view-toggle__btn--active]="viewMode() === 'list'" (click)="viewMode.set('list')" aria-label="List view">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                  </svg>
+                </button>
+                <button type="button" class="view-toggle__btn" [class.view-toggle__btn--active]="viewMode() === 'card'" (click)="viewMode.set('card')" aria-label="Card view">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- General Search tab: list + card views -->
+        @if (activeTab() === 'general') {
+          @if (viewMode() === 'list') {
+            <div class="result-list">
+              @for (r of results(); track r.id) {
+                <div class="result-item">
+                  @if (r.thumbnail) {
+                    <div class="result-item__thumb">
+                      <a [href]="r.href" target="_blank" rel="noopener noreferrer" class="result-item__thumb-link">
+                        <img [src]="r.thumbnail" [alt]="r.title" loading="lazy" />
+                      </a>
+                    </div>
+                  }
+                  <div class="result-item__body" [class.result-item__body--no-thumb]="!r.thumbnail">
+                    <div class="result-item__meta">{{ r.date }} | {{ r.type }}</div>
+                    <div class="result-item__title-wrap">
+                      <a [href]="r.href" target="_blank" rel="noopener noreferrer" class="result-item__title" [innerHTML]="r.titleHtml"></a>
+                    </div>
+                    <p class="result-item__desc">{{ r.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @if (viewMode() === 'card') {
+            <div class="result-grid">
+              @for (r of results(); track r.id) {
+                <a [href]="r.href" target="_blank" rel="noopener noreferrer" class="result-card">
+                  @if (r.thumbnail) {
+                    <div class="result-card__thumb">
+                      <img [src]="r.thumbnail" [alt]="r.title" loading="lazy" />
+                    </div>
+                  } @else {
+                    <div class="result-card__thumb result-card__thumb--placeholder">
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    </div>
+                  }
+                  <div class="result-card__body">
+                    <span class="result-card__type">{{ r.type }}</span>
+                    <h3 class="result-card__title" [innerHTML]="r.titleHtml"></h3>
+                    <p class="result-card__desc">{{ r.description }}</p>
+                    <span class="result-card__date">{{ r.date }}</span>
+                  </div>
+                </a>
+              }
+            </div>
+          }
+        }
+
+        <!-- Projects tab -->
+        @if (activeTab() === 'projects') {
+          <div class="proj-list">
+            @for (p of projects(); track p.id) {
+              <a class="proj-row" [href]="p.url" target="_blank" rel="noopener">
+                <div class="proj-row__meta">
+                  <span class="status-badge status-badge--{{ statusClass(p.status) }}">{{ p.status }}</span>
+                  <span class="proj-row__year">{{ p.approvalYear }}</span>
+                </div>
+                <div class="proj-row__title">
+                  <span class="proj-row__num">{{ p.projectNumber }}</span>: {{ p.title }}
+                </div>
+                <div class="proj-row__attrs">
+                  <span class="proj-row__attr">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                    {{ p.country }}
+                  </span>
+                  <span class="proj-row__attr">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                    {{ p.sector }}
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+
+        <!-- Project Documents tab -->
+        @if (activeTab() === 'documents') {
+          <div class="proj-list">
+            @for (d of documents(); track d.id) {
+              <a class="doc-row" [href]="d.url" target="_blank" rel="noopener">
+                <div class="doc-row__meta">
+                  <span class="doc-row__type-chip">{{ d.types[0] }}</span>
+                  <span class="doc-row__date">{{ d.documentDate }}</span>
+                </div>
+                <div class="proj-row__title">
+                  <span class="proj-row__num">{{ d.projectNumber }}</span>: {{ d.title.split(': ').slice(1).join(': ') }}
+                </div>
+                <div class="doc-row__country">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                  {{ d.country }}
+                </div>
+                <p class="doc-row__desc">{{ d.description }}</p>
+              </a>
+            }
+          </div>
+        }
+
+        <!-- Tenders tab -->
+        @if (activeTab() === 'tenders') {
+          <div class="proj-list">
+            @for (t of tenders(); track t.id) {
+              <a class="tender-row" [href]="t.documentUrl" target="_blank" rel="noopener">
+                <div class="proj-row__meta">
+                  <span class="status-badge status-badge--{{ statusClass(t.status) }}">{{ t.status }}</span>
+                  <span class="tender-row__deadline">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Deadline: {{ t.deadline }}
+                  </span>
+                </div>
+                <div class="proj-row__title">
+                  <span class="proj-row__num">{{ t.projectNumber }}</span>: {{ t.title.includes(':') ? t.title.split(':').slice(1).join(':').trim() : t.title }}
+                </div>
+                <div class="proj-row__attrs">
+                  <span class="proj-row__attr">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                    {{ t.country }}
+                  </span>
+                  <span class="proj-row__attr">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                    {{ t.sector }}
+                  </span>
+                </div>
+                <div class="tender-row__footer">
+                  <span>Posted: {{ t.postingDate }}</span>
+                  <span class="tender-row__sep">·</span>
+                  <span>{{ t.noticeType }}</span>
+                  @if (t.approvalNumber) {
+                    <span class="tender-row__sep">·</span>
+                    <span>Approval No.: {{ t.approvalNumber }}</span>
+                  }
+                  <span class="tender-row__pdf">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    PDF
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+
+        <!-- Pagination -->
+        <div class="results-pagination">
+          <button class="pagination-btn" [disabled]="currentPage() === 1" (click)="currentPage.update(p => p - 1)">&lt; Previous</button>
+          <span class="pagination-info">{{ startResult() }} - {{ endResult() }} of {{ formatCount(activeTotal()) }}</span>
+          <button class="pagination-btn" [disabled]="currentPage() === totalPages()" (click)="currentPage.update(p => p + 1)">Next &gt;</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Mobile filter overlay -->
+  @if (filterOpen()) {
+    <div class="filter-overlay">
+      <div class="filter-overlay__header">
+        <span class="filter-overlay__title">Filter By</span>
+        <button class="filter-overlay__close" type="button" aria-label="Close filters" (click)="filterOpen.set(false)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="filter-overlay__body">
+        @if (activeChips().length) {
+          <div class="facet-chips">
+            @for (chip of activeChips(); track chip.label) {
+              <button class="facet-chip" (click)="removeChip(chip.facetKey, chip.label)">
+                {{ chip.label }}
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M7.5 2.5l-5 5M2.5 2.5l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            }
+            <button class="facet-clear-all" (click)="clearAll()">Clear All</button>
+          </div>
+        }
+        @for (facet of facets(); track facet.key; let fi = $index) {
+          <div class="facet-group" [class.facet-group--collapsed]="!facet.expanded">
+            <button class="facet-group__header" (click)="toggleFacet(fi)">
+              <span>{{ facet.title }}</span>
+              <svg class="facet-arrow" [class.facet-arrow--open]="facet.expanded" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            @if (facet.expanded) {
+              <div class="facet-values">
+                @for (val of facet.values; track val.label; let vi = $index) {
+                  <label class="facet-value">
+                    <input type="checkbox" class="facet-checkbox" [checked]="val.checked" (change)="toggleValue(fi, vi)" />
+                    <span class="facet-value__label">{{ val.label }}</span>
+                    <span class="facet-value__count">({{ formatCount(val.count) }})</span>
+                  </label>
+                }
+                <button class="facet-more">more</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <div class="filter-overlay__footer">
+        <button class="filter-overlay__done" type="button" (click)="filterOpen.set(false)">Done</button>
+      </div>
+    </div>
+  }
+</div>

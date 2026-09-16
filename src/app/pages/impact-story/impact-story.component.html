@@ -1,0 +1,265 @@
+<app-site-header (heightChange)="headerHeight.set($event)"></app-site-header>
+<div [style.height.px]="headerHeight()"></div>
+
+<article class="is-page">
+
+  <!-- ── Breadcrumb ─────────────────────────────────────────────────────────── -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container">
+      <a routerLink="/">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="https://www.adb.org/where-we-work">Where We Work</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="https://www.adb.org/where-we-work/east-asia">East Asia</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Impact Stories</span>
+    </div>
+  </nav>
+
+  <!-- ── 1. Editorial Hero ──────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__img-wrap">
+      <img
+        class="hero__img"
+        src="/adb-home/blog-digital-transformation.jpg"
+        alt="Vocational training graduates at a skills centre in Darkhan, Mongolia"
+      />
+      <div class="hero__gradient"></div>
+    </div>
+    <div class="hero__text">
+      <div class="container">
+        <div class="hero__meta">
+          <span class="hero__category">Education &amp; Skills</span>
+          <span class="hero__meta-dot"></span>
+          <span class="hero__location">Mongolia · East Asia</span>
+        </div>
+        <h1 class="hero__headline">Skills for the future,<br>closer to home</h1>
+        <p class="hero__intro">"Getting a technical qualification used to mean leaving your aimag for Ulaanbaatar. Now the training centre is here."</p>
+        <ul class="hero__tags">
+          <li>Youth employment</li>
+          <li>Vocational training</li>
+          <li>Mongolia</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. Impact Highlights ───────────────────────────────────────────────── -->
+  <section class="impact">
+    <div class="container">
+      <p class="eyebrow">The Impact</p>
+      <div class="impact__row">
+        <div class="impact__stat">
+          <span class="impact__num">12,000+</span>
+          <span class="impact__label">People Trained</span>
+        </div>
+        <div class="impact__divider"></div>
+        <div class="impact__stat">
+          <span class="impact__num">8</span>
+          <span class="impact__label">Training Centres<br>Supported</span>
+        </div>
+        <div class="impact__divider"></div>
+        <div class="impact__stat">
+          <span class="impact__num">85%</span>
+          <span class="impact__label">Graduates Employed or<br>Continuing Education</span>
+        </div>
+        <div class="impact__divider"></div>
+        <div class="impact__stat">
+          <span class="impact__num">$276.9M</span>
+          <span class="impact__label">Committed to<br>East Asia, 2024</span>
+        </div>
+      </div>
+      <a href="https://www.adb.org/results" class="impact__footnote" target="_blank" rel="noopener noreferrer">
+        About these results ↗
+      </a>
+    </div>
+  </section>
+
+  <!-- ── 3. Story in 30 Seconds ─────────────────────────────────────────────── -->
+  <!-- Layout breaks out of .container so the image can be full-column-height -->
+  <section class="story30">
+    <div class="story30__band">
+
+      <div class="story30__narrative">
+        <p class="eyebrow">The Story in 30 Seconds</p>
+
+        <div class="story30__step">
+          <span class="story30__num">01</span>
+          <p class="story30__context-label">The Challenge</p>
+          <h3 class="story30__takeaway">Skills meant<br>leaving home.</h3>
+          <p class="story30__step-body">Young people outside Ulaanbaatar had limited access to specialised technical education, leaving most without options close to home.</p>
+        </div>
+
+        <div class="story30__step">
+          <span class="story30__num">02</span>
+          <p class="story30__context-label">What ADB Supported</p>
+          <h3 class="story30__takeaway">Bring training<br>closer.</h3>
+          <p class="story30__step-body">ADB helped expand vocational facilities, equip workshops and establish accredited local programmes in regional centres.</p>
+        </div>
+
+        <div class="story30__step">
+          <span class="story30__num">03</span>
+          <p class="story30__context-label">What Changed</p>
+          <h3 class="story30__takeaway">More opportunity,<br>locally.</h3>
+          <p class="story30__step-body">Young people can now develop employment-ready skills without leaving their communities — most find work within six months.</p>
+        </div>
+      </div>
+
+      <div class="story30__visual">
+        <img src="/adb-home/blog-mongolia-rangelands.jpg" alt="Graduates of the ADB-supported vocational programme, Mongolia" />
+        <p class="story30__caption">ADB-supported vocational programme, Darkhan, Mongolia.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 4. Human Moment ───────────────────────────────────────────────────── -->
+  <section class="human">
+    <div class="human__img-side">
+      <img src="/adb-home/blog-disasters-strike.jpg" alt="Oyunbileg, TVET graduate, Darkhan, Mongolia" />
+    </div>
+    <div class="human__quote-side">
+      <div class="human__quote-inner">
+        <span class="human__open-quote">&ldquo;</span>
+        <blockquote class="human__quote">
+          Getting a technical qualification used to mean leaving your aimag for Ulaanbaatar. Now the training centre is here.
+        </blockquote>
+        <div class="human__attribution">
+          <strong class="human__name">Oyunbileg</strong>
+          <span class="human__role">TVET graduate</span>
+          <span class="human__place">Darkhan, Mongolia</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. How the Impact Happened ────────────────────────────────────────── -->
+  <section class="how">
+    <div class="container">
+      <p class="eyebrow">How the Impact Happened</p>
+      <div class="how__flow">
+
+        <div class="how__step">
+          <span class="how__step-num">01</span>
+          <p class="how__step-label">ADB Investment</p>
+          <p class="how__step-key">$276.9M<br>invested</p>
+          <p class="how__step-detail">Funding skills infrastructure and training capacity across the region.</p>
+        </div>
+
+        <div class="how__connector"><span class="how__arrow">→</span></div>
+
+        <div class="how__step">
+          <span class="how__step-num">02</span>
+          <p class="how__step-label">Training Infrastructure</p>
+          <p class="how__step-key">Training<br>brought closer</p>
+          <p class="how__step-detail">Modern facilities and accredited programmes built in regional centres.</p>
+        </div>
+
+        <div class="how__connector"><span class="how__arrow">→</span></div>
+
+        <div class="how__step">
+          <span class="how__step-num">03</span>
+          <p class="how__step-label">Local Opportunity</p>
+          <p class="how__step-key">Opportunities<br>created locally</p>
+          <p class="how__step-detail">Skills → employment → stronger communities, without migration.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. Project Snapshot ────────────────────────────────────────────────── -->
+  <section class="project">
+    <div class="container">
+      <p class="eyebrow">The Project Behind the Story</p>
+      <a href="https://www.adb.org/projects/52320-002/main" target="_blank" rel="noopener noreferrer" class="project__title-link">
+        <h2 class="project__title">Skills for Employment Project</h2>
+      </a>
+      <p class="project__subtitle">Expanding vocational training access in Mongolia's regional centres.</p>
+      <div class="project__facts">
+        <div class="project__fact">
+          <span class="project__fact-label">Location</span>
+          <span class="project__fact-value">Mongolia</span>
+        </div>
+        <div class="project__fact">
+          <span class="project__fact-label">Sector</span>
+          <span class="project__fact-value">Education &amp; Vocational Training</span>
+        </div>
+        <div class="project__fact">
+          <span class="project__fact-label">ADB Financing</span>
+          <span class="project__fact-value">$276.9M (East Asia)</span>
+        </div>
+        <div class="project__fact">
+          <span class="project__fact-label">Status</span>
+          <span class="project__fact-value">Active</span>
+        </div>
+        <div class="project__fact">
+          <span class="project__fact-label">Period</span>
+          <span class="project__fact-value">2022–2028</span>
+        </div>
+        <div class="project__fact">
+          <span class="project__fact-label">Approved</span>
+          <span class="project__fact-value">December 2022</span>
+        </div>
+      </div>
+      <a href="https://www.adb.org/projects/52320-002/main" class="project__cta" target="_blank" rel="noopener noreferrer">
+        View project details →
+      </a>
+    </div>
+  </section>
+
+  <!-- ── 7. Related Stories ─────────────────────────────────────────────────── -->
+  <section class="related">
+    <div class="container">
+      <p class="eyebrow">More Impact from East Asia</p>
+      <div class="related__grid">
+
+        <!-- Featured: ~60% width, tall landscape image -->
+        <a class="related__item related__item--featured" href="https://www.adb.org/where-we-work/prc" target="_blank" rel="noopener noreferrer">
+          <div class="related__img-wrap">
+            <img src="/adb-home/blog-disasters-strike.jpg" alt="Groundwater protection in PRC" />
+          </div>
+          <div class="related__body">
+            <span class="related__cat">Environment · PRC</span>
+            <h3 class="related__headline">Protecting groundwater for the food systems of tomorrow</h3>
+            <span class="related__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Secondary: two stacked vertical stories, ~40% width -->
+        <div class="related__secondary">
+          <a class="related__item" href="https://www.adb.org/where-we-work/mongolia" target="_blank" rel="noopener noreferrer">
+            <div class="related__img-wrap">
+              <img src="/adb-home/blog-digital-transformation.jpg" alt="Urban development Ulaanbaatar" />
+            </div>
+            <div class="related__body">
+              <span class="related__cat">Urban Resilience · Mongolia</span>
+              <h3 class="related__headline">Bringing water and services to Ulaanbaatar's fastest-growing communities</h3>
+              <span class="related__arrow">→</span>
+            </div>
+          </a>
+          <a class="related__item" href="https://www.adb.org/where-we-work/korea" target="_blank" rel="noopener noreferrer">
+            <div class="related__img-wrap">
+              <img src="/adb-home/blog-mongolia-rangelands.jpg" alt="Green innovation Korea" />
+            </div>
+            <div class="related__body">
+              <span class="related__cat">Clean Energy · Korea</span>
+              <h3 class="related__headline">How Korea is proving that green and competitive are the same goal</h3>
+              <span class="related__arrow">→</span>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8. Return to Map ───────────────────────────────────────────────────── -->
+  <section class="return-map">
+    <div class="container">
+      <p class="return-map__text">Explore more stories and results across East Asia.</p>
+      <a routerLink="/map" class="return-map__link">Back to East Asia map →</a>
+    </div>
+  </section>
+
+</article>

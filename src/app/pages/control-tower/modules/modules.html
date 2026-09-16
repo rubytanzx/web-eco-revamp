@@ -1,0 +1,229 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Modules</h1>
+    <p class="page-subtitle">Click-level usage for services within the selected module.</p>
+  </div>
+  <div class="modules-filter-bar">
+    <select class="mod-module-select"
+            [value]="selectedModule()"
+            (change)="onModuleChange($any($event.target).value)">
+      @for (m of moduleNames; track m) {
+        <option [value]="m">{{ m }}</option>
+      }
+    </select>
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- Module KPI strip -->
+<div class="mods-kpi-strip">
+  <div class="mods-kpi-card">
+    <span class="mods-kpi-label">Total Clicks</span>
+    <span class="mods-kpi-value">{{ selectedModuleClicks() | number }}</span>
+  </div>
+  <div class="mods-kpi-card">
+    <span class="mods-kpi-label">Unique Users</span>
+    <span class="mods-kpi-value">{{ selectedModuleUsers() | number }}</span>
+  </div>
+  <div class="mods-kpi-card">
+    <span class="mods-kpi-label">Services</span>
+    <span class="mods-kpi-value">{{ selectedModuleServiceCount() }}</span>
+  </div>
+  <div class="mods-kpi-card">
+    <span class="mods-kpi-label">Week-on-Week</span>
+    <span class="mods-kpi-value"
+          [style.color]="trendColor(selectedModuleRow()?.trend ?? 0)">
+      {{ (selectedModuleRow()?.trend ?? 0) > 0 ? '+' : '' }}{{ selectedModuleRow()?.trend ?? 0 }}%
+    </span>
+  </div>
+</div>
+
+<!-- Trend chart — full width -->
+<section class="card mods-trend-card">
+  <div class="mods-card-hd">
+    <h3 class="card-title">Week-over-week trend</h3>
+    <span class="mods-card-sub">Last 8 weeks</span>
+  </div>
+
+  <div class="mods-trend-controls">
+    <div class="mods-metric-tabs">
+      <button type="button" class="mods-metric-tab" [class.is-active]="trendMetric() === 'clicks'" (click)="trendMetric.set('clicks')">Clicks</button>
+      <button type="button" class="mods-metric-tab" [class.is-active]="trendMetric() === 'users'"  (click)="trendMetric.set('users')">Unique users</button>
+    </div>
+
+    @if (svcDdOpen()) {
+      <div class="mods-dd-backdrop" (click)="svcDdOpen.set(false)"></div>
+    }
+    <div class="mods-dd-wrap">
+      <button type="button" class="mods-dd-btn" (click)="$event.stopPropagation(); toggleSvcDd()">
+        <span>{{ selectedService() === '__all__' ? 'All services' : selectedService() }}</span>
+        <tabler-icon icon="chevron-down" [size]="13" />
+      </button>
+      @if (svcDdOpen()) {
+        <div class="mods-dd-panel" (click)="$event.stopPropagation()">
+          <div class="mods-dd-search-row">
+            <input class="mods-dd-search-input" type="text" placeholder="Search services…"
+                   [value]="svcDdSearch()"
+                   (input)="svcDdSearch.set($any($event.target).value)" />
+          </div>
+          <div class="mods-dd-list">
+            @if (ddItems().search) {
+              @for (s of ddItems().matches; track s.name) {
+                <div class="mods-dd-item" (click)="selectService(s.name)">
+                  <span>{{ s.name }}</span><span class="mods-dd-val">{{ s.clicks | number }}</span>
+                </div>
+              }
+              @if (!ddItems().matches.length) {
+                <div class="mods-dd-empty">No services match.</div>
+              }
+            } @else {
+              <div class="mods-dd-item mods-dd-item--all"
+                   [class.is-selected]="selectedService() === '__all__'"
+                   (click)="selectService('__all__')">
+                <span>All services</span>
+                <span class="mods-dd-val">{{ selectedModuleClicks() | number }}</span>
+              </div>
+              <div class="mods-dd-divider"></div>
+              @for (s of ddItems().allAz; track s.name) {
+                <div class="mods-dd-item" [class.is-selected]="selectedService() === s.name" (click)="selectService(s.name)">
+                  <span>{{ s.name }}</span><span class="mods-dd-val">{{ s.clicks | number }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <svg class="mods-trend-svg"
+       [attr.viewBox]="'0 0 ' + trendW + ' ' + trendH"
+       preserveAspectRatio="xMidYMid meet"
+       (mousemove)="onTrendMouseMove($event)"
+       (mouseleave)="onTrendMouseLeave()">
+    <defs>
+      <linearGradient id="mods-area-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   [attr.stop-color]="trendLineColor()" stop-opacity="0.22" />
+        <stop offset="100%" [attr.stop-color]="trendLineColor()" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+
+    @for (t of trendYTicks(); track t.label) {
+      <line class="mods-grid-line" [attr.x1]="padL" [attr.x2]="trendW - padR" [attr.y1]="t.y" [attr.y2]="t.y" />
+      <text class="mods-y-label" [attr.x]="padL - 6" [attr.y]="t.y + 4">{{ t.label }}</text>
+    }
+
+    <path [attr.d]="trendAreaPath()" fill="url(#mods-area-grad)" stroke="none" />
+    <path [attr.d]="trendLinePath()" fill="none" [attr.stroke]="trendLineColor()" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+    @for (t of trendXTicks; track t.label) {
+      <text class="mods-x-label" [attr.x]="t.x" [attr.y]="trendH - 10" text-anchor="middle">{{ t.label }}</text>
+    }
+
+    @if (hoveredPt(); as hp) {
+      <line class="mods-hover-vline"
+            [attr.x1]="hp.x" [attr.x2]="hp.x"
+            [attr.y1]="padT" [attr.y2]="trendH - padB" />
+      <circle class="mods-hover-dot" [attr.cx]="hp.x" [attr.cy]="hp.y" r="5" />
+      <g [attr.transform]="'translate(' + hoveredTooltipX() + ',' + hoveredTooltipY() + ')'">
+        <rect class="mods-tooltip-bg" x="0" y="0" width="110" height="42" rx="6" />
+        <text class="mods-tooltip-period" x="10" y="15">{{ hp.label }}</text>
+        <text class="mods-tooltip-value"  x="10" y="32">{{ hp.v | number }} {{ trendUnitLabel() }}</text>
+      </g>
+    }
+  </svg>
+</section>
+
+<!-- 2-column grid: services breakdown + trending services -->
+<div class="mods-grid-2">
+
+  <!-- Services in selected module -->
+  <div class="card mods-bar-card">
+    <div class="mods-card-hd">
+      <h3 class="card-title mods-card-title-sm">Services in {{ selectedModule() }}</h3>
+      <span class="ref-col-hdr">Clicks</span>
+    </div>
+    <ul class="ref-list">
+      @for (r of moduleServiceListRows(); track r.name) {
+        <li class="ref-item">
+          <div class="ref-item-bar" [style.width.%]="r.pct"></div>
+          <span class="ref-item-label">{{ r.name }}</span>
+          <span class="ref-item-val">{{ r.clicks | number }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <!-- Trending services -->
+  <div class="card mods-bar-card">
+    <div class="mods-card-hd">
+      <h3 class="card-title mods-card-title-sm">Trending Services</h3>
+    </div>
+    <div class="mods-inner-tabs">
+      <button type="button" class="mods-inner-tab" [class.is-active]="topSvcMetric() === 'clicks'" (click)="topSvcMetric.set('clicks')">By clicks</button>
+      <button type="button" class="mods-inner-tab" [class.is-active]="topSvcMetric() === 'users'"  (click)="topSvcMetric.set('users')">By unique users</button>
+    </div>
+    <svg class="mods-bar-svg" [attr.viewBox]="'0 0 ' + topVBarW + ' ' + topVBarH">
+      @for (t of topSvcYTicks(); track t.label) {
+        <line class="mods-grid-line" [attr.x1]="topVBarPL" [attr.x2]="topVBarW - topVBarPR" [attr.y1]="t.y" [attr.y2]="t.y" />
+        <text class="mods-vbar-ytick" [attr.x]="topVBarPL - 4" [attr.y]="t.y + 4">{{ t.label }}</text>
+      }
+      @for (r of topSvcBarRows(); track r.name) {
+        <rect class="mods-vbar-fill" [attr.x]="r.barX" [attr.y]="r.barY" [attr.width]="r.barW" [attr.height]="r.barH" rx="4" />
+        <text class="mods-vbar-xlabel" [attr.x]="r.lx" [attr.y]="r.ly" text-anchor="middle">{{ truncateLabel(r.name, 8) }}</text>
+      }
+    </svg>
+  </div>
+
+</div>
+
+<!-- Full services table — scoped to selected module -->
+<section class="card mods-all-table">
+  <div class="mods-card-hd">
+    <h3 class="card-title">All services in {{ selectedModule() }}</h3>
+    <div class="mods-tbl-controls">
+      <label class="mods-tbl-search-wrap">
+        <tabler-icon icon="search" [size]="13" class="mods-search-icon" />
+        <input class="mods-tbl-search" type="text" placeholder="Search services…" [value]="svcSearch()" (input)="setSvcSearch($any($event.target).value)" />
+      </label>
+    </div>
+  </div>
+  <table class="mod-table">
+    <colgroup>
+      <col style="width:36%">
+      <col style="width:18%">
+      <col style="width:18%">
+      <col style="width:18%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="mod-th">Service</th>
+        <th class="mod-th mod-th--num">Clicks</th>
+        <th class="mod-th mod-th--num">Unique users</th>
+        <th class="mod-th">Last accessed</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of paginatedSvcRows(); track s.name) {
+        <tr class="mod-tr">
+          <td class="mod-td mod-td--service">{{ s.name }}</td>
+          <td class="mod-td mod-td--num">{{ s.clicks | number }}</td>
+          <td class="mod-td mod-td--num">{{ s.users | number }}</td>
+          <td class="mod-td mod-td--date">{{ s.last }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <div class="mods-pagination">
+    <span class="mods-page-range">{{ pageRangeLabel() }}</span>
+    <div class="mods-page-btns">
+      <button type="button" class="mods-page-btn" [disabled]="currentPage() === 1" (click)="currentPage.update(p => p - 1)">
+        <tabler-icon icon="chevron-left" [size]="14" />
+      </button>
+      <span class="mods-page-info">{{ currentPage() }} / {{ totalPages() }}</span>
+      <button type="button" class="mods-page-btn" [disabled]="currentPage() === totalPages()" (click)="currentPage.update(p => p + 1)">
+        <tabler-icon icon="chevron-right" [size]="14" />
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,139 @@
+.carousel { width: 100%; position: relative; }
+
+.carousel__track {
+  display: flex;
+  justify-content: safe center;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 10px 100px 18px 24px;
+  scroll-padding-left: 24px;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+  &:active { cursor: grabbing; }
+}
+
+.carousel__card {
+  flex: 0 0 clamp(200px, calc(22% - 8px), 260px);
+  scroll-snap-align: start;
+  background: #ffffff;
+  border: 1px solid #e4e8ec;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  user-select: none;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--region-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.22s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+    &::after { transform: scaleX(1); }
+  }
+
+  &--active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+    &::after { transform: scaleX(1); }
+  }
+}
+
+.card__body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 90px;
+  justify-content: center;
+}
+
+.card__name {
+  font-family: 'Ideal Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400 !important;
+  color: #212121;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.card__code {
+  font-family: 'Ideal Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 400;
+  color: #212121;
+}
+
+.card__stat {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(30, 40, 50, 0.45);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.card__short { display: none; }
+
+@media (max-width: 960px) {
+  .carousel__track {
+    padding: 0 8px;
+    gap: 0;
+    justify-content: flex-start;
+  }
+
+  .carousel__card {
+    flex: 0 0 auto;
+    border-radius: 0;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    box-shadow: none;
+    transition: border-color 0.2s ease;
+
+    &::after { display: none; }
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      border-bottom-color: var(--region-color);
+    }
+
+    &--active {
+      transform: none;
+      box-shadow: none;
+      border-bottom-color: var(--region-color);
+    }
+  }
+
+  .card__body {
+    min-height: 0;
+    padding: 10px 12px;
+    gap: 0;
+  }
+
+  .card__name { font-size: 0; }
+
+  .card__short {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #1a2a3a;
+    text-transform: uppercase;
+  }
+
+  .card__stat { display: none; }
+}

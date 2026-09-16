@@ -1,0 +1,340 @@
+<div class="shell" [class.is-expanded]="expanded()" [class.is-ai-open]="aiOpen()">
+
+  <!-- ===== Top bar ===== -->
+  <header class="top-bar">
+    <button type="button" class="top-bar-brand" (click)="toggle()"
+      [attr.aria-label]="expanded() ? 'Collapse sidebar' : 'Expand sidebar'">
+      <img src="/adb-home/adb-blue-block.png" width="28" height="28" alt="ADB" class="top-bar-logo" />
+      <tabler-icon class="top-bar-toggle-overlay" [icon]="expanded() ? 'layout-sidebar-left-collapse' : 'layout-sidebar-left-expand'" [size]="18" />
+      <span class="top-bar-divider"></span>
+      <span class="top-bar-title">Control Tower</span>
+      <tabler-icon class="top-bar-toggle" [icon]="expanded() ? 'layout-sidebar-left-collapse' : 'layout-sidebar-left-expand'" [size]="18" />
+    </button>
+
+    <button type="button" class="top-bar-search" (click)="openSearch()" aria-label="Open search">
+      <tabler-icon icon="search" [size]="15" class="top-bar-search-icon" />
+      <span class="top-bar-search-placeholder">Search metrics, pages…</span>
+      <kbd class="top-bar-kbd">⌘K</kbd>
+    </button>
+
+    <div class="top-bar-end" #profileMenuEl>
+      <button type="button" class="top-bar-avatar-btn" (click)="toggleProfileMenu()" aria-label="Profile menu">
+        <div class="avatar top-bar-avatar">NT</div>
+      </button>
+      @if (profileMenuOpen()) {
+        <div class="profile-menu" role="menu">
+          <div class="profile-menu-header">
+            <div class="avatar profile-menu-avatar">NT</div>
+            <div>
+              <div class="profile-menu-name">Nick T</div>
+              <div class="profile-menu-email">nick.t&#64;adb.org</div>
+            </div>
+          </div>
+          <div class="profile-menu-divider"></div>
+          <button type="button" class="profile-menu-item" role="menuitem">
+            <tabler-icon icon="settings" [size]="16" />
+            <span>Account Settings</span>
+          </button>
+          <div class="profile-menu-divider"></div>
+          <div class="profile-menu-item profile-menu-viewmode">
+            <span>{{ viewMode() === 'admin' ? 'Admin View' : 'User View' }}</span>
+            <div class="profile-menu-toggle">
+              <button type="button" class="profile-menu-toggle-opt" [class.is-selected]="viewMode() === 'user'" (click)="setViewMode('user')">User</button>
+              <button type="button" class="profile-menu-toggle-opt" [class.is-selected]="viewMode() === 'admin'" (click)="setViewMode('admin')">Admin</button>
+            </div>
+          </div>
+          <div class="profile-menu-divider"></div>
+          <button type="button" class="profile-menu-item profile-menu-item--danger" role="menuitem">
+            <tabler-icon icon="logout" [size]="16" />
+            <span>Sign out</span>
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar" [attr.aria-expanded]="expanded()">
+    <nav class="nav">
+      @for (item of nav; track item.label) {
+        @if (item.type === 'leaf') {
+          <a
+            class="nav-item"
+            [routerLink]="item.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+            [attr.aria-label]="item.label"
+            (mouseenter)="showTooltip($event, item.label)"
+            (mouseleave)="hideTooltip()"
+          >
+            <tabler-icon [icon]="item.icon" [size]="22" />
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        } @else {
+          <div class="nav-group" [class.is-open]="isGroupOpen(item.label)" [class.has-active]="isGroupActive(item)">
+            <button
+              type="button"
+              class="nav-item nav-group-btn"
+              [class.is-active]="isGroupActive(item) && !isGroupOpen(item.label)"
+              [attr.aria-expanded]="isGroupOpen(item.label)"
+              [attr.aria-label]="item.label"
+              (click)="toggleGroup(item.label)"
+              (mouseenter)="showTooltip($event, item.label)"
+              (mouseleave)="hideTooltip()"
+            >
+              <tabler-icon [icon]="item.icon" [size]="22" />
+              <span class="nav-label nav-group-label">{{ item.label }}</span>
+              <tabler-icon class="nav-chevron" icon="chevron-down" [size]="14" />
+            </button>
+            <ul class="nav-children" [class.is-open]="isGroupOpen(item.label)">
+              @for (child of item.children; track child.label) {
+                <li>
+                  <a
+                    class="nav-child"
+                    [routerLink]="child.route"
+                    [queryParams]="child.queryParams"
+                    [class.is-active]="isChildActive(child)"
+                    [attr.aria-label]="child.label"
+                  >
+                    <tabler-icon [icon]="child.icon" [size]="15" />
+                    <span class="nav-child-label">{{ child.label }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      @for (item of footerLinks; track item.label) {
+        <a class="nav-item" [attr.aria-label]="item.label"
+           (mouseenter)="showTooltip($event, item.label)"
+           (mouseleave)="hideTooltip()">
+          <tabler-icon [icon]="item.icon" [size]="22" />
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+
+    </div>
+  </aside>
+
+  <!-- ===== Main content ===== -->
+  <main class="content">
+    @if (navigating()) {
+      <div class="route-loader" aria-hidden="true">
+        <div class="route-loader-bar"></div>
+      </div>
+    }
+    <div class="content-card">
+      <router-outlet />
+    </div>
+  </main>
+
+  <!-- Search command palette -->
+  @if (searchOpen()) {
+    <div class="search-backdrop" (click)="searchOpen.set(false); searchQuery.set('')"></div>
+    <div class="search-palette" role="dialog" aria-label="Search">
+      <div class="search-palette-input-wrap">
+        <tabler-icon icon="search" [size]="17" class="search-palette-icon" />
+        <input
+          #searchInput
+          type="text"
+          class="search-palette-input"
+          placeholder="Search metrics, pages…"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          autofocus
+        />
+        <kbd class="search-palette-esc" (click)="searchOpen.set(false); searchQuery.set('')">esc</kbd>
+      </div>
+
+      <div class="search-palette-body">
+        @if (filteredSearch().metrics.length) {
+          <div class="search-section-label">Metrics</div>
+          @for (item of filteredSearch().metrics; track item.label) {
+            <button type="button" class="search-result" (click)="navigateSearch(item.route)">
+              <span class="search-result-icon">
+                <tabler-icon [icon]="item.icon" [size]="16" />
+              </span>
+              <span class="search-result-body">
+                <span class="search-result-label">{{ item.label }}</span>
+                @if ($any(item).sub) {
+                  <span class="search-result-sub">{{ $any(item).sub }}</span>
+                }
+              </span>
+              @if ($any(item).value) {
+                <span class="search-result-value">{{ $any(item).value }}</span>
+              }
+            </button>
+          }
+        }
+        @if (filteredSearch().pages.length) {
+          <div class="search-section-label">Pages</div>
+          @for (item of filteredSearch().pages; track item.label) {
+            <button type="button" class="search-result" (click)="navigateSearch(item.route)">
+              <span class="search-result-icon search-result-icon--page"></span>
+              <span class="search-result-body">
+                <span class="search-result-label">{{ item.label }}</span>
+              </span>
+              <tabler-icon icon="arrow-right" [size]="14" class="search-result-arrow" />
+            </button>
+          }
+        }
+        @if (!filteredSearch().metrics.length && !filteredSearch().pages.length) {
+          <div class="search-empty">No results for "{{ searchQuery() }}"</div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- AI edge tab (shown when panel is closed) -->
+  @if (!aiOpen()) {
+    <button type="button" class="ai-edge-tab" (click)="openAi()" aria-label="Open AI panel">
+      <tabler-icon icon="sparkles" [size]="15" />
+      <span>Ask AI</span>
+    </button>
+  }
+
+  <!-- Tooltip (collapsed sidebar) -->
+  @if (!expanded() && tooltip(); as t) {
+    <div class="nav-tooltip" [style.top.px]="t.y">{{ t.label }}</div>
+  }
+
+  <!-- Ask AI side panel -->
+  @if (aiOpen()) {
+    <aside class="ai-panel" role="complementary" aria-label="Ask AI">
+      <div class="ai-card">
+
+        <header class="ai-head">
+          <div class="ai-head-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="url(#ai-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <defs>
+                <linearGradient id="ai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#68c5ea"/>
+                  <stop offset="100%" stop-color="#ae5ded"/>
+                </linearGradient>
+              </defs>
+              <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+            </svg>
+            <span>AI Chat</span>
+          </div>
+          <button type="button" class="ai-head-close" (click)="closeAi()" aria-label="Close">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </header>
+
+        <div class="ai-thread">
+          @if (aiMessages().length === 0) {
+            <div class="ai-empty">
+              <p class="ai-empty-title">Ask anything</p>
+              <p class="ai-empty-sub">Get answers grounded in your platform metrics</p>
+              <div class="ai-suggestions">
+                @for (s of aiSuggestions; track s) {
+                  <button type="button" class="ai-suggestion" (click)="useSuggestion(s); sendMessage()">{{ s }}</button>
+                }
+              </div>
+            </div>
+          } @else {
+            @for (msg of aiMessages(); track $index; let i = $index) {
+              @if (msg.role === 'user') {
+                <div class="ai-msg ai-msg--user">
+                  <div class="ai-bubble--user">{{ msg.text }}</div>
+                </div>
+              } @else {
+                <div class="ai-msg ai-msg--ai">
+                  <div class="ai-response">
+                    @for (sec of msg.sections; track $index) {
+                      @if (sec.type === 'p') {
+                        <p class="ai-text">{{ sec.text }}</p>
+                      } @else {
+                        <ul class="ai-bullets">
+                          @for (item of sec.items; track item) { <li>{{ item }}</li> }
+                        </ul>
+                      }
+                    }
+                    @if (msg.sourcesCount) {
+                      <div class="ai-sources-row">
+                        <button type="button" class="ai-sources-toggle" (click)="toggleSources(i)">
+                          Used {{ msg.sourcesCount }} source{{ msg.sourcesCount > 1 ? 's' : '' }}
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
+                               [style.transform]="sourcesOpenFor(i) ? 'rotate(180deg)' : 'none'"
+                               style="transition:transform 0.2s" aria-hidden="true">
+                            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    }
+                    <div class="ai-actions">
+                      <button class="ai-action-btn" [class.ai-action-btn--done]="copiedKey() === 'msg-' + i"
+                        type="button" title="Copy response" (click)="copyText(getAiText($any(msg)), 'msg-' + i)">
+                        @if (copiedKey() === 'msg-' + i) {
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        } @else {
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        }
+                      </button>
+                      <span class="ai-action-sep"></span>
+                      <button class="ai-action-btn"
+                        [style.color]="getThumb('msg-' + i) === 'up' ? '#22c55e' : null"
+                        type="button" title="Good response" (click)="setThumb('msg-' + i, 'up')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/>
+                          <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                        </svg>
+                      </button>
+                      <button class="ai-action-btn"
+                        [style.color]="getThumb('msg-' + i) === 'down' ? '#ef4444' : null"
+                        type="button" title="Bad response" (click)="setThumb('msg-' + i, 'down')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z"/>
+                          <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+            @if (aiThinking()) {
+              <div class="ai-msg ai-msg--ai">
+                <div class="ai-thinking">
+                  <svg class="ai-dots" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="ai-dot ai-dot--1" cx="4.94"  cy="4.94"  r="2.12"/>
+                    <circle class="ai-dot ai-dot--2" cx="12"    cy="4.94"  r="2.12"/>
+                    <circle class="ai-dot ai-dot--3" cx="19.06" cy="4.94"  r="2.12"/>
+                    <circle class="ai-dot ai-dot--4" cx="4.94"  cy="12"    r="2.12"/>
+                    <circle class="ai-dot ai-dot--5" cx="12"    cy="12"    r="2.12"/>
+                    <circle class="ai-dot ai-dot--6" cx="19.06" cy="12"    r="2.12"/>
+                    <circle class="ai-dot ai-dot--7" cx="4.94"  cy="19.06" r="2.12"/>
+                    <circle class="ai-dot ai-dot--8" cx="12"    cy="19.06" r="2.12"/>
+                    <circle class="ai-dot ai-dot--9" cx="19.06" cy="19.06" r="2.12"/>
+                  </svg>
+                  <span class="ai-thinking-label">Thinking...</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="ai-prompt-wrap">
+          <form class="ai-prompt" (submit)="$event.preventDefault(); sendMessage()">
+            <input type="text" class="ai-prompt-field" placeholder="Ask a follow-up question…"
+                   [value]="aiInput()" (input)="setAiInput($any($event.target).value)"
+                   (keydown.enter)="$event.preventDefault(); sendMessage()" />
+            <button type="submit" class="ai-prompt-send" [class.ai-prompt-send--active]="!!aiInput().trim()" [disabled]="!aiInput().trim()">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7"/>
+              </svg>
+            </button>
+          </form>
+          <p class="ai-powered">Powered by ADB AI · Responses may contain errors</p>
+        </div>
+
+      </div>
+    </aside>
+  }
+</div>

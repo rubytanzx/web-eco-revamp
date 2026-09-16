@@ -1,0 +1,186 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Search success rate chart ── */
+.sr-chart-host { display: block; width: 100%; }
+
+.sr-svg {
+  display: block;
+  width: 100%;
+  height: 220px;
+  overflow: visible;
+  cursor: crosshair;
+}
+
+.sr-grid { stroke: var(--color-neutral-solid-08, #f1f5f9); stroke-width: 1; }
+
+.sr-y-label {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-40);
+  font-family: inherit;
+  text-anchor: end;
+}
+
+.sr-x-label {
+  font-size: 12px;
+  fill: var(--color-neutral-solid-50);
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.sr-area { fill: url(#sr-trend-grad); }
+
+.sr-line {
+  fill: none;
+  stroke: #449DF7;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sr-hover-vline {
+  stroke: var(--color-neutral-solid-30);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+.sr-hover-dot {
+  fill: #449DF7;
+  stroke: #ffffff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.sr-tooltip-bg {
+  fill: #ffffff;
+  stroke: #e2e8f0;
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+  pointer-events: none;
+}
+
+.sr-tooltip-period {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  fill: #64748b;
+  pointer-events: none;
+}
+
+.sr-tooltip-value {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  fill: #1e293b;
+  pointer-events: none;
+}
+
+.sr-tooltip-pct {
+  font-family: inherit;
+  font-size: 10.5px;
+  pointer-events: none;
+}
+
+.sr-tooltip-pct--up { fill: #16a34a; }
+.sr-tooltip-pct--dn { fill: #dc2626; }
+
+/* ── 3-column signal strip variant ── */
+.signal-strip--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ── AI conversion callout ── */
+.ai-conversion-callout {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: rgba(68, 157, 247, 0.06);
+  border: 1px solid rgba(68, 157, 247, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ai-conversion-number {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--color-primary-50);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ai-conversion-text {
+  font-size: 13px;
+  color: var(--color-neutral-solid-60);
+  line-height: 1.4;
+}
+
+/* ── AI Visibility gauge ── */
+.ai-vis-gauge {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.ai-vis-number {
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--color-neutral-solid-90);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.ai-vis-denom {
+  font-size: 20px;
+  color: var(--color-neutral-solid-40);
+  font-weight: 400;
+}
+
+.ai-vis-label {
+  margin-left: 12px;
+  align-self: center;
+}
+
+.ai-vis-bar-wrap {
+  margin-top: 4px;
+}
+
+.ai-vis-bar {
+  position: relative;
+  height: 10px;
+  background: var(--color-neutral-solid-10);
+  border-radius: 6px;
+  overflow: visible;
+}
+
+.ai-vis-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #22c55e 0%, #fb923c 60%, #ef4444 100%);
+  background-size: 100% 100%;
+  /* show only 0-40% of the gradient */
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 50%, #fb923c 100%);
+  opacity: 0.85;
+}
+
+.ai-vis-bar-marker {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 16px;
+  background: var(--color-neutral-solid-80);
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+
+.ai-vis-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--color-neutral-solid-40);
+}

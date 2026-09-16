@@ -1,0 +1,143 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Overview</h1>
+    <p class="page-subtitle">Platform health, audience activity, and content performance as of {{ today }}.</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<!-- Signal strip -->
+<div class="signal-strip">
+  @for (s of signals; track s.label) {
+    <div class="signal-item" [class.signal-item--alert]="s.alert">
+      <span class="signal-label">
+        <tabler-icon [icon]="s.icon" [size]="14" style="opacity:0.6; vertical-align:-2px;" />
+        {{ s.label }}
+      </span>
+      <span class="signal-value">{{ s.value }}</span>
+      <span class="signal-sub">
+        @if (s.trendClass === 'trend--pos') {
+          <tabler-icon icon="arrow-up" [size]="12" style="color:var(--color-success,#16a34a);flex-shrink:0;" />
+        } @else if (s.trendClass === 'trend--neg') {
+          <tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;" />
+        }
+        <span class="trend" [class]="s.trendClass">{{ s.sub }}</span>
+      </span>
+    </div>
+  }
+</div>
+
+<!-- Activity trend chart -->
+<article class="card section">
+  <div class="chart-header">
+    <div>
+      <h2 class="card-title">Platform activity</h2>
+    </div>
+    <div class="metric-tabs">
+      @for (label of TREND_LABELS; track label; let i = $index) {
+        <button
+          class="metric-tab"
+          [class.is-active]="trendMetric() === TREND_KEYS[i]"
+          (click)="trendMetric.set(TREND_KEYS[i])"
+        >{{ label }}</button>
+      }
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px; margin-top:12px; flex-wrap:wrap;">
+    <span style="font-size:26px; font-weight:500; color:var(--color-neutral-solid-90); letter-spacing:-0.02em; line-height:1;">{{ trendCurrent() }}</span>
+    <span style="font-size:13px; color:var(--color-neutral-solid-50); font-weight:400;">{{ trendUnit() }}</span>
+    <span [class]="trendDeltaClass()" style="font-size:13px;">{{ trendDelta() }}</span>
+    <span style="font-size:13px; color:var(--color-neutral-solid-40);">over 90 days</span>
+  </div>
+
+  <div class="chart-outer">
+    <div class="chart-wrap" (mousemove)="onChartMove($event)" (mouseleave)="onChartLeave()">
+
+      <!-- Y-axis labels -->
+      <div class="y-axis">
+        @for (tick of yTicks(); track tick.label) {
+          <span class="y-tick" [style.top.%]="tick.svgY / 150 * 100">{{ tick.label }}</span>
+        }
+      </div>
+
+      <!-- Chart area -->
+      <div class="chart-area">
+        <svg style="width:100%; height:100%; display:block;" viewBox="0 0 1200 150" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="trend-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#449DF7" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#449DF7" stop-opacity="0.01"/>
+            </linearGradient>
+          </defs>
+          @for (tick of yTicks(); track tick.label) {
+            <line x1="0" [attr.y1]="tick.svgY" x2="1200" [attr.y2]="tick.svgY"
+                  stroke="rgba(0,0,0,0.055)" stroke-width="1"/>
+          }
+          <path [attr.d]="trendAreaPath()" style="fill:url(#trend-grad);"/>
+          <path [attr.d]="trendLinePath()" style="fill:none; stroke:#449DF7; stroke-width:2; stroke-linejoin:round;"/>
+          @if (hoverPoint(); as hp) {
+            <line [attr.x1]="hp.svgX" y1="0" [attr.x2]="hp.svgX" y2="150"
+                  stroke="rgba(0,0,0,0.14)" stroke-width="1.5" stroke-dasharray="3,3"/>
+            <circle [attr.cx]="hp.svgX" [attr.cy]="hp.svgY" r="4.5"
+                    fill="#449DF7" stroke="white" stroke-width="2.5"/>
+          }
+        </svg>
+
+        @if (hoverPoint(); as hp) {
+          <div class="chart-tooltip" [style.left.%]="hp.xPct">
+            <span class="chart-tooltip-val">{{ hp.label }}</span>
+            <span class="chart-tooltip-date">{{ hp.dateStr }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- X-axis labels -->
+    <div class="x-axis-row">
+      <div class="y-axis-gap"></div>
+      <div class="x-axis">
+        @for (tick of xTicks(); track tick.label) {
+          <span class="x-tick" [style.left.%]="tick.leftPct">{{ tick.label }}</span>
+        }
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- Two-column: attention + insights -->
+<div class="col-2-3-1 section">
+  <article class="card">
+    <h2 class="card-title" style="margin-bottom:16px;">Needs attention</h2>
+    <ul class="attn-list">
+      @for (item of attentionItems; track item.title) {
+        <li class="attn-item">
+          <span [class]="'badge badge--' + item.severity">{{ item.severity }}</span>
+          <div class="attn-body">
+            <span class="attn-title">{{ item.title }}</span>
+            <span class="attn-meta">{{ item.area }}</span>
+          </div>
+          <div>
+            <span class="attn-metric">{{ item.metric }}</span>
+            <span class="attn-time">{{ item.time }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2 class="card-title" style="margin-bottom:16px;">What's changing</h2>
+    <ul class="insight-list">
+      @for (item of insights; track item.text) {
+        <li class="insight-item">
+          <span [class]="item.dir === 'up' ? 'insight-dir insight-dir--up' : 'insight-dir insight-dir--down'">
+            <tabler-icon [icon]="item.dir === 'up' ? 'arrow-up' : 'arrow-down'" [size]="13" />
+          </span>
+          <span style="font-size:13.5px; color:var(--color-neutral-solid-80);">{{ item.text }}</span>
+          <span class="insight-tag">{{ item.tag }}</span>
+        </li>
+      }
+    </ul>
+  </article>
+</div>

@@ -1,0 +1,410 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Content</h1>
+    <p class="page-subtitle">Asset performance, content health issues, and inventory coverage across all content types.</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<nav class="page-tabs">
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'performance'" (click)="activeTab.set('performance')">Performance</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'health'"      (click)="activeTab.set('health')">Health</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'inventory'"   (click)="activeTab.set('inventory')">Inventory</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'knowledge'"   (click)="activeTab.set('knowledge')">Knowledge Sources</button>
+</nav>
+
+<!-- ==================== PERFORMANCE TAB ==================== -->
+@if (activeTab() === 'performance') {
+
+  <!-- Signal strip -->
+  <div class="signal-strip">
+    <div class="signal-item">
+      <span class="signal-label">Page views (30d)</span>
+      <span class="signal-value">4.8M</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>6% vs prior period</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Publication downloads</span>
+      <span class="signal-value">82.4K</span>
+      <span class="signal-sub">12.1 actions/session</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Content effectiveness</span>
+      <span class="signal-value">67%</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>2pp vs prior period</span>
+    </div>
+    <div class="signal-item signal-item--alert">
+      <span class="signal-label">High-value / low-vis.</span>
+      <span class="signal-value">64</span>
+      <span class="signal-sub">pages needing attention</span>
+    </div>
+  </div>
+
+  <!-- Content type breakdown + Top content -->
+  <div class="col-3-2 section">
+
+    <!-- Content type breakdown -->
+    <article class="card">
+      <div class="chart-header">
+        <h2 class="card-title">Content Type Breakdown</h2>
+        <span class="content-col-labels">
+          <span class="content-col-lbl">ASSETS</span>
+          <span class="content-col-lbl">ACTIONS</span>
+          <span class="content-col-lbl">EFF.</span>
+          <span class="content-col-lbl">TREND</span>
+        </span>
+      </div>
+      <ul class="ref-list">
+        @for (row of contentTypeRows; track row.type) {
+          <li class="ref-item content-type-item">
+            <div class="ref-item-bar" [style.width.%]="actionBarPct(row.actions)"></div>
+            <span class="ref-item-label">{{ row.type }}</span>
+            <span class="content-col-val">{{ row.assets | number }}</span>
+            <span class="content-col-val content-col-val--bold">{{ row.actions | number }}</span>
+            <span class="content-col-val">{{ row.effectiveness }}%</span>
+            <span class="content-col-val" [class.trend--pos]="row.trend.startsWith('+')" [class.trend--neg]="row.trend.startsWith('-')">{{ row.trend }}</span>
+          </li>
+        }
+      </ul>
+    </article>
+
+    <!-- Top performing content -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Top Performing Content</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Title</th>
+            <th class="data-th">Type</th>
+            <th class="data-th data-th--num">Actions</th>
+            <th class="data-th data-th--num">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of topContent; track row.title) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong" style="max-width: 220px; white-space: normal; line-height: 1.3;">{{ row.title }}</td>
+              <td class="data-td data-td--muted">{{ row.type }}</td>
+              <td class="data-td data-td--num">{{ row.actions | number }}</td>
+              <td class="data-td data-td--num">
+                <span class="trend" [class.trend--pos]="row.trend.startsWith('+')" [class.trend--neg]="row.trend.startsWith('-')">{{ row.trend }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+
+  </div>
+
+  <!-- Declining content -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Declining Content — Requiring Review</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Title</th>
+            <th class="data-th">Type</th>
+            <th class="data-th data-th--num">Actions</th>
+            <th class="data-th data-th--num">Decline</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of decliningContent; track row.title) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">{{ row.title }}</td>
+              <td class="data-td data-td--muted">{{ row.type }}</td>
+              <td class="data-td data-td--num">{{ row.actions | number }}</td>
+              <td class="data-td data-td--num">
+                <span class="trend trend--neg">{{ row.decline }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+}
+
+<!-- ==================== HEALTH TAB ==================== -->
+@if (activeTab() === 'health') {
+
+  <!-- Health alert banner -->
+  <div class="health-alert-bar">
+    <span class="health-alert-count">184</span>
+    <div class="health-alert-text">
+      <strong>HIGH-TRAFFIC pages require attention</strong><br>
+      Content issues detected across top-performing assets. Review and remediate to protect visibility and user experience.
+    </div>
+  </div>
+
+  <div class="col-3-2">
+
+    <!-- Issue breakdown -->
+    <article class="card">
+      <div class="chart-header">
+        <h2 class="card-title">Issue Breakdown</h2>
+        <span style="font-size: 12px; color: var(--color-neutral-solid-40);">184 assets total</span>
+      </div>
+      <ul class="ref-list">
+        @for (row of healthBreakdown; track row.issue) {
+          <li class="ref-item health-breakdown-item">
+            <div class="ref-item-bar" [style.width.%]="row.pct" [class.ref-item-bar--high]="row.severity === 'high'" [class.ref-item-bar--medium]="row.severity === 'medium'"></div>
+            <span class="ref-item-label">{{ row.issue }}</span>
+            <span [class]="severityBadgeClass(row.severity)">{{ row.severity }}</span>
+            <span class="ref-item-val">{{ row.count }}</span>
+            <span class="ref-item-rank">{{ row.pct }}%</span>
+          </li>
+        }
+      </ul>
+    </article>
+
+    <!-- Severity summary -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 16px;">By Severity</h2>
+      <div class="severity-summary">
+        <div class="severity-row">
+          <span class="badge badge--high">High</span>
+          <div class="inline-bar" style="flex: 1;">
+            <div class="inline-bar-fill inline-bar-fill--red" style="width: 64%;"></div>
+          </div>
+          <span class="severity-count">119 assets</span>
+        </div>
+        <div class="severity-row">
+          <span class="badge badge--medium">Medium</span>
+          <div class="inline-bar" style="flex: 1;">
+            <div class="inline-bar-fill inline-bar-fill--warn" style="width: 25%;"></div>
+          </div>
+          <span class="severity-count">47 assets</span>
+        </div>
+        <div class="severity-row">
+          <span class="badge badge--low">Low</span>
+          <div class="inline-bar" style="flex: 1;">
+            <div class="inline-bar-fill" style="width: 10%;"></div>
+          </div>
+          <span class="severity-count">18 assets</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- Content health table -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Content Requiring Attention</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Title</th>
+            <th class="data-th">Type</th>
+            <th class="data-th">Issue</th>
+            <th class="data-th">Traffic</th>
+            <th class="data-th">AI Visibility</th>
+            <th class="data-th">Owner</th>
+            <th class="data-th">Last Updated</th>
+            <th class="data-th">Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of healthRows; track row.title) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong" style="max-width: 200px; white-space: normal; line-height: 1.3;">{{ row.title }}</td>
+              <td class="data-td data-td--muted">{{ row.type }}</td>
+              <td class="data-td" style="font-size: 12.5px;">{{ row.issue }}</td>
+              <td class="data-td">
+                <span class="status-dot"
+                  [class.status-dot--up]="row.traffic === 'High'"
+                  [class.status-dot--warn]="row.traffic === 'Med'"
+                  [class.status-dot--down]="row.traffic === 'Low'">
+                </span>
+                {{ row.traffic }}
+              </td>
+              <td class="data-td">
+                <span [class]="row.aiVisibility === 'Good' ? 'badge badge--good' : row.aiVisibility === 'Fair' ? 'badge badge--medium' : 'badge badge--high'">
+                  {{ row.aiVisibility }}
+                </span>
+              </td>
+              <td class="data-td data-td--muted">{{ row.owner }}</td>
+              <td class="data-td data-td--muted" style="font-size: 12px;">{{ row.updated }}</td>
+              <td class="data-td">
+                <span [class]="priorityBadgeClass(row.priority)">{{ row.priority }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+}
+
+<!-- ==================== INVENTORY TAB ==================== -->
+@if (activeTab() === 'inventory') {
+
+  <!-- Signal strip -->
+  <div class="signal-strip">
+    <div class="signal-item">
+      <span class="signal-label">Total content assets</span>
+      <span class="signal-value">24,212</span>
+      <span class="signal-sub">across all content types</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Published</span>
+      <span class="signal-value">91%</span>
+      <span class="signal-sub">22,035 live assets</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">With owner assigned</span>
+      <span class="signal-value">84%</span>
+      <span class="signal-sub">20,338 assets</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Structured data coverage</span>
+      <span class="signal-value">61%</span>
+      <span class="signal-sub">14,769 assets</span>
+    </div>
+  </div>
+
+  <div class="col-3-2 section">
+
+    <!-- Inventory table -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Inventory by Content Type</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Type</th>
+            <th class="data-th data-th--num">Total</th>
+            <th class="data-th data-th--num">Published %</th>
+            <th class="data-th data-th--num">With Owner %</th>
+            <th class="data-th data-th--num">Schema %</th>
+            <th class="data-th">Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of inventoryRows; track row.type) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">{{ row.type }}</td>
+              <td class="data-td data-td--num">{{ row.total | number }}</td>
+              <td class="data-td data-td--num">
+                <span [style.color]="pctColor(row.published)" style="font-weight: 500;">{{ row.published }}%</span>
+              </td>
+              <td class="data-td data-td--num">
+                <span [style.color]="pctColor(row.withOwner)" style="font-weight: 500;">{{ row.withOwner }}%</span>
+              </td>
+              <td class="data-td data-td--num">
+                <span [style.color]="pctColor(row.withSchema)" style="font-weight: 500;">{{ row.withSchema }}%</span>
+              </td>
+              <td class="data-td data-td--muted" style="font-size: 12px;">{{ row.lastUpdated }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+
+    <!-- Publishing status summary -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 16px;">Publishing Status</h2>
+      <ul class="ref-list">
+        <li class="ref-item">
+          <div class="ref-item-bar ref-item-bar--published" style="width: 91%;"></div>
+          <span class="ref-item-label">Published</span>
+          <span class="ref-item-val" style="color: #16a34a; font-weight: 500;">91%</span>
+          <span class="ref-item-rank">22,035</span>
+        </li>
+        <li class="ref-item">
+          <div class="ref-item-bar ref-item-bar--review" style="width: 5%;"></div>
+          <span class="ref-item-label">Under review</span>
+          <span class="ref-item-val" style="color: #fb923c; font-weight: 500;">5%</span>
+          <span class="ref-item-rank">1,211</span>
+        </li>
+        <li class="ref-item">
+          <div class="ref-item-bar ref-item-bar--draft" style="width: 4%;"></div>
+          <span class="ref-item-label">Draft</span>
+          <span class="ref-item-val" style="color: var(--color-neutral-solid-50);">4%</span>
+          <span class="ref-item-rank">966</span>
+        </li>
+      </ul>
+
+      <div class="inventory-coverage-note" style="margin-top: 20px;">
+        <h3 class="card-title" style="font-size: 14px; margin-bottom: 12px;">Coverage Gaps</h3>
+        <div class="coverage-gap-item">
+          <span class="coverage-gap-label">Pages / Web — Owner coverage</span>
+          <span class="coverage-gap-val badge badge--medium">62%</span>
+        </div>
+        <div class="coverage-gap-item">
+          <span class="coverage-gap-label">Data & Statistics — Schema coverage</span>
+          <span class="coverage-gap-val badge badge--medium">44%</span>
+        </div>
+        <div class="coverage-gap-item">
+          <span class="coverage-gap-label">Pages / Web — Schema coverage</span>
+          <span class="coverage-gap-val badge badge--high">28%</span>
+        </div>
+        <div class="coverage-gap-item">
+          <span class="coverage-gap-label">News & Events — Schema coverage</span>
+          <span class="coverage-gap-val badge badge--high">38%</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+}
+
+<!-- ==================== KNOWLEDGE SOURCES TAB ==================== -->
+@if (activeTab() === 'knowledge') {
+  <div class="signal-strip">
+    @for (s of knowledgeSignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <section class="card section">
+    <h2 class="card-title" style="margin-bottom:16px">Knowledge Sources</h2>
+    <table class="data-table" style="width:100%">
+      <thead>
+        <tr>
+          <th class="data-th">Source</th>
+          <th class="data-th data-th--num">Assets</th>
+          <th class="data-th data-th--num">Retrieval Rate</th>
+          <th class="data-th data-th--num">Queries</th>
+          <th class="data-th">Quality</th>
+          <th class="data-th">Last Indexed</th>
+          <th class="data-th">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (src of knowledgeSources; track src.name) {
+          <tr class="data-tr">
+            <td class="data-td data-td--strong">{{ src.name }}</td>
+            <td class="data-td data-td--num">{{ src.assets | number }}</td>
+            <td class="data-td data-td--num">
+              <div class="inline-bar">
+                <div class="inline-bar-fill"
+                  [class.inline-bar-fill--green]="src.retrievalRate >= 70"
+                  [class.inline-bar-fill--warn]="src.retrievalRate >= 30 && src.retrievalRate < 70"
+                  [class.inline-bar-fill--red]="src.retrievalRate < 30"
+                  [style.width.%]="src.retrievalRate"></div>
+              </div>
+              {{ src.retrievalRate }}%
+            </td>
+            <td class="data-td data-td--num">{{ src.queries | number }}</td>
+            <td class="data-td"><span [class]="qualityBadgeClass(src.quality)">{{ src.quality }}</span></td>
+            <td class="data-td data-td--muted">{{ src.lastIndexed }}</td>
+            <td class="data-td">
+              <span [class]="sourceStatusClass(src.status)"></span>
+              {{ src.status }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

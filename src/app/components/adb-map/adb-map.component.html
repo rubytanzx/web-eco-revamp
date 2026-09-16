@@ -1,0 +1,71 @@
+@if (mapData()) {
+  <div class="map-wrap">
+    <svg
+      class="map-svg"
+      #mapSvg
+      viewBox="380 75 700 275"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="adb-land" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="402">
+          <stop offset="0%"   stop-color="#b0dab8" />
+          <stop offset="100%" stop-color="#a8d0e8" />
+        </linearGradient>
+        <linearGradient id="map-ocean" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="402">
+          <stop offset="0%"   stop-color="#ffffff" />
+          <stop offset="48%"  stop-color="#ddeaf3" />
+          <stop offset="100%" stop-color="#ffffff" />
+        </linearGradient>
+      </defs>
+
+      <rect x="-500" y="-500" width="3000" height="1402" fill="url(#map-ocean)" />
+
+      <g class="countries-layer">
+        @for (c of countries(); track c.iso) {
+          @if (c.path) {
+            <path
+              [attr.d]="c.path"
+              [attr.class]="countryClass(c.regionId)"
+              [attr.data-iso]="c.iso"
+              (mouseenter)="c.regionId && onRegionEnter(c.regionId)"
+              (mouseleave)="onRegionLeave()"
+              (click)="c.regionId && regionSelect.emit(c.regionId)"
+              [style.cursor]="c.regionId ? 'pointer' : 'default'"
+            />
+          }
+        }
+      </g>
+    </svg>
+    @for (region of regions(); track region.id) {
+      @if (region.id !== 'rlo') {
+        <app-adb-map-marker
+          [region]="region"
+          [active]="isMarkerActive(region.id)"
+          [style.left.%]="markerLeftPct(region.markerX)"
+          [style.top.%]="markerTopPct(region.markerY)"
+          (select)="regionSelect.emit($event)"
+          (mouseenter)="onRegionEnter(region.id)"
+          (mouseleave)="onRegionLeave()"
+        />
+      }
+    }
+    @for (office of liaisonOffices(); track office.id) {
+      @if (office.markerX !== null && office.markerY !== null) {
+        <div class="liaison-marker"
+             [style.left.%]="markerLeftPct(office.markerX)"
+             [style.top.%]="markerTopPct(office.markerY)">
+          <div class="liaison-marker__square"></div>
+          <div class="liaison-marker__bottom">
+            <div class="liaison-marker__stem"></div>
+            <span class="liaison-marker__name">{{ office.name }}</span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+} @else {
+  <div class="map-wrap map-wrap--loading">
+    <div class="map-skeleton"></div>
+  </div>
+}

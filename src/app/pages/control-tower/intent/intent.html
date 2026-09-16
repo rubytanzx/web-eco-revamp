@@ -1,0 +1,156 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Search Categories</h1>
+    <p class="page-subtitle">LLM-classified prompt breakdown by Knowledge, People, and Unclassified intent</p>
+  </div>
+
+  <div class="assets-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<nav class="int-page-tabs">
+  <button type="button" class="int-page-tab" [class.is-active]="activeTab() === 'ai-search'"      (click)="activeTab.set('ai-search')">AI Search</button>
+  <button type="button" class="int-page-tab" [class.is-active]="activeTab() === 'keyword-search'" (click)="activeTab.set('keyword-search')">Keyword Search</button>
+</nav>
+
+@if (activeTab() === 'ai-search') {
+
+  <section class="kpi-grid kpi-grid--4">
+    @for (k of pageKpis; track k.title) {
+      <article class="kpi-card">
+        <h3 class="kpi-card-title">{{ k.title }}</h3>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <span class="kpi-metric-value">{{ k.value }}</span>
+          </div>
+        </div>
+        @if (k.sub) { <p class="kpi-card-sub">{{ k.sub }}</p> }
+      </article>
+    }
+  </section>
+
+  <section class="pv-card">
+    <header class="pv-card-hd">
+      <div>
+        <h3 class="pv-card-title">Prompt Volume Trend</h3>
+        <p class="pv-card-sub">Weekly prompt submissions across all intent categories</p>
+      </div>
+    </header>
+    <app-pv-chart></app-pv-chart>
+  </section>
+
+  <section class="treemap-section">
+    <app-intent-treemap
+      [selectedTopic]="selectedTopic()"
+      (topicClicked)="onTopicClicked($event)">
+    </app-intent-treemap>
+  </section>
+
+  @if (topicDrawerOpen()) {
+    <div class="topic-drawer-backdrop" (click)="closeTopicDrawer()"></div>
+    <aside class="topic-drawer" [style.width.px]="drawerWidth()">
+      <div class="topic-drawer-resizer" (mousedown)="onResizerMouseDown($event)"></div>
+      <header class="topic-drawer-hd">
+        <h2 class="topic-drawer-title">{{ selectedTopicLabel() }}</h2>
+        <button type="button" class="topic-drawer-close" (click)="closeTopicDrawer()" aria-label="Close">
+          <tabler-icon icon="x" [size]="16" />
+        </button>
+      </header>
+      <div class="topic-drawer-controls">
+        <span class="topic-drawer-count">{{ filteredDrilldownRows().length }} results</span>
+        <div class="topic-drawer-filters">
+          <select class="topic-drawer-dept-select"
+                  (change)="drawerDeptFilter.set($any($event.target).value)">
+            <option value="all">All departments</option>
+            @for (d of drawerDepts(); track d) {
+              <option [value]="d">{{ d }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="topic-drawer-body">
+        @if (filteredDrilldownRows().length) {
+          <table class="topic-drawer-table">
+            <thead>
+              <tr>
+                <th>Prompt</th>
+                <th>Response</th>
+                <th>Dept</th>
+                <th>Date Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredDrilldownRows(); track $index) {
+                <tr>
+                  <td class="td-prompt">{{ row.prompt }}</td>
+                  <td class="td-response">{{ row.response }}</td>
+                  <td><span class="mod-module-badge">{{ row.dept }}</span></td>
+                  <td class="td-date">{{ row.date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="topic-drawer-empty">No results match the current filter.</p>
+        }
+      </div>
+    </aside>
+  }
+
+}
+
+@if (activeTab() === 'keyword-search') {
+
+  <section class="int-row">
+    <article class="card ref-card">
+      <div class="ref-card-head">
+        <span class="ref-card-title">Zero Results by Content Type</span>
+        <span class="ref-col-hdr">RATE</span>
+      </div>
+      <ul class="ref-list">
+        @for (z of zeroResultByType; track z.type) {
+          <li class="ref-item ref-item--clickable" (click)="openZrDrawer(z.type)">
+            <div class="ref-item-bar" [style.width.%]="z.rate"></div>
+            <span class="ref-item-label">{{ z.type }}</span>
+            <span class="ref-item-val">{{ z.rate }}%</span>
+          </li>
+        }
+      </ul>
+    </article>
+  </section>
+
+  @if (zrDrawerOpen()) {
+    <div class="zr-backdrop" (click)="closeZrDrawer()"></div>
+    <aside class="zr-drawer">
+      <header class="zr-drawer-hd">
+        <div>
+          <h2 class="zr-drawer-title">{{ zrDrawerType() }}</h2>
+          <p class="zr-drawer-sub">Zero-result keyword searches</p>
+        </div>
+        <button class="zr-drawer-close" type="button" (click)="closeZrDrawer()">
+          <tabler-icon icon="x" [size]="18" />
+        </button>
+      </header>
+      <div class="zr-drawer-body">
+        <table class="zr-table">
+          <thead>
+            <tr>
+              <th class="zr-th">Keyword</th>
+              <th class="zr-th zr-th--date">Search Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of zrDrawerRows(); track row.keyword) {
+              <tr class="zr-tr">
+                <td class="zr-td">{{ row.keyword }}</td>
+                <td class="zr-td zr-td--date">{{ row.date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </aside>
+  }
+
+}

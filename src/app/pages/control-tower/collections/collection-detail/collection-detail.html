@@ -1,0 +1,226 @@
+<!-- Back link + title + meta + date range -->
+<header class="page-header">
+  <div class="page-header-title">
+    <a class="cd-back" routerLink="/collections">
+      <tabler-icon icon="chevron-left" [size]="14" />
+      Back to Collections
+    </a>
+    <h1 class="title">{{ name() }}</h1>
+    <ul class="cd-meta">
+      <li><span class="cd-meta-label">Type:</span> {{ meta.type }}</li>
+      <li><span class="cd-meta-label">Domain:</span> {{ meta.domain }}</li>
+      <li><span class="cd-meta-label">Verticals:</span> {{ meta.verticals }}</li>
+      <li><span class="cd-meta-label">Sectors:</span> {{ meta.sectors }}</li>
+      <li><span class="cd-meta-label">Updated:</span> {{ meta.updated }}</li>
+    </ul>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<!-- KPI row -->
+<section class="kpi-grid kpi-grid--4">
+  @for (k of kpis; track k.title) {
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">{{ k.title }}</h3>
+      <div class="kpi-metrics">
+        @for (m of k.metrics; track $index) {
+          <div class="kpi-metric">
+            <span class="kpi-metric-value">{{ m.value }}</span>
+            @if (m.delta) { <span class="kpi-metric-delta">{{ m.delta }}</span> }
+          </div>
+        }
+      </div>
+      @if (k.sub) {
+        <p class="kpi-card-sub">{{ k.sub }}</p>
+      }
+      @if (k.feedback) {
+        <div class="kpi-feedback">
+          <span class="kpi-feedback-item kpi-feedback-item--positive">
+            <tabler-icon icon="thumb-up" [size]="18" />
+            <strong>{{ k.feedback.positive }}%</strong>
+          </span>
+          <span class="kpi-feedback-item kpi-feedback-item--negative">
+            <tabler-icon icon="thumb-down" [size]="18" />
+            <strong>{{ k.feedback.negative }}%</strong>
+          </span>
+        </div>
+      }
+    </article>
+  }
+</section>
+
+<!-- Knowledge Coverage -->
+<section class="cd-panels">
+  <!-- Knowledge Coverage donut -->
+  <article class="cd-panel">
+    <h3 class="cd-panel-title">Knowledge Coverage</h3>
+    <div class="donut-wrap">
+      <svg class="donut-svg" viewBox="0 0 100 100" aria-label="Knowledge coverage donut">
+        <!-- Cited (green) -->
+        <circle
+          cx="50" cy="50" r="40" fill="none"
+          stroke="#34D399" stroke-width="14"
+          [attr.stroke-dasharray]="donutCited() + ' ' + donutCirc"
+          stroke-dashoffset="0"
+          transform="rotate(-90 50 50)"
+        />
+        <!-- Referenced (blue) -->
+        <circle
+          cx="50" cy="50" r="40" fill="none"
+          stroke="#0EA5E9" stroke-width="14"
+          [attr.stroke-dasharray]="donutReferenced() + ' ' + donutCirc"
+          [attr.stroke-dashoffset]="donutOffsetReferenced()"
+          transform="rotate(-90 50 50)"
+        />
+        <!-- Not Retrieved (amber) -->
+        <circle
+          cx="50" cy="50" r="40" fill="none"
+          stroke="#F59E0B" stroke-width="14"
+          [attr.stroke-dasharray]="donutNotRetrieved() + ' ' + donutCirc"
+          [attr.stroke-dashoffset]="donutOffsetNotRetrieved()"
+          transform="rotate(-90 50 50)"
+        />
+        <text x="50" y="48" text-anchor="middle" class="donut-center-value">{{ formatNum(coverage.totalFiles) }}</text>
+        <text x="50" y="58" text-anchor="middle" class="donut-center-label">files</text>
+      </svg>
+      <ul class="donut-legend">
+        <li><span class="donut-dot" style="background:#34D399"></span>{{ coverage.cited }}% Cited</li>
+        <li><span class="donut-dot" style="background:#0EA5E9"></span>{{ coverage.referenced }}% Referenced</li>
+        <li><span class="donut-dot" style="background:#F59E0B"></span>{{ coverage.notRetrieved }}% Not Retrieved</li>
+      </ul>
+    </div>
+  </article>
+
+</section>
+
+<!-- ========================= Analytics row: Health Score + Contribution Trend ========================= -->
+<section class="cd-analytics-row">
+  <!-- Collection Health Score -->
+  <article class="cd-detail-card">
+    <div class="cd-health-header">
+      <h3 class="cd-detail-card-title">Collection Health Score</h3>
+      <div class="cd-health-badge cd-health-badge--good">
+        <span class="cd-health-score">{{ healthScore.score }}</span>
+        <span class="cd-health-grade">{{ healthScore.grade }}</span>
+      </div>
+    </div>
+    <div class="cd-health-breakdown">
+      @for (b of healthScore.breakdown; track b.label) {
+        <div class="cd-health-item">
+          <div class="cd-health-item-head">
+            <span class="cd-health-item-label">{{ b.label }}</span>
+            <span class="cd-health-item-score">{{ b.score }}</span>
+          </div>
+          <div class="cd-health-track">
+            <div class="cd-health-fill" [style.width.%]="b.score"></div>
+          </div>
+          <span class="cd-health-weight">weight {{ b.weight }}%</span>
+        </div>
+      }
+    </div>
+  </article>
+
+  <!-- Contribution Trend Over Time -->
+  <article class="cd-detail-card">
+    <h3 class="cd-detail-card-title">Contribution Trend</h3>
+    <p class="cd-detail-card-sub">New resources added per week</p>
+    <svg class="cd-trend-svg"
+      [attr.viewBox]="'0 0 ' + trendChartW + ' ' + trendChartH"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      @for (bar of trendBars; track bar.label) {
+        <rect
+          [attr.x]="bar.x"
+          [attr.y]="bar.y"
+          [attr.width]="bar.width"
+          [attr.height]="bar.height < 1 ? 0 : bar.height"
+          rx="3"
+          class="cd-trend-bar"
+        />
+        @if (bar.value > 0) {
+          <text
+            [attr.x]="bar.x + bar.width / 2"
+            [attr.y]="bar.y - 4"
+            text-anchor="middle"
+            class="cd-trend-val"
+          >{{ bar.value }}</text>
+        }
+      }
+      @for (tick of trendXTicks; track tick.label) {
+        <text
+          [attr.x]="tick.x"
+          [attr.y]="trendChartH - 4"
+          text-anchor="middle"
+          class="cd-trend-x-label"
+        >{{ tick.label }}</text>
+      }
+    </svg>
+  </article>
+</section>
+
+<!-- ========================= Dept tables: Contributions + Freshness ========================= -->
+<section class="cd-dept-row">
+  <!-- Contributions per Dept/Owner -->
+  <article class="cd-detail-card">
+    <h3 class="cd-detail-card-title">Contributions per Department</h3>
+    <table class="cd-detail-table">
+      <thead>
+        <tr>
+          <th class="cd-th">VPU</th>
+          <th class="cd-th">Department</th>
+          <th class="cd-th">Resources</th>
+          <th class="cd-th">Share</th>
+          <th class="cd-th">Last Added</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (dept of contributionsByDept; track dept.vpu) {
+          <tr class="cd-tr">
+            <td class="cd-td"><span class="cd-vpu-badge">{{ dept.vpu }}</span></td>
+            <td class="cd-td">{{ dept.name }}</td>
+            <td class="cd-td">{{ dept.resources }}</td>
+            <td class="cd-td">
+              <div class="cd-share-wrap">
+                <div class="cd-share-fill" [style.width.%]="dept.pct * 3"></div>
+                <span class="cd-share-pct">{{ dept.pct }}%</span>
+              </div>
+            </td>
+            <td class="cd-td cd-td--date">{{ dept.lastAdded }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+
+  <!-- Content Freshness by Contributor -->
+  <article class="cd-detail-card">
+    <h3 class="cd-detail-card-title">Content Freshness by Contributor</h3>
+    <table class="cd-detail-table">
+      <thead>
+        <tr>
+          <th class="cd-th">VPU</th>
+          <th class="cd-th">Latest Doc</th>
+          <th class="cd-th">Avg Age (days)</th>
+          <th class="cd-th">Stale Docs</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (f of contentFreshness; track f.vpu) {
+          <tr class="cd-tr">
+            <td class="cd-td"><span class="cd-vpu-badge">{{ f.vpu }}</span></td>
+            <td class="cd-td cd-td--date">{{ f.latestDoc }}</td>
+            <td class="cd-td" [class.cd-td--stale]="f.avgAgeDays > 120">{{ f.avgAgeDays }}</td>
+            <td class="cd-td">
+              @if (f.staleCount > 0) {
+                <span class="cd-stale-chip">{{ f.staleCount }} stale</span>
+              } @else {
+                <span class="cd-fresh-chip">Fresh</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+</section>

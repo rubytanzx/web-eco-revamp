@@ -1,0 +1,373 @@
+<header #headerEl class="site-header">
+  <!-- Utility bar -->
+  <div class="top-nav">
+    <div class="top-nav-inner">
+      <a href="https://www.adb.org/news">News and Events</a>
+      <a href="https://www.adb.org/adbi/main">ADB Institute</a>
+      <a href="https://www.adb.org/contacts">Contact</a>
+      <a href="https://www.adb.org/">English ▾</a>
+    </div>
+  </div>
+
+  <!-- Main nav row -->
+  <div class="header-inner" (mouseleave)="scheduleClose()">
+    <a class="brand" routerLink="/">
+      <img src="/adb-home/adb-blue-block.png" alt="ADB logo" class="brand-logo" />
+      <span class="brand-tagline">
+        Solving Complex
+        <span>Challenges Together</span>
+        <span>for 60 Years</span>
+      </span>
+    </a>
+    <nav class="main-nav">
+      <div class="nav-item" (mouseenter)="setMenu(1)">
+        <a class="nav-link nav-link--blue" [class.nav-link--open]="activeMenu() === 1" href="https://www.adb.org/who-we-are">WHO&nbsp;WE&nbsp;ARE</a>
+      </div>
+      <div class="nav-item" (mouseenter)="setMenu(2)">
+        <a class="nav-link nav-link--red" [class.nav-link--open]="activeMenu() === 2" href="https://www.adb.org/what-we-do">WHAT&nbsp;WE&nbsp;DO</a>
+      </div>
+      <div class="nav-item" (mouseenter)="setMenu(3)">
+        <a class="nav-link nav-link--green" [class.nav-link--open]="activeMenu() === 3" href="https://www.adb.org/where-we-work">WHERE&nbsp;WE&nbsp;WORK</a>
+      </div>
+      <div class="nav-item" (mouseenter)="setMenu(4)">
+        <a class="nav-link nav-link--yellow" [class.nav-link--open]="activeMenu() === 4" href="https://www.adb.org/work-with-us">WORK&nbsp;WITH&nbsp;US</a>
+      </div>
+    </nav>
+    <div class="header-right">
+      <div class="header-search" role="search">
+        <button type="button" class="header-search__submit-icon" aria-label="Search" (click)="onSearch()">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14"/></svg>
+        </button>
+        <input #searchInput type="search" placeholder="Search ADB.org" aria-label="Search ADB.org" (keydown.enter)="onSearch()" />
+        <button type="button" class="header-search__clear" aria-label="Clear search" (click)="searchInput.value = ''; searchInput.focus()">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+        <div class="header-search__actions"></div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Mega Menu ─────────────────────────────────────────────────────────── -->
+  @if (activeMenu() !== null) {
+    <div [class]="'mega-wrap mega-wrap--' + activeMenu()" (mouseenter)="cancelClose()" (mouseleave)="scheduleClose()">
+
+      <!-- 1. WHO WE ARE -->
+      @if (activeMenu() === 1) {
+        <div class="mega-inner">
+          <div class="mega-highlight">
+            <p>ADB is a leading multilateral development bank supporting sustainable, inclusive, and resilient growth across Asia and the Pacific.</p>
+            <p>Founded in 1966, ADB is owned by 69 members—50 from the region.</p>
+            <a href="https://www.adb.org/who-we-are/management/masato-kanda">
+              <img class="mega-highlight__img" src="https://www.adb.org/sites/default/files/2026-02/menu-president-kanda.png" alt="ADB President Masato Kanda" loading="lazy" />
+            </a>
+          </div>
+          <div class="mega-content">
+            <div class="mega-cols mega-cols--3">
+              <div>
+                <p class="mega-heading">About ADB</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/who-we-are/about">Overview</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/about#members">Members</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/about#history">History</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/about#annual-reports">Annual Reports</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/about#policies">Policies and Strategies</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/about#partners">Partners</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">Organization</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/who-we-are/organization/board-governors">Board of Governors</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/organization/board-directors">Board of Directors</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/management/masato-kanda">President</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/organization#management">Management</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/organization#departments">Departments and Country Offices</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">Accountability</p>
+                <ul class="mega-list mega-list--2col">
+                  <li><a href="https://www.adb.org/who-we-are/access-information">Access to Information</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/accountability-mechanism">Accountability Mechanism</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/integrity">Anticorruption and Integrity</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/development-effectiveness">Development Effectiveness</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/environmental-social-requirements">Environmental and Social Requirements</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/evaluation">Independent Evaluation</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/organization/administrative-tribunal">Administrative Tribunal</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/professional-ethics-and-conduct">Ethics and Conduct</a></li>
+                  <li><a href="https://www.adb.org/who-we-are/office-ombudsperson">Ombudsperson</a></li>
+                </ul>
+              </div>
+            </div>
+            <hr class="mega-divider">
+            <div class="mega-featured">
+              <a href="https://www.adb.org/who-we-are/strategy-2030">Strategy 2030</a>
+              <a href="https://www.adb.org/news/events/annual-meetings">Annual Meetings</a>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 2. WHAT WE DO -->
+      @if (activeMenu() === 2) {
+        <div class="mega-inner">
+          <div class="mega-highlight">
+            <p>The Asian Development Bank (ADB) supports projects in developing member countries.</p>
+            <a href="https://www.adb.org/solving-complex-challenges-together">
+              <img class="mega-highlight__img" src="https://www.adb.org/sites/default/files/2026-05/megamenu-banner-SCCT-adb60.jpg" alt="Solving Complex Challenges Together" loading="lazy" />
+            </a>
+          </div>
+          <div class="mega-content">
+            <div class="mega-cols mega-cols--3">
+              <div>
+                <p class="mega-heading">About ADB Projects</p>
+                <ul class="mega-list" style="margin-bottom:18px">
+                  <li><a href="https://www.adb.org/projects">Projects &amp; Tenders</a></li>
+                  <li><a href="https://www.adb.org/news/results">Project Results and Case Studies</a></li>
+                </ul>
+                <p class="mega-heading">Products and Services</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/what-we-do/public-sector-financing">Public Sector Financing</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/private-sector-financing">Private Sector Financing</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/financing-partnerships/main">Financing Partnerships</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/funds/main">Funds and Resources</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">Knowledge</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/outlook">Economic Forecasts</a></li>
+                  <li><a href="https://www.adb.org/publications">Publications and Documents</a></li>
+                  <li><a href="https://www.adb.org/data">Data and Statistics</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/asia-pacific-tax-hub">Asia Pacific Tax Hub</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/civilsociety">ADB and Civil Society</a></li>
+                  <li><a href="https://development.asia/" target="_blank" rel="noopener">Development Asia</a></li>
+                  <li><a href="https://blogs.adb.org/" target="_blank" rel="noopener">ADB Blogs</a></li>
+                  <li><a href="https://data.adb.org" target="_blank" rel="noopener">ADB Data Library</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">Topics</p>
+                <ul class="mega-list mega-list--2col">
+                  <li><a href="https://www.adb.org/what-we-do/topics/agriculture">Agriculture and Food Security</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/climate-change">Climate Change</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/digital-technology">Digital Technology</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/disaster-risk-management">Disaster Risk Management</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/education">Education</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/energy">Energy</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/environment">Environment</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/finance">Finance Sector</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/fcas-sids">Fragility and Vulnerability</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/gender">Gender Equality</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/governance">Governance</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/health">Health</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/public-private-partnerships">Markets Development and PPP</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/regional-cooperation">Regional Cooperation</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/social-development">Social Development</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/sdg">Sustainable Development Goals</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/transport">Transport</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/urban-development">Urban Development</a></li>
+                  <li><a href="https://www.adb.org/what-we-do/topics/water">Water</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 3. WHERE WE WORK -->
+      @if (activeMenu() === 3) {
+        <div class="mega-inner mega-inner--tall">
+          <div class="mega-highlight">
+            <p>Learn about ADB activities in member countries and regional offices.</p>
+            <p>Get information on country economic data and analysis, development assistance, and regional initiatives.</p>
+          </div>
+          <div class="mega-content">
+            <!-- Subregion tabs -->
+            <div class="mega-tabs" role="tablist">
+              <button class="mega-tab" [class.mega-tab--active]="activeRegion() === 'central-west-asia'" (click)="setRegion('central-west-asia')" type="button" role="tab">Central and West Asia</button>
+              <button class="mega-tab" [class.mega-tab--active]="activeRegion() === 'east-asia'" (click)="setRegion('east-asia')" type="button" role="tab">East Asia</button>
+              <button class="mega-tab" [class.mega-tab--active]="activeRegion() === 'south-asia'" (click)="setRegion('south-asia')" type="button" role="tab">South Asia</button>
+              <button class="mega-tab" [class.mega-tab--active]="activeRegion() === 'southeast-asia'" (click)="setRegion('southeast-asia')" type="button" role="tab">Southeast Asia</button>
+              <button class="mega-tab" [class.mega-tab--active]="activeRegion() === 'pacific'" (click)="setRegion('pacific')" type="button" role="tab">Pacific</button>
+            </div>
+
+            @if (activeRegion() === 'central-west-asia') {
+              <div class="mega-tab-pane" role="tabpanel">
+                <a class="mega-tab-pane__region-link" href="https://www.adb.org/where-we-work/central-west-asia">ADB Central and West Asia Operations</a>
+                <ul class="mega-list mega-list--4col">
+                  <li><a href="https://www.adb.org/where-we-work/afghanistan">Afghanistan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/armenia">Armenia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/azerbaijan">Azerbaijan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/georgia">Georgia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/kazakhstan">Kazakhstan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/kyrgyz-republic">Kyrgyz Republic</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/pakistan">Pakistan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/tajikistan">Tajikistan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/turkiye">Türkiye</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/turkmenistan">Turkmenistan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/uzbekistan">Uzbekistan</a></li>
+                </ul>
+              </div>
+            }
+            @if (activeRegion() === 'east-asia') {
+              <div class="mega-tab-pane" role="tabpanel">
+                <a class="mega-tab-pane__region-link" href="https://www.adb.org/where-we-work/east-asia">ADB East Asia Operations</a>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/where-we-work/mongolia">Mongolia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/prc">People's Republic of China</a></li>
+                </ul>
+              </div>
+            }
+            @if (activeRegion() === 'south-asia') {
+              <div class="mega-tab-pane" role="tabpanel">
+                <a class="mega-tab-pane__region-link" href="https://www.adb.org/where-we-work/south-asia">ADB South Asia Operations</a>
+                <ul class="mega-list mega-list--3col">
+                  <li><a href="https://www.adb.org/where-we-work/bangladesh">Bangladesh</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/bhutan">Bhutan</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/india">India</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/maldives">Maldives</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/nepal">Nepal</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/sri-lanka">Sri Lanka</a></li>
+                </ul>
+              </div>
+            }
+            @if (activeRegion() === 'southeast-asia') {
+              <div class="mega-tab-pane" role="tabpanel">
+                <a class="mega-tab-pane__region-link" href="https://www.adb.org/where-we-work/southeast-asia">ADB Southeast Asia Operations</a>
+                <ul class="mega-list mega-list--4col">
+                  <li><a href="https://www.adb.org/where-we-work/cambodia">Cambodia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/indonesia">Indonesia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/lao-pdr">Lao People's Democratic Republic</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/myanmar">Myanmar</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/philippines">Philippines</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/thailand">Thailand</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/timor-leste">Timor-Leste</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/viet-nam">Viet Nam</a></li>
+                </ul>
+              </div>
+            }
+            @if (activeRegion() === 'pacific') {
+              <div class="mega-tab-pane" role="tabpanel">
+                <a class="mega-tab-pane__region-link" href="https://www.adb.org/pacific">ADB Pacific Operations</a>
+                <ul class="mega-list mega-list--4col">
+                  <li><a href="https://www.adb.org/where-we-work/cook-islands">Cook Islands</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/micronesia">Federated States of Micronesia</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/fiji">Fiji</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/kiribati">Kiribati</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/marshall-islands">Marshall Islands</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/naoero">Naoero</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/niue">Niue</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/palau">Palau</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/papua-new-guinea">Papua New Guinea</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/samoa">Samoa</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/solomon-islands">Solomon Islands</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/tonga">Tonga</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/tuvalu">Tuvalu</a></li>
+                  <li><a href="https://www.adb.org/where-we-work/vanuatu">Vanuatu</a></li>
+                </ul>
+              </div>
+            }
+
+            <hr class="mega-divider">
+            <a class="mega-link-bold" href="https://www.adb.org/where-we-work">Full list of countries with operations</a>
+
+            <div class="mega-cols mega-cols--2" style="margin-top:20px">
+              <div class="mega-cols mega-cols--2">
+                <div>
+                  <p class="mega-heading">Regional Offices</p>
+                  <ul class="mega-list">
+                    <li><a href="https://www.adb.org/ero">European Representative Office</a></li>
+                    <li><a href="https://www.adb.org/jro">Japanese Representative Office</a></li>
+                    <li><a href="https://www.adb.org/naro">North America Representative Office</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="mega-heading">Liaison Offices</p>
+                  <ul class="mega-list">
+                    <li><a href="https://www.adb.org/plco">Pacific Liaison and Coordination Office</a></li>
+                    <li><a href="https://www.adb.org/spso">Pacific Subregional Office</a></li>
+                    <li><a href="https://www.adb.org/offices/singapore/main">Singapore Office</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <p class="mega-heading">Subregional Programs</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/bimp-eaga">Brunei, Indonesia, Malaysia, Philippines East ASEAN Growth Area (BIMP-EAGA)</a></li>
+                  <li><a href="https://www.adb.org/carec">Central Asia Regional Economic Cooperation (CAREC) Program</a></li>
+                  <li><a href="https://www.adb.org/gms">Greater Mekong Subregion (GMS) Program</a></li>
+                  <li><a href="https://www.adb.org/imt-gt">Indonesia, Malaysia, Thailand Growth Triangle (IMT-GT)</a></li>
+                  <li><a href="https://www.adb.org/sasec">South Asia Subregional Economic Cooperation (SASEC)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 4. WORK WITH US -->
+      @if (activeMenu() === 4) {
+        <div class="mega-inner">
+          <div class="mega-highlight">
+            <p>With employees from more than 60 countries, ADB is a place of real diversity.</p>
+            <p>Work with us to find fulfillment in sharing your knowledge and skills, and be a part of our vision for the region.</p>
+          </div>
+          <div class="mega-content">
+            <div class="mega-cols mega-cols--2-1">
+              <div>
+                <p class="mega-heading">Careers and Scholarships</p>
+                <ul class="mega-list mega-list--2col">
+                  <li><a href="https://www.adb.org/work-with-us/careers">Careers</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/careers/current-opportunities">Careers Opportunities</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/careers/adb-young-professionals-program">Young Professionals Program</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/careers/adb-visiting-fellow-program">Visiting Fellow Program</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/careers/internship-program">Internship Program</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/careers/japan-scholarship-program">Scholarship Program</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">For Investors</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/work-with-us/investors">Investor Relations</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/investors/adb-green-bonds">ADB Green and Blue Bonds</a></li>
+                  <li><a href="https://www.adb.org/work-with-us/investors/adb-theme-bonds">ADB Theme Bonds</a></li>
+                </ul>
+              </div>
+            </div>
+            <hr class="mega-divider">
+            <div class="mega-cols mega-cols--2-1">
+              <div>
+                <p class="mega-heading">Information on Working with ADB for...</p>
+                <ul class="mega-list mega-list--2col">
+                  <li><a href="https://www.adb.org/business/main#tab-1">Consultants</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-1b">Contractors and Suppliers</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-2">Governments</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-3">Executing and Implementing Agencies</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-4">Development Institutions</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-5">Private Sector Partners</a></li>
+                  <li><a href="https://www.adb.org/business/main#tab-6">Civil Society/Non-government Organizations</a></li>
+                </ul>
+              </div>
+              <div>
+                <p class="mega-heading">Procurement and Outreach</p>
+                <ul class="mega-list">
+                  <li><a href="https://www.adb.org/business/project-procurement">Project Procurement</a></li>
+                  <li><a href="https://www.adb.org/business/institutional-procurement">Institutional Procurement</a></li>
+                  <li><a href="https://www.adb.org/business/opportunities-outreach">Business Opportunities Outreach</a></li>
+                  <li><a href="https://www.adb.org/projects/tenders">Projects &amp; Tenders</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+  <div class="scroll-bar" [style.width.%]="scrollProgress()"></div>
+</header>

@@ -1,0 +1,27 @@
+<header class="page-header">
+  <div class="page-header-left">
+    <a class="page-back" routerLink="/performance">
+      <tabler-icon icon="chevron-left" [size]="14" />
+      Back to Performance
+    </a>
+    <h1 class="title">Keyword Search</h1>
+    <p class="page-subtitle">Search query volume, zero-result rate, and search-to-AI conversion</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<section class="kpi-grid kpi-grid--3">
+  @for (k of kpis; track k.title) {
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">{{ k.title }}</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value" [class.kpi-metric-value--bad]="k.positive === false">
+            {{ k.value }}
+          </span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ k.sub }}</p>
+    </article>
+  }
+</section>

@@ -1,0 +1,653 @@
+<!-- Backdrop -->
+@if (open()) {
+  <div class="acp-backdrop" (click)="onClose()"></div>
+}
+
+<!-- Drawer -->
+<div class="acp" [class.acp--open]="open()" [class.acp--split]="selectedProject() || pdfPane()">
+
+  <!-- Chat pane (always left) -->
+  <div class="acp__chat"
+       [style.flex]="(selectedProject() || pdfPane()) ? '0 0 ' + chatWidth() + 'px' : '1 1 auto'"
+       [style.width]="(selectedProject() || pdfPane()) ? chatWidth() + 'px' : null">
+
+    <!-- Header -->
+    <div class="acp__header">
+      <div class="acp__header-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="url(#acp-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <defs>
+            <linearGradient id="acp-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#68c5ea"/>
+              <stop offset="100%" stop-color="#ae5ded"/>
+            </linearGradient>
+          </defs>
+          <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+        </svg>
+        <span>AI Chat</span>
+      </div>
+      <button class="acp__close" type="button" aria-label="Close" (click)="onClose()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Thread -->
+    <div class="acp__thread" #thread>
+
+      <!-- Seed: user query bubble -->
+      <div class="acp__msg acp__msg--user">
+        <div class="acp__bubble acp__bubble--user">{{ query() }}</div>
+      </div>
+
+      <!-- Reasoning loader -->
+      @if (!aiVisible()) {
+        <div class="acp__msg acp__msg--ai">
+          <div class="acp__reasoning">
+            <button class="acp__reasoning-header" type="button" (click)="loaderCollapsed.update(v => !v)">
+              <svg class="acp__dots" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="acp__dot acp__dot--1" cx="4.94" cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--2" cx="12"   cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--3" cx="19.06" cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--4" cx="4.94" cy="12"   r="2.12"/>
+                <circle class="acp__dot acp__dot--5" cx="12"   cy="12"   r="2.12"/>
+                <circle class="acp__dot acp__dot--6" cx="19.06" cy="12"  r="2.12"/>
+                <circle class="acp__dot acp__dot--7" cx="4.94" cy="19.06" r="2.12"/>
+                <circle class="acp__dot acp__dot--8" cx="12"   cy="19.06" r="2.12"/>
+                <circle class="acp__dot acp__dot--9" cx="19.06" cy="19.06" r="2.12"/>
+              </svg>
+              <span class="acp__phase">{{ currentPhase() }}...</span>
+              <span class="acp__elapsed">{{ elapsed() }}s</span>
+              <svg class="acp__chevron" [class.acp__chevron--up]="!loaderCollapsed()" viewBox="0 0 16 16" fill="none" aria-hidden="true" width="14" height="14">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            @if (!loaderCollapsed()) {
+              <p class="acp__thought">{{ currentThought() }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- AI seed response -->
+      @if (aiVisible()) {
+        <div class="acp__msg acp__msg--ai acp__msg--animate">
+          <div class="acp__ai-response">
+            <p class="acp__ai-text">{{ aiSeed() }}</p>
+
+            @if (aiSeedProjects().length) {
+              <div class="acp__projects">
+                @for (p of aiSeedProjects(); track p.projectNumber) {
+                  <div class="acp__project-card"
+                       [class.acp__project-card--selected]="selectedProject()?.projectNumber === p.projectNumber"
+                       (click)="onProjectClick($event, p.projectNumber)" role="button" tabindex="0">
+                    <div class="acp__project-card__header">
+                      <span class="acp__project-card__title">{{ p.title }}</span>
+                      <span class="acp__project-card__status acp__project-card__status--{{ statusClass(p.status) }}">{{ p.status }}</span>
+                      <svg class="acp__project-card__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <div class="acp__project-card__meta">{{ p.projectNumber }} · {{ p.sector }} · {{ p.country }}</div>
+                    @if (p.description && aiSeedProjects().length === 1) {
+                      <p class="acp__project-card__desc">{{ p.description }}</p>
+                    }
+                    <div class="acp__project-card__actions">
+                      <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p.projectNumber)">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <defs><linearGradient id="sl-grad-a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                          <path stroke="url(#sl-grad-a)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                        </svg>
+                        <span class="acp__project-card__summary-text">View Summary</span>
+                      </button>
+                      <span class="acp__project-card__sep">·</span>
+                      <a class="acp__project-card__link" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                        ADB.org
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Related queries: hidden once any follow-up has been sent -->
+            @if (!messages().length) {
+              <div class="acp__related">
+                <div class="acp__related-label">Try asking</div>
+                @if (!relatedLoaded()) {
+                  <div class="acp__skeleton" style="width: 88%"></div>
+                  <div class="acp__skeleton" style="width: 72%; animation-delay: 0.2s"></div>
+                  <div class="acp__skeleton" style="width: 80%; animation-delay: 0.4s"></div>
+                } @else {
+                  <div class="acp__related-list">
+                    @for (q of activeRelated(); track q) {
+                      <button class="acp__related-item" type="button" (click)="sendFollowUp(q)">{{ q }}</button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Actions -->
+            <div class="acp__actions">
+              <button class="acp__action-btn" [class.acp__action-btn--done]="copiedKey() === 'seed'"
+                type="button" title="Copy response" (click)="copyText(aiSeed(), 'seed')">
+                @if (copiedKey() === 'seed') {
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                } @else {
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                }
+              </button>
+              <span class="acp__action-sep"></span>
+              <button class="acp__action-btn"
+                [style.color]="getThumb('seed') === 'up' ? '#22c55e' : null"
+                type="button" title="Good response" (click)="setThumb('seed', 'up')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/>
+                  <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                </svg>
+              </button>
+              <button class="acp__action-btn"
+                [style.color]="getThumb('seed') === 'down' ? '#ef4444' : null"
+                type="button" title="Bad response" (click)="setThumb('seed', 'down')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z"/>
+                  <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Follow-up messages -->
+      @for (msg of messages(); track msg.id) {
+        @if (isUser(msg)) {
+          <div class="acp__msg acp__msg--user acp__msg--animate">
+            <div class="acp__bubble acp__bubble--user">{{ msg.text }}</div>
+          </div>
+        }
+        @if (isThinking(msg)) {
+          <div class="acp__msg acp__msg--ai acp__msg--animate">
+            <div class="acp__reasoning acp__reasoning--inline">
+              <svg class="acp__dots" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="acp__dot acp__dot--1" cx="4.94" cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--2" cx="12"   cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--3" cx="19.06" cy="4.94" r="2.12"/>
+                <circle class="acp__dot acp__dot--4" cx="4.94" cy="12"   r="2.12"/>
+                <circle class="acp__dot acp__dot--5" cx="12"   cy="12"   r="2.12"/>
+                <circle class="acp__dot acp__dot--6" cx="19.06" cy="12"  r="2.12"/>
+                <circle class="acp__dot acp__dot--7" cx="4.94" cy="19.06" r="2.12"/>
+                <circle class="acp__dot acp__dot--8" cx="12"   cy="19.06" r="2.12"/>
+                <circle class="acp__dot acp__dot--9" cx="19.06" cy="19.06" r="2.12"/>
+              </svg>
+              <span class="acp__phase">Thinking...</span>
+            </div>
+          </div>
+        }
+        @if (isAI(msg)) {
+          <div class="acp__msg acp__msg--ai acp__msg--animate">
+            <div class="acp__ai-response">
+              @if (msg.chartConfig?.citations?.length) {
+                <div (click)="handleCiteClick($event, msg.id)"
+                     [innerHTML]="renderAiText(msg.text, msg.chartConfig!.citations)"></div>
+              } @else {
+                <p class="acp__ai-text">{{ msg.text }}</p>
+              }
+              @if (msg.chartConfig; as cfg) {
+                @let chart = buildChart(cfg);
+                <div class="acp__chart">
+                  <div class="acp__chart-header">
+                    <div class="acp__chart-title">{{ cfg.title }}</div>
+                    <div class="acp__chart-subtitle">{{ cfg.subtitle }}</div>
+                  </div>
+                  <svg [attr.viewBox]="'0 0 ' + chart.svgW + ' ' + chart.svgH"
+                       class="acp__chart-svg" preserveAspectRatio="xMidYMid meet"
+                       style="overflow:visible"
+                       (mouseleave)="onChartLeave()">
+                    @for (g of chart.gridLines; track g.y) {
+                      <line [attr.x1]="chart.pad.left" [attr.x2]="chart.svgW - chart.pad.right"
+                            [attr.y1]="g.y" [attr.y2]="g.y"
+                            [class.acp__chart-zero]="g.isZero"
+                            class="acp__chart-grid"/>
+                    }
+                    @for (xl of chart.xLabels; track xl.x) {
+                      @if (xl.label) {
+                        <text [attr.x]="xl.x" [attr.y]="chart.svgH - chart.pad.bottom + 14"
+                              class="acp__chart-axis-label" text-anchor="middle">{{ xl.label }}</text>
+                      }
+                    }
+                    @for (yl of chart.yLabels; track yl.y) {
+                      <text [attr.x]="yl.x" [attr.y]="yl.y"
+                            class="acp__chart-axis-label" text-anchor="end">{{ yl.label }}</text>
+                    }
+                    @for (p of chart.paths; track p.name) {
+                      <path [attr.d]="p.areaD" [attr.fill]="p.color" class="acp__chart-area"/>
+                      <path [attr.d]="p.lineD" [attr.stroke]="p.color" class="acp__chart-line" fill="none"/>
+                    }
+                    <!-- Dots (always visible) -->
+                    @for (p of chart.paths; track p.name) {
+                      @for (pt of p.pts; track pt.x) {
+                        <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3" [attr.fill]="p.color" class="acp__chart-dot"/>
+                      }
+                    }
+                    <!-- Hover layer -->
+                    @if (hoverMsgId() === msg.id && hoverIdx() !== null) {
+                      @let hi = hoverIdx()!;
+                      @let hx = chart.xCoords[hi];
+                      @let tipX = hx > chart.svgW - 170 ? hx - 155 : hx + 10;
+                      <line [attr.x1]="hx" [attr.x2]="hx"
+                            [attr.y1]="chart.pad.top" [attr.y2]="chart.svgH - chart.pad.bottom"
+                            class="acp__chart-crosshair" pointer-events="none"/>
+                      @for (p of chart.paths; track p.name) {
+                        <circle [attr.cx]="p.pts[hi].x" [attr.cy]="p.pts[hi].y"
+                                r="5" [attr.fill]="p.color" stroke="#fff" stroke-width="2" pointer-events="none"/>
+                      }
+                      <!-- Tooltip box -->
+                      <rect [attr.x]="tipX" [attr.y]="chart.pad.top + 2"
+                            width="148" [attr.height]="chart.tipH"
+                            rx="6" fill="white" stroke="#e4edf5" stroke-width="1" pointer-events="none"/>
+                      <text [attr.x]="tipX + 10" [attr.y]="chart.pad.top + 15"
+                            class="acp__chart-tip-label" pointer-events="none">{{ cfg.years[hi] }}</text>
+                      @for (p of chart.paths; track p.name; let si = $index) {
+                        <text [attr.x]="tipX + 10" [attr.y]="chart.pad.top + 28 + si * 16"
+                              [attr.fill]="p.color" class="acp__chart-tip-val" pointer-events="none">
+                          {{ p.name }}: {{ formatChartVal(p.pts[hi].v, cfg.yUnit) }}
+                        </text>
+                      }
+                    }
+                    <!-- Invisible hit area -->
+                    <rect [attr.x]="chart.pad.left" [attr.y]="chart.pad.top"
+                          [attr.width]="chart.svgW - chart.pad.left - chart.pad.right"
+                          [attr.height]="chart.svgH - chart.pad.top - chart.pad.bottom"
+                          fill="transparent" style="cursor:crosshair"
+                          (mousemove)="onChartHover($event, chart, msg.id)"/>
+                  </svg>
+                  <!-- Legend -->
+                  <div class="acp__chart-legend">
+                    @for (s of cfg.series; track s.name) {
+                      <div class="acp__chart-legend-item">
+                        <span class="acp__chart-legend-line" [style.background]="s.color"></span>
+                        <span>{{ s.name }}</span>
+                      </div>
+                    }
+                    <span class="acp__chart-legend-unit">{{ cfg.yUnit }}</span>
+                  </div>
+                  <!-- Content blocks -->
+                  @if (cfg.contentBlocks?.length) {
+                    <div class="acp__chart-content">
+                      @for (block of cfg.contentBlocks!; track $index) {
+                        <div class="acp__chart-block">
+                          @if (block.heading) {
+                            <div class="acp__chart-block-heading">{{ block.heading }}</div>
+                          }
+                          <p class="acp__chart-block-body">{{ block.body }}</p>
+                        </div>
+                      }
+                    </div>
+                  }
+                  <!-- Sources -->
+                  @if (cfg.citations?.length) {
+                    <div class="acp__chart-sources">
+                      <button class="acp__chart-sources-toggle" type="button"
+                              (click)="toggleSources(msg.id)">
+                        Used {{ cfg.citations!.length }} source{{ cfg.citations!.length > 1 ? 's' : '' }}
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
+                             [style.transform]="sourcesOpenFor(msg.id) ? 'rotate(180deg)' : 'none'"
+                             style="transition:transform 0.2s" aria-hidden="true">
+                          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
+                      @if (sourcesOpenFor(msg.id)) {
+                        <div class="acp__chart-source-cards">
+                          @for (c of cfg.citations!; track c.label) {
+                            <div class="acp__chart-source-card" (click)="openSource(c)" [class.acp__chart-source-card--clickable]="!!c.url">
+                              <div class="acp__chart-source-card__head">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#007DB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                  <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                                </svg>
+                                <span class="acp__chart-source-card__label">{{ c.label }}</span>
+                              </div>
+                              <p class="acp__chart-source-card__text">{{ c.text }}</p>
+                              <span class="acp__chart-source-card__meta">
+                                {{ c.type === 'doc' ? 'View document →' : 'Last updated August 2026' }}
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              @if (msg.artifactProject) {
+                <!-- Artifact card: reopens the project summary pane -->
+                <div class="acp__artifact" (click)="onProjectClick($event, msg.artifactProject)" role="button" tabindex="0">
+                  <div class="acp__artifact__icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <defs><linearGradient id="art-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                      <path stroke="url(#art-grad)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                    </svg>
+                  </div>
+                  <div class="acp__artifact__body">
+                    <span class="acp__artifact__label">Project Summary</span>
+                    <span class="acp__artifact__title">{{ projectTitle(msg.artifactProject) }}</span>
+                  </div>
+                  <svg class="acp__artifact__open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+              }
+              @if (msg.projects?.length) {
+                <div class="acp__projects">
+                  @for (p of msg.projects!; track p.projectNumber) {
+                    <div class="acp__project-card"
+                         [class.acp__project-card--selected]="selectedProject()?.projectNumber === p.projectNumber"
+                         (click)="onProjectClick($event, p.projectNumber)" role="button" tabindex="0">
+                      <div class="acp__project-card__header">
+                        <span class="acp__project-card__title">{{ p.title }}</span>
+                        <span class="acp__project-card__status acp__project-card__status--{{ statusClass(p.status) }}">{{ p.status }}</span>
+                        <svg class="acp__project-card__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                      </div>
+                      <div class="acp__project-card__meta">{{ p.projectNumber }} · {{ p.sector }} · {{ p.country }}</div>
+                      @if (p.description && msg.projects!.length === 1) {
+                        <p class="acp__project-card__desc">{{ p.description }}</p>
+                      }
+                      <div class="acp__project-card__actions">
+                        <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p.projectNumber)">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/></svg>
+                          View Summary
+                        </button>
+                        <span class="acp__project-card__sep">·</span>
+                        <a class="acp__project-card__link" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                          ADB.org
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @if (!msg.artifactProject) {
+              @let mk = msg.id.toString();
+              <div class="acp__actions">
+                <button class="acp__action-btn" [class.acp__action-btn--done]="copiedKey() === mk"
+                  type="button" title="Copy" (click)="copyText(msg.text, mk)">
+                  @if (copiedKey() === mk) {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  } @else {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  }
+                </button>
+                <span class="acp__action-sep"></span>
+                <button class="acp__action-btn"
+                  [style.color]="getThumb(mk) === 'up' ? '#22c55e' : null"
+                  type="button" title="Good response" (click)="setThumb(mk, 'up')">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/>
+                    <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                  </svg>
+                </button>
+                <button class="acp__action-btn"
+                  [style.color]="getThumb(mk) === 'down' ? '#ef4444' : null"
+                  type="button" title="Bad response" (click)="setThumb(mk, 'down')">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z"/>
+                    <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                  </svg>
+                </button>
+              </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- Data explorer prompts (appear after NEP auto-open response) -->
+      @if (showDataExplorer()) {
+        <div class="acp__related acp__related--data">
+          <div class="acp__related-label">Try asking</div>
+          <div class="acp__related-list">
+            @for (q of dataPrompts; track q) {
+              <button class="acp__related-item acp__related-item--data" type="button" (click)="sendFollowUp(q)">{{ q }}</button>
+            }
+          </div>
+        </div>
+      }
+
+    </div><!-- /.acp__thread -->
+
+    <!-- Bottom fade -->
+    <div class="acp__bottom-fade"></div>
+
+    <!-- Prompt bar -->
+    <div class="acp__prompt-wrap">
+      <div class="acp__prompt">
+        <input
+          class="acp__prompt-field"
+          type="text"
+          placeholder="Ask a follow-up question…"
+          [value]="promptText()"
+          (input)="promptText.set($any($event.target).value)"
+          (keydown)="onPromptKey($event)"
+          (focus)="promptFocused.set(true)"
+          (blur)="promptFocused.set(false)"
+          aria-label="Follow-up prompt"
+        />
+        <button
+          class="acp__prompt-send"
+          [class.acp__prompt-send--active]="canSubmit()"
+          type="button"
+          [disabled]="!canSubmit()"
+          (click)="sendFollowUp()"
+          aria-label="Send"
+        >
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+          </svg>
+        </button>
+      </div>
+      <p class="acp__powered">Powered by ADB AI · Responses may contain errors</p>
+    </div>
+
+  </div><!-- /.acp__chat -->
+
+  <!-- Resize handle (only in split mode) -->
+  @if (selectedProject() || pdfPane()) {
+    <div class="acp__resizer" [class.acp__resizer--active]="resizing()" (mousedown)="onResizerMouseDown($event)">
+      <div class="acp__resizer-bar"></div>
+    </div>
+  }
+
+  <!-- Project detail pane (slides in from right) -->
+  @if (selectedProject(); as proj) {
+    <div class="acp__detail">
+      <div class="acp__detail-topbar">
+        <div class="acp__detail-breadcrumb">
+          <!-- Back arrow: mobile only -->
+          <button class="acp__detail-back" type="button" aria-label="Back to chat" (click)="closeDetail()">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </button>
+          <span class="acp__detail-summary-label">Project Summary</span>
+        </div>
+        <div class="acp__detail-topbar-right">
+          <!-- ADB.org link: mobile only -->
+          @if (proj.relatedDocs.length) {
+            <a class="acp__detail-adblink" [href]="proj.relatedDocs[0].url" target="_blank" rel="noopener" aria-label="View on ADB.org">
+              ADB.org
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          }
+          <!-- Close ×: desktop only -->
+          <button class="acp__detail-close" type="button" aria-label="Close detail" (click)="closeDetail()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      @if (detailLoading()) {
+        <!-- AI gradient skeleton -->
+        <div class="acp__detail-skeleton">
+          <div class="acp__detail-skeleton__thinking">
+            <svg class="acp__detail-skeleton__sparkle" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <defs><linearGradient id="sk-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+              <path stroke="url(#sk-grad)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+            </svg>
+            <span class="acp__detail-skeleton__thinking-text">Generating summary…</span>
+          </div>
+          <div class="acp__detail-skeleton__header">
+            <div class="acp__sk-line acp__sk-line--title"></div>
+            <div class="acp__sk-line acp__sk-line--sub"></div>
+            <div class="acp__sk-line acp__sk-line--prose"></div>
+            <div class="acp__sk-line acp__sk-line--prose" style="width:82%"></div>
+            <div class="acp__sk-line acp__sk-line--prose" style="width:61%"></div>
+          </div>
+          <div class="acp__detail-skeleton__cols">
+            <div class="acp__detail-skeleton__main">
+              <div class="acp__sk-card">
+                <div class="acp__sk-line acp__sk-line--label"></div>
+                <div class="acp__sk-line" style="width:90%"></div>
+                <div class="acp__sk-line" style="width:75%"></div>
+                <div class="acp__sk-line" style="width:85%"></div>
+                <div class="acp__sk-line" style="width:68%"></div>
+              </div>
+              <div class="acp__sk-card acp__sk-card--analysis">
+                <div class="acp__sk-line acp__sk-line--label"></div>
+                <div class="acp__sk-line" style="width:95%"></div>
+                <div class="acp__sk-line" style="width:80%"></div>
+                <div class="acp__sk-line" style="width:70%"></div>
+              </div>
+            </div>
+            <div class="acp__detail-skeleton__aside">
+              <div class="acp__sk-card">
+                <div class="acp__sk-line acp__sk-line--label"></div>
+                <div class="acp__sk-line" style="width:90%"></div>
+                <div class="acp__sk-line" style="width:75%"></div>
+                <div class="acp__sk-line" style="width:82%"></div>
+              </div>
+              <div class="acp__sk-photo"></div>
+            </div>
+          </div>
+        </div>
+      } @else {
+      <div class="acp__detail-body">
+
+        <!-- Full-width title + geo + overview -->
+        <div class="acp__detail-header">
+          <h1 class="acp__detail-title">{{ proj.title }}</h1>
+          <div class="acp__detail-geo">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="acp__detail-geo-label">Geographic scope:</span>
+            @for (tag of proj.geographicScope; track tag) {
+              <span class="acp__detail-geo-tag">{{ tag }}</span>
+            }
+          </div>
+          <p class="acp__detail-prose">{{ proj.overview }}</p>
+        </div>
+
+        <!-- Section 1: cards left / sidebar right — both start at card level -->
+        <section class="acp__detail-intro">
+          <div class="acp__detail-intro-main">
+
+            <!-- Key Activities + Expected Outcomes -->
+            <div class="acp__detail-two-col">
+              <div class="acp__detail-card">
+                <div class="acp__detail-card-label">Key Activities</div>
+                <ol class="acp__detail-activities">
+                  @for (act of proj.keyActivities; track $index) {
+                    <li><span class="acp__detail-num">{{ $index + 1 }}</span>{{ act }}</li>
+                  }
+                </ol>
+              </div>
+              <div class="acp__detail-card">
+                <div class="acp__detail-card-label">Expected Outcomes</div>
+                <ul class="acp__detail-outcomes">
+                  @for (out of proj.expectedOutcomes; track $index) {
+                    <li>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                      {{ out }}
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <!-- Analysis Summary -->
+            <div class="acp__detail-card acp__detail-card--analysis">
+              <div class="acp__detail-card-label acp__detail-card-label--analysis">
+                <span class="acp__detail-analysis-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/></svg>
+                </span>
+                Analysis Summary
+              </div>
+              <p class="acp__detail-card-text">{{ proj.analysisSummary }}</p>
+              <div class="acp__detail-stats">
+                @for (stat of proj.analysisStats; track stat.label) {
+                  <div class="acp__detail-stat">
+                    <div class="acp__detail-stat-label">{{ stat.label | uppercase }}</div>
+                    <div class="acp__detail-stat-value">{{ stat.value }}</div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="acp__detail-intro-aside">
+            <!-- Key Facts card -->
+            <div class="acp__detail-sidebar-section">
+              <div class="acp__detail-card-label">Key Facts</div>
+              @for (fact of proj.keyFacts; track fact.label) {
+                <div class="acp__detail-fact">
+                  <span class="acp__detail-fact-label">{{ fact.label }}</span>
+                  <span class="acp__detail-fact-value">{{ fact.value }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Photo -->
+            @if (proj.photo) {
+              <div class="acp__detail-photo-wrap">
+                <img class="acp__detail-photo" [src]="proj.photo" alt="" />
+              </div>
+            }
+
+            <!-- Related Documents card -->
+            <div class="acp__detail-sidebar-section">
+              <div class="acp__detail-card-label">Related Documents</div>
+              @for (doc of proj.relatedDocs; track doc.label) {
+                <a class="acp__detail-doc" [href]="doc.url" target="_blank" rel="noopener">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#002569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  {{ doc.label }}
+                </a>
+              }
+            </div>
+          </div>
+        </section>
+
+      </div>
+      }<!-- /@else -->
+    </div>
+  }
+
+  <!-- PDF source pane -->
+  @if (pdfPane(); as pdf) {
+    <div class="acp__detail acp__pdf-pane">
+      <div class="acp__detail-topbar">
+        <button class="acp__detail-back" type="button" aria-label="Back to chat" (click)="closePdfPane()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="acp__detail-summary-label">{{ pdf.label }}</span>
+        <div class="acp__detail-topbar-right">
+          @if (pdf.url) {
+            <a class="acp__pdf-extlink" [href]="pdf.url" target="_blank" rel="noopener" aria-label="Open in browser">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          }
+          <button class="acp__detail-close" type="button" aria-label="Close" (click)="closePdfPane()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- PDF canvas viewer -->
+      <app-pdf-viewer [pdfUrl]="pdf.pdfUrl!"></app-pdf-viewer>
+    </div>
+  }
+
+</div><!-- /.acp -->

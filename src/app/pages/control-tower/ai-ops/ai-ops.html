@@ -1,0 +1,300 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="page-title">AI Operations</h1>
+    <p class="page-subtitle">Usage, quality, knowledge sources, and agent health</p>
+  </div>
+  <div class="page-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<nav class="page-tabs" role="tablist">
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'activity'"  (click)="activeTab.set('activity')">Activity</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'quality'"   (click)="activeTab.set('quality')">Quality</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'agents'"    (click)="activeTab.set('agents')">Agents</button>
+</nav>
+
+<!-- ============================= ACTIVITY TAB ============================= -->
+@if (activeTab() === 'activity') {
+  <div class="signal-strip">
+    @for (s of activitySignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <section class="card section">
+    <div class="chart-header">
+      <h2 class="card-title">Activity Trend — 90 days</h2>
+      <nav class="metric-tabs" role="tablist">
+        @for (t of activityMetricTabs; track t.id) {
+          <button type="button" class="metric-tab" [class.is-active]="activityMetric() === t.id" (click)="activityMetric.set(t.id)">{{ t.label }}</button>
+        }
+      </nav>
+    </div>
+    <div class="chart-wrap">
+      <svg [attr.viewBox]="'0 0 ' + actW + ' ' + actH"
+           class="area-chart"
+           style="cursor:crosshair"
+           (mousemove)="onActMouseMove($event)"
+           (mouseleave)="onActMouseLeave()">
+        <defs>
+          <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#449DF7" stop-opacity="0.22" />
+            <stop offset="100%" stop-color="#449DF7" stop-opacity="0.01" />
+          </linearGradient>
+        </defs>
+        <!-- Y grid + labels -->
+        @for (tick of actYTicks(); track tick.label) {
+          <line [attr.x1]="actPadL" [attr.x2]="actW - actPadR"
+                [attr.y1]="tick.y" [attr.y2]="tick.y"
+                stroke="var(--color-neutral-solid-08,#f1f5f9)" stroke-width="1" />
+          <text [attr.x]="actPadL - 6" [attr.y]="tick.y + 4"
+                text-anchor="end" font-size="11" fill="var(--color-neutral-solid-40)" font-family="inherit">{{ tick.label }}</text>
+        }
+        <!-- X labels -->
+        @for (tick of actXTicks(); track tick.label) {
+          <text [attr.x]="tick.x" [attr.y]="actH - 8"
+                text-anchor="middle" font-size="11" fill="var(--color-neutral-solid-50)" font-family="inherit">{{ tick.label }}</text>
+        }
+        <!-- Area + line -->
+        <path [attr.d]="activityAreaPath()" fill="url(#actGrad)" />
+        <path [attr.d]="activityLinePath()" fill="none" stroke="#449DF7" stroke-width="2" stroke-linecap="round" />
+        <!-- Hover -->
+        @if (hoveredActPt(); as hp) {
+          <line [attr.x1]="hp.x" [attr.x2]="hp.x"
+                [attr.y1]="actPadT" [attr.y2]="actBottom"
+                stroke="var(--color-neutral-solid-30)" stroke-width="1" stroke-dasharray="3 3" />
+          <circle [attr.cx]="hp.x" [attr.cy]="hp.y" r="4"
+                  fill="#449DF7" stroke="#fff" stroke-width="2" />
+          <rect [attr.x]="actTooltipX(hp)" [attr.y]="actTooltipY(hp)"
+                width="150" height="48" rx="6"
+                fill="#fff" stroke="#e2e8f0" stroke-width="1"
+                style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.10))" />
+          <text [attr.x]="actTooltipX(hp) + 10" [attr.y]="actTooltipY(hp) + 17"
+                font-size="10" font-weight="500" fill="#64748b" font-family="inherit">{{ hp.label }}</text>
+          <text [attr.x]="actTooltipX(hp) + 10" [attr.y]="actTooltipY(hp) + 35"
+                font-size="13" font-weight="600" fill="#1e293b" font-family="inherit">{{ hp.fmtValue }}</text>
+        }
+      </svg>
+    </div>
+  </section>
+
+  <section class="card section">
+    <h2 class="card-title" style="margin-bottom:16px">Capability Breakdown</h2>
+    <table class="data-table" style="width:100%">
+      <thead>
+        <tr>
+          <th class="data-th">Capability</th>
+          <th class="data-th data-th--num">Interactions</th>
+          <th class="data-th data-th--num">Users</th>
+          <th class="data-th data-th--num">Success %</th>
+          <th class="data-th data-th--num">P95 Latency</th>
+          <th class="data-th data-th--num">Cost / 1K</th>
+          <th class="data-th data-th--num">Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of capabilityRows; track row.capability) {
+          <tr class="data-tr">
+            <td class="data-td data-td--strong">{{ row.capability }}</td>
+            <td class="data-td data-td--num">{{ row.interactions | number }}</td>
+            <td class="data-td data-td--num">{{ row.users | number }}</td>
+            <td class="data-td data-td--num">
+              <div class="inline-bar">
+                <div class="inline-bar-fill" [class.inline-bar-fill--green]="row.success >= 75" [class.inline-bar-fill--warn]="row.success >= 60 && row.success < 75" [class.inline-bar-fill--red]="row.success < 60" [style.width.%]="row.success"></div>
+              </div>
+              {{ row.success }}%
+            </td>
+            <td class="data-td data-td--num">{{ row.p95Latency }}</td>
+            <td class="data-td data-td--num">{{ row.costPer1K }}</td>
+            <td class="data-td data-td--num"><span class="trend trend--pos">{{ row.trend }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}
+
+<!-- ============================= QUALITY TAB ============================= -->
+@if (activeTab() === 'quality') {
+  <div class="signal-strip">
+    @for (s of qualitySignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="col-2-3-1">
+    <section class="card section">
+      <div class="chart-header">
+        <h2 class="card-title">Answer Success — 12 weeks</h2>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 800 120" preserveAspectRatio="none" class="area-chart">
+          <defs>
+            <linearGradient id="qualGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#16a34a" stop-opacity="0.20" />
+              <stop offset="100%" stop-color="#16a34a" stop-opacity="0.01" />
+            </linearGradient>
+          </defs>
+          <path [attr.d]="qualityAreaPath()" fill="url(#qualGrad)" />
+          <path [attr.d]="qualityLinePath()" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:500;margin:20px 0 12px;color:var(--color-neutral-solid-90)">Failure Breakdown</h3>
+      <ul class="ref-list">
+        @for (f of failureBreakdown; track f.type) {
+          <li class="ref-item">
+            <span class="ref-item-label">{{ f.type }}</span>
+            <div class="ref-item-bar">
+              <div class="inline-bar"><div class="inline-bar-fill inline-bar-fill--warn" [style.width.%]="f.pct"></div></div>
+            </div>
+            <span class="ref-item-val">{{ f.count | number }} ({{ f.pct }}%)</span>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <section class="card section">
+        <h2 class="card-title" style="margin-bottom:14px">Latency by Capability</h2>
+        <table class="data-table" style="width:100%">
+          <thead>
+            <tr>
+              <th class="data-th">Capability</th>
+              <th class="data-th data-th--num">P50</th>
+              <th class="data-th data-th--num">P95</th>
+              <th class="data-th data-th--num">Target</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of latencyRows; track row.capability) {
+              <tr class="data-tr">
+                <td class="data-td data-td--strong">{{ row.capability }}</td>
+                <td class="data-td data-td--num">{{ row.p50 }}</td>
+                <td class="data-td data-td--num" [class.data-td--strong]="row.overTarget" [style.color]="row.overTarget ? '#dc2626' : 'inherit'">{{ row.p95 }}</td>
+                <td class="data-td data-td--num data-td--muted">{{ row.target }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card section">
+        <h2 class="card-title" style="margin-bottom:14px">Recent Runs</h2>
+        <table class="data-table" style="width:100%">
+          <thead>
+            <tr>
+              <th class="data-th">Capability</th>
+              <th class="data-th">Time</th>
+              <th class="data-th">Status</th>
+              <th class="data-th data-th--num">Duration</th>
+              <th class="data-th data-th--num">Spans</th>
+              <th class="data-th data-th--num">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (run of recentRuns; track $index) {
+              <tr class="data-tr run-row" [class.run-row--expanded]="expandedRun() === $index" (click)="toggleRun($index)" style="cursor:pointer">
+                <td class="data-td data-td--strong">{{ run.name }}</td>
+                <td class="data-td data-td--muted">{{ run.ts }}</td>
+                <td class="data-td">
+                  @if (run.status === 'success') {
+                    <span class="badge badge--good">success</span>
+                  } @else {
+                    <span class="badge badge--high">error</span>
+                  }
+                </td>
+                <td class="data-td data-td--num">{{ run.duration }}</td>
+                <td class="data-td data-td--num">{{ run.spans }}</td>
+                <td class="data-td data-td--num">{{ run.cost }}</td>
+              </tr>
+              @if (expandedRun() === $index) {
+                <tr class="data-tr">
+                  <td colspan="6" style="padding:0">
+                    <div class="run-detail">
+                      <div class="run-detail-grid">
+                        <div class="run-detail-item"><span class="run-detail-label">Capability</span><span class="run-detail-val">{{ run.name }}</span></div>
+                        <div class="run-detail-item"><span class="run-detail-label">Timestamp</span><span class="run-detail-val">{{ run.ts }}</span></div>
+                        <div class="run-detail-item"><span class="run-detail-label">Status</span><span class="run-detail-val">{{ run.status }}</span></div>
+                        <div class="run-detail-item"><span class="run-detail-label">Duration</span><span class="run-detail-val">{{ run.duration }}</span></div>
+                        <div class="run-detail-item"><span class="run-detail-label">Spans</span><span class="run-detail-val">{{ run.spans }}</span></div>
+                        <div class="run-detail-item"><span class="run-detail-label">Cost</span><span class="run-detail-val">{{ run.cost }}</span></div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+}
+
+<!-- ============================= KNOWLEDGE TAB ============================= -->
+<!-- ============================= AGENTS TAB ============================= -->
+@if (activeTab() === 'agents') {
+  <div class="signal-strip">
+    @for (s of agentsSignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <section class="card section">
+    <h2 class="card-title" style="margin-bottom:16px">Deployed Agents</h2>
+    <table class="data-table" style="width:100%">
+      <thead>
+        <tr>
+          <th class="data-th">Agent</th>
+          <th class="data-th">Purpose</th>
+          <th class="data-th">Status</th>
+          <th class="data-th data-th--num">Total Runs</th>
+          <th class="data-th data-th--num">Success %</th>
+          <th class="data-th">Last Run</th>
+          <th class="data-th data-th--num">Cost (period)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (agent of agentsRows; track agent.name) {
+          <tr class="data-tr">
+            <td class="data-td">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span [class]="agentStatusDotClass(agent.status)"></span>
+                <span class="data-td--strong">{{ agent.name }}</span>
+              </div>
+            </td>
+            <td class="data-td data-td--muted" style="max-width:240px">{{ agent.purpose }}</td>
+            <td class="data-td"><span [class]="agentStatusBadgeClass(agent.status)">{{ agent.status }}</span></td>
+            <td class="data-td data-td--num">{{ agent.runs | number }}</td>
+            <td class="data-td data-td--num">
+              <div class="inline-bar">
+                <div class="inline-bar-fill"
+                  [class.inline-bar-fill--green]="agent.success >= 70"
+                  [class.inline-bar-fill--warn]="agent.success >= 40 && agent.success < 70"
+                  [class.inline-bar-fill--red]="agent.success < 40"
+                  [style.width.%]="agent.success"></div>
+              </div>
+              {{ agent.success }}%
+            </td>
+            <td class="data-td data-td--muted">{{ agent.lastRun }}</td>
+            <td class="data-td data-td--num">{{ agent.cost }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

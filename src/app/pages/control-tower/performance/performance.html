@@ -1,0 +1,141 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Performance</h1>
+    <p class="page-subtitle">AI response latency, retrieval, error rates, token usage, and search metrics.</p>
+  </div>
+
+  <div class="perf-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- Base44-style page-level tab nav -->
+<nav class="perf-page-tabs">
+  <button type="button" class="perf-page-tab" [class.is-active]="activeTab() === 'ai'"     (click)="activeTab.set('ai')">AI Performance</button>
+  <button type="button" class="perf-page-tab" [class.is-active]="activeTab() === 'search'"   (click)="activeTab.set('search')">Keyword Search Performance</button>
+  <button type="button" class="perf-page-tab" [class.is-active]="activeTab() === 'ai-usage'" (click)="activeTab.set('ai-usage')">AI Usage</button>
+</nav>
+
+<!-- ==================== AI PERFORMANCE TAB ==================== -->
+@if (activeTab() === 'ai') {
+  <section class="kpi-grid kpi-grid--4">
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">Avg. AI Response Time</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">{{ kpiResponseTime.value }}</span>
+          <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!kpiResponseTime.deltaGood">{{ kpiResponseTime.delta }}</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ kpiResponseTime.sub }}</p>
+    </article>
+
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">No Answer Rate</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">{{ kpiNoAnswerRate.value }}</span>
+          <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!kpiNoAnswerRate.deltaGood">{{ kpiNoAnswerRate.delta }}</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ kpiNoAnswerRate.sub }}</p>
+    </article>
+
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">Retrieval Success Rate</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">{{ kpiRetrievalSucc.value }}</span>
+          <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!kpiRetrievalSucc.deltaGood">{{ kpiRetrievalSucc.delta }}</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ kpiRetrievalSucc.sub }}</p>
+    </article>
+
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">Error Rate</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">{{ kpiErrorRate.value }}</span>
+          <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!kpiErrorRate.deltaGood">{{ kpiErrorRate.delta }}</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">{{ kpiErrorRate.sub }}</p>
+    </article>
+  </section>
+
+  <section class="perf-row-2">
+    <article class="card ref-card">
+      <div class="ref-card-head">
+        <span class="ref-card-title">Response Time by Collection</span>
+        <span class="ref-col-hdr">AVG TIME</span>
+      </div>
+      <ul class="ref-list">
+        @for (c of collections; track c.name) {
+          <li class="ref-item">
+            <div class="ref-item-bar" [style.width.%]="c.pct"></div>
+            <span class="ref-item-label" [class.ref-item-label--warn]="c.overSla">{{ c.name }}</span>
+            <span class="ref-item-val" [class.ref-item-val--warn]="c.overSla">{{ c.ms }}s</span>
+          </li>
+        }
+      </ul>
+    </article>
+  </section>
+
+}
+
+<!-- ==================== AI USAGE TAB ==================== -->
+@if (activeTab() === 'ai-usage') {
+  <section class="perf-row-3">
+    <article class="card perf-panel">
+      <h3 class="card-title">Token Usage Per Query</h3>
+      <div class="panel-hero">
+        <span class="panel-hero-value">{{ tokenUsage.avg }}</span>
+        <span class="panel-hero-delta panel-hero-delta--warn">{{ tokenUsage.delta }}</span>
+      </div>
+      <p class="panel-hero-sub">{{ tokenUsage.sub }}</p>
+      <div class="token-stacked-bar" role="img" aria-label="Token distribution">
+        @for (b of tokenBuckets; track b.label) {
+          <span class="token-segment" [style.width.%]="b.pct" [style.background]="b.color" [attr.title]="b.label + ' — ' + b.pct + '%'"></span>
+        }
+      </div>
+      <ul class="token-legend">
+        @for (b of tokenBuckets; track b.label) {
+          <li class="token-legend-item">
+            <span class="token-legend-dot" [style.background]="b.color"></span>
+            <span class="token-legend-label">{{ b.label }}</span>
+            <span class="token-legend-pct">{{ b.pct }}%</span>
+          </li>
+        }
+      </ul>
+    </article>
+  </section>
+}
+
+<!-- ==================== SEARCH PERFORMANCE TAB ==================== -->
+@if (activeTab() === 'search') {
+  <section class="kpi-grid kpi-grid--2">
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">Follow-up Search Queries</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">2,046</span>
+          <span class="kpi-metric-delta">-2%</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">users refining search using the keyword bar after an AI response</p>
+    </article>
+
+    <article class="kpi-card">
+      <h3 class="kpi-card-title">Keyword Search to AI Conversion</h3>
+      <div class="kpi-metrics">
+        <div class="kpi-metric">
+          <span class="kpi-metric-value">48.8%</span>
+          <span class="kpi-metric-delta">+11%</span>
+        </div>
+      </div>
+      <p class="kpi-card-sub">999 sessions where search was followed by an AI prompt</p>
+    </article>
+  </section>
+
+}

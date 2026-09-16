@@ -1,0 +1,33 @@
+@if (regions().length) {
+  <div class="carousel">
+    <div
+      class="carousel__track"
+      #track
+      appDragScroll
+      [regionIds]="regionIdList()"
+      (regionSettle)="onRegionSettle($event)"
+    >
+      @for (region of regions(); track region.id) {
+        @if (region.id !== 'rlo') {
+        <div
+          class="carousel__card"
+          #card
+          [class.carousel__card--active]="selectedId() === region.id"
+          [style.--region-color]="region.color"
+          (click)="onCardClick(region.id)"
+          (mouseenter)="regionHover.emit(region.id)"
+          (mouseleave)="regionHover.emit('')"
+          role="button"
+          [attr.aria-pressed]="selectedId() === region.id"
+          [attr.aria-label]="region.name"
+        >
+          <div class="card__body">
+            <h3 class="card__name">{{ region.name }} <span class="card__code">({{ region.shortName }})</span><span class="card__short">{{ region.shortName }}</span></h3>
+            <p class="card__stat">{{ region.stat }}</p>
+          </div>
+        </div>
+        }
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,36 @@
+<header class="treemap-head">
+  <nav class="kpt-tabs" role="tablist">
+    @for (t of kptTabDefs; track t.id) {
+      <button
+        type="button"
+        class="kpt-tab"
+        role="tab"
+        [class.is-active]="activeTab() === t.id"
+        (click)="onTabClick(t.id)"
+      >{{ t.label }}</button>
+    }
+  </nav>
+</header>
+
+<div class="treemap-canvas">
+  @for (cell of treemapCells(); track cell.topic.id) {
+    <div
+      class="tm-cell"
+      [title]="cell.topic.name"
+      [class.is-selected]="selectedTopic() === cell.topic.id"
+      [style.left.%]="cell.rect.x / TM_W * 100"
+      [style.top.%]="cell.rect.y / TM_H * 100"
+      [style.width.%]="cell.rect.w / TM_W * 100"
+      [style.height.%]="cell.rect.h / TM_H * 100"
+      [style.background-color]="cell.topic.color"
+      [style.border-color]="selectedTopic() === cell.topic.id ? '#fff' : cell.topic.color"
+      (click)="onCellClick(cell.topic.id)"
+    >
+      <span class="tm-cell-name">{{ cell.topic.name }}</span>
+      <span class="tm-cell-count">{{ cell.topic.count.toLocaleString() }} prompts</span>
+      @if (cell.topic.trending) {
+        <span class="tm-trending-badge">Trending</span>
+      }
+    </div>
+  }
+</div>

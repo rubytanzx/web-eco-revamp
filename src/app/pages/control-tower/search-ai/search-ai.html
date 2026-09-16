@@ -1,0 +1,352 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Search &amp; AI Discovery</h1>
+    <p class="page-subtitle">Search performance, AI visibility across platforms, and cited source analysis.</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<nav class="page-tabs">
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'search'"    (click)="activeTab.set('search')">Search</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'discovery'" (click)="activeTab.set('discovery')">AI Discovery</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'sources'"   (click)="activeTab.set('sources')">Sources</button>
+</nav>
+
+<!-- ==================== SEARCH TAB ==================== -->
+@if (activeTab() === 'search') {
+
+  <!-- Signal strip -->
+  <div class="signal-strip">
+    <div class="signal-item signal-item--alert">
+      <span class="signal-label">Search success rate</span>
+      <span class="signal-value">68%</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-down" [size]="12" style="vertical-align:-2px;color:#dc2626;margin-right:2px;"/>3pts this month</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Searches per day</span>
+      <span class="signal-value">12.4K</span>
+      <span class="signal-sub">avg this period</span>
+    </div>
+    <div class="signal-item signal-item--alert">
+      <span class="signal-label">Zero-result rate</span>
+      <span class="signal-value">12.4%</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>41% this week</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Avg CTR (position 1)</span>
+      <span class="signal-value">38.4%</span>
+      <span class="signal-sub">22% refinement rate</span>
+    </div>
+  </div>
+
+  <!-- Search trend chart + zero-result breakdown -->
+  <div class="col-3-2 section">
+
+    <!-- Prompt volume trend -->
+    <article class="card" style="display:flex;flex-direction:column;">
+      <h2 class="card-title" style="margin-bottom:8px">Prompt Volume Trend</h2>
+      <div style="flex:1;display:flex;align-items:center;">
+        <app-pv-chart style="width:100%" />
+      </div>
+    </article>
+
+    <!-- Zero-result breakdown -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Zero-Result Categories</h2>
+      <ul class="ref-list">
+        @for (cat of zeroResultCategories; track cat.label) {
+          <li class="ref-item">
+            <div class="ref-item-bar" style="background: rgba(239,68,68,0.18);" [style.width.%]="cat.pct"></div>
+            <span class="ref-item-label">{{ cat.label }}</span>
+            <span class="ref-item-val">{{ cat.count | number }}</span>
+            <span class="ref-item-rank">{{ cat.pct }}%</span>
+          </li>
+        }
+      </ul>
+
+      <!-- AI conversion callout -->
+      <div class="ai-conversion-callout">
+        <span class="ai-conversion-number">41%</span>
+        <span class="ai-conversion-text">of search sessions transitioned to<br>AI-assisted query</span>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- Query intent treemap -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 16px;">Query Intent</h2>
+      <app-intent-treemap />
+    </article>
+  </div>
+
+  <!-- Top queries table -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Top Queries</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Query</th>
+            <th class="data-th data-th--num">Sessions</th>
+            <th class="data-th data-th--num">Success %</th>
+            <th class="data-th">Status</th>
+            <th class="data-th">Trending</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of topQueryRows; track row.query) {
+            <tr class="data-tr" [style]="row.zeroResult ? 'background: rgba(239,68,68,0.03)' : ''">
+              <td class="data-td data-td--strong">{{ row.query }}</td>
+              <td class="data-td data-td--num">{{ row.sessions | number }}</td>
+              <td class="data-td data-td--num">
+                @if (row.zeroResult) {
+                  <span style="color: #ef4444; font-weight: 500;">0%</span>
+                } @else {
+                  <span [style.color]="successColor(row.success, row.zeroResult)" style="font-weight: 500;">{{ row.success }}%</span>
+                }
+              </td>
+              <td class="data-td">
+                @if (row.zeroResult) {
+                  <span class="badge badge--high">Zero result</span>
+                } @else {
+                  <span class="badge badge--good">Results</span>
+                }
+              </td>
+              <td class="data-td">
+                @if (row.trending) {
+                  <span class="trend trend--pos"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>trending</span>
+                } @else {
+                  <span class="trend trend--neu">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+}
+
+<!-- ==================== AI DISCOVERY TAB ==================== -->
+@if (activeTab() === 'discovery') {
+
+  <!-- Primary signal strip -->
+  <div class="signal-strip">
+    <div class="signal-item">
+      <span class="signal-label">AI Visibility</span>
+      <span class="signal-value">40<span style="font-size: 16px; font-weight: 400;">/100</span></span>
+      <span class="signal-sub">
+        <span class="badge badge--medium" style="font-size: 11px;">Medium</span>
+      </span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">AI Retrievability</span>
+      <span class="signal-value">68<span style="font-size: 16px; font-weight: 400;">/100</span></span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>3pp MoM</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">AI Citation Rate</span>
+      <span class="signal-value">61%</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>8% MoM</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Content coverage</span>
+      <span class="signal-value">84%</span>
+      <span class="signal-sub"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>2pp MoM</span>
+    </div>
+  </div>
+
+  <!-- AI channels + Content readiness -->
+  <div class="col-1-1 section">
+
+    <!-- AI channel breakdown -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">AI Channel Breakdown</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Channel</th>
+            <th class="data-th data-th--num">Mentions</th>
+            <th class="data-th data-th--num">Cited Pages</th>
+            <th class="data-th data-th--num">Share %</th>
+            <th class="data-th data-th--num">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of aiChannelRows; track row.channel) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">{{ row.channel }}</td>
+              <td class="data-td data-td--num">{{ row.mentions | number }}</td>
+              <td class="data-td data-td--num">{{ row.citedPages | number }}</td>
+              <td class="data-td data-td--num">
+                <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+                  <div class="inline-bar" style="width: 64px;">
+                    <div class="inline-bar-fill inline-bar-fill--green" [style.width.%]="shareBarPct(row.share)"></div>
+                  </div>
+                  {{ row.share }}%
+                </div>
+              </td>
+              <td class="data-td data-td--num">
+                <span class="trend trend--pos">{{ row.trend }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+
+    <!-- AI visibility gauge callout -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 16px;">AI Visibility Score</h2>
+      <div class="ai-vis-gauge">
+        <div class="ai-vis-number">40</div>
+        <div class="ai-vis-denom">/100</div>
+        <div class="ai-vis-label">
+          <span class="badge badge--medium">Medium</span>
+        </div>
+      </div>
+      <div class="ai-vis-bar-wrap">
+        <div class="ai-vis-bar">
+          <div class="ai-vis-bar-fill" style="width: 40%;"></div>
+          <div class="ai-vis-bar-marker" style="left: 40%;"></div>
+        </div>
+        <div class="ai-vis-scale">
+          <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+        </div>
+      </div>
+      <p style="font-size: 12.5px; color: var(--color-neutral-solid-50); margin-top: 14px; line-height: 1.5;">
+        ADB.org content is moderately surfaced across AI platforms. Improving schema markup, freshness, and discoverability could push visibility into the High range (≥60).
+      </p>
+    </article>
+
+  </div>
+
+  <!-- Content readiness table -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Content AI Readiness by Area</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Content Area</th>
+            <th class="data-th data-th--num">Retrievable %</th>
+            <th class="data-th data-th--num">Citation Rate %</th>
+            <th class="data-th">Structured Data</th>
+            <th class="data-th">Freshness</th>
+            <th class="data-th">Key Issue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of readinessRows; track row.area) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">{{ row.area }}</td>
+              <td class="data-td data-td--num">
+                <span [style.color]="pctColor(row.retrievable)" style="font-weight: 500;">{{ row.retrievable }}%</span>
+              </td>
+              <td class="data-td data-td--num">
+                <span [style.color]="pctColor(row.citationRate)" style="font-weight: 500;">{{ row.citationRate }}%</span>
+              </td>
+              <td class="data-td">
+                <span [class]="readinessBadge(row.structured)">{{ row.structured }}</span>
+              </td>
+              <td class="data-td">
+                <span [class]="readinessBadge(row.freshness)">{{ row.freshness }}</span>
+              </td>
+              <td class="data-td data-td--muted" style="font-size: 12.5px;">{{ row.issue }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+}
+
+<!-- ==================== SOURCES TAB ==================== -->
+@if (activeTab() === 'sources') {
+
+  <!-- Signal strip (3 items, use 3-col grid override) -->
+  <div class="signal-strip signal-strip--3">
+    <div class="signal-item">
+      <span class="signal-label">ADB domains cited</span>
+      <span class="signal-value">12 domains</span>
+      <span class="signal-sub">across AI platforms</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Top cited page</span>
+      <span class="signal-value" style="font-size: 18px; letter-spacing: 0;">adb.org/projects</span>
+      <span class="signal-sub">8,420 citations this period</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-label">Source trend</span>
+      <span class="signal-value" style="color: #16a34a;"><tabler-icon icon="arrow-up" [size]="12" style="vertical-align:-2px;color:#16a34a;margin-right:2px;"/>8%</span>
+      <span class="signal-sub">citations MoM</span>
+    </div>
+  </div>
+
+  <!-- Cited content table -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Top Cited Content — AI Platforms</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Page</th>
+            <th class="data-th">URL</th>
+            <th class="data-th data-th--num">Citations</th>
+            <th class="data-th data-th--num">Share %</th>
+            <th class="data-th data-th--num">Trend</th>
+            <th class="data-th">AI Visible</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of sourcesRows; track row.url) {
+            <tr class="data-tr" [style]="!row.aiVisible ? 'opacity: 0.75;' : ''">
+              <td class="data-td data-td--strong">{{ row.page }}</td>
+              <td class="data-td data-td--muted" style="font-size: 12px;">{{ row.url }}</td>
+              <td class="data-td data-td--num">{{ row.citations | number }}</td>
+              <td class="data-td data-td--num">{{ row.share }}%</td>
+              <td class="data-td data-td--num">
+                <span class="trend"
+                  [class.trend--pos]="row.trend.startsWith('+')"
+                  [class.trend--neg]="row.trend.startsWith('-')">{{ row.trend }}</span>
+              </td>
+              <td class="data-td">
+                @if (row.aiVisible) {
+                  <span class="status-dot status-dot--up"></span> Yes
+                } @else {
+                  <span class="status-dot status-dot--down"></span> No
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+  <!-- Losing visibility -->
+  <div class="section">
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom: 14px;">Pages Losing AI Visibility</h2>
+      <ul class="attn-list">
+        @for (row of losingVisibility; track row.page) {
+          <li class="attn-item">
+            <span class="badge badge--high" style="align-self: center;">▼</span>
+            <div class="attn-body">
+              <span class="attn-title">{{ row.page }}</span>
+              <span class="attn-meta">{{ row.reason }}</span>
+            </div>
+            <div>
+              <span class="attn-metric trend trend--neg">{{ row.decline }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
+  </div>
+
+}

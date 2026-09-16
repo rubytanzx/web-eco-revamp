@@ -1,0 +1,147 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Audience</h1>
+    <p class="page-subtitle">Visitor activity, geographic breakdown, and engagement depth for ADB.org.</p>
+  </div>
+  <app-date-range-filter />
+</header>
+
+<!-- ═══ OVERVIEW ═══════════════════════════════════════════════════════════ -->
+
+  <div class="signal-strip">
+    @for (s of overviewSignals; track s.label) {
+      <div class="signal-item">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">
+          @if (s.trendClass === 'trend--pos') {
+            <tabler-icon icon="arrow-up" [size]="12" style="color:var(--color-success,#16a34a);flex-shrink:0;" />
+          } @else if (s.trendClass === 'trend--neg') {
+            <tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;" />
+          }
+          <span class="trend" [class]="s.trendClass">{{ s.sub }}</span>
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Audience trend bar chart -->
+  <article class="card section">
+    <div class="chart-header">
+      <h2 class="card-title">Visitor trend</h2>
+      <span style="font-size:12px; color:var(--color-neutral-solid-40);">Unique visitors (K) · last 12 months</span>
+    </div>
+    <svg viewBox="0 0 800 160" style="width:100%; height:auto; display:block; margin-top:12px;" preserveAspectRatio="none">
+      @for (bar of barRects(); track bar.label) {
+        <rect
+          [attr.x]="bar.x"
+          [attr.y]="bar.y"
+          [attr.width]="bar.width"
+          [attr.height]="bar.height"
+          rx="3"
+          [attr.fill]="bar.isLast ? '#449DF7' : '#BFDBFE'"
+        />
+        <text
+          [attr.x]="bar.labelX"
+          [attr.y]="bar.labelY"
+          text-anchor="middle"
+          font-size="9.5"
+          fill="#9CA3AF"
+        >{{ bar.label }}</text>
+      }
+    </svg>
+  </article>
+
+  <!-- Geography + visitor type -->
+  <div class="col-3-2 section">
+
+    <!-- Top geographies -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom:16px;">Top geographies</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="data-th">Country</th>
+            <th class="data-th data-th--num">Sessions</th>
+            <th class="data-th data-th--num">Share</th>
+            <th class="data-th data-th--num">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of geoRows; track row.country) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">
+                <span style="font-size:12px; color:var(--color-neutral-solid-40); margin-right:6px;">{{ row.code }}</span>{{ row.country }}
+              </td>
+              <td class="data-td data-td--num">{{ row.sessions }}</td>
+              <td class="data-td data-td--num data-td--muted">{{ row.pct }}%</td>
+              <td class="data-td data-td--num">
+                <span [class]="geoTrendClass(row.trend)" style="font-size:12px;">{{ row.trend }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+
+    <!-- Visitor type + engagement -->
+    <article class="card">
+      <h2 class="card-title" style="margin-bottom:14px;">Visitor type</h2>
+
+      <!-- Donut -->
+      <div class="donut-wrap">
+        <svg viewBox="0 0 200 200" class="donut-svg">
+          <!-- Background track -->
+          <circle cx="100" cy="100" r="55" fill="none" stroke="var(--color-neutral-solid-10)" stroke-width="18"/>
+          <!-- New visitors (32%) -->
+          <circle
+            cx="100" cy="100" r="55"
+            fill="none"
+            stroke="#449DF7"
+            stroke-width="18"
+            [attr.stroke-dasharray]="newDash"
+            stroke-dashoffset="0"
+            transform="rotate(-90, 100, 100)"
+          />
+          <!-- Returning visitors (68%) -->
+          <circle
+            cx="100" cy="100" r="55"
+            fill="none"
+            stroke="#8dc63f"
+            stroke-width="18"
+            [attr.stroke-dasharray]="retDash"
+            [attr.stroke-dashoffset]="retOffset"
+            transform="rotate(-90, 100, 100)"
+          />
+          <text x="100" y="94" text-anchor="middle" font-size="22" font-weight="500" fill="var(--color-neutral-solid-90)">32%</text>
+          <text x="100" y="113" text-anchor="middle" font-size="12" fill="var(--color-neutral-solid-50)">New</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="donut-legend-item">
+            <span class="donut-dot" style="background:#449DF7;"></span>
+            <span class="donut-legend-label">New</span>
+            <span class="donut-legend-val">32%</span>
+          </div>
+          <div class="donut-legend-item">
+            <span class="donut-dot" style="background:#8dc63f;"></span>
+            <span class="donut-legend-label">Returning</span>
+            <span class="donut-legend-val">68%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement depth -->
+      <h3 class="engagement-label" style="margin:16px 0 10px;">Engagement depth</h3>
+      <ul class="ref-list">
+        @for (row of engagementRows; track row.label; let i = $index) {
+          <li class="ref-item">
+            <div class="ref-item-bar" [style.width.%]="row.pct"></div>
+            <span class="ref-item-rank">{{ i + 1 }}</span>
+            <span class="ref-item-label">{{ row.label }}</span>
+            <span class="ref-item-val">{{ row.val }}</span>
+          </li>
+        }
+      </ul>
+    </article>
+  </div>
+

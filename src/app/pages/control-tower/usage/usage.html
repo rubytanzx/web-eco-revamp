@@ -1,0 +1,299 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="page-title">Usage</h1>
+    <p class="page-subtitle">Intent categories, module clicks, and service-level engagement</p>
+  </div>
+
+  <div class="page-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- Base44-style top tab nav -->
+<nav class="page-tabs" role="tablist">
+  <button type="button" class="page-tab" role="tab" [class.is-active]="activeTab() === 'intent'"  (click)="activeTab.set('intent')">Intent</button>
+  <button type="button" class="page-tab" role="tab" [class.is-active]="activeTab() === 'modules'" (click)="activeTab.set('modules')">Modules</button>
+</nav>
+
+<!-- ============================= INTENT TAB ============================= -->
+@if (activeTab() === 'intent') {
+  <section class="kpi-grid kpi-grid--4">
+    @for (k of intentKpis; track k.title) {
+      <article class="kpi-card">
+        <h3 class="kpi-card-title">{{ k.title }}</h3>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <span class="kpi-metric-value">{{ k.value }}</span>
+          </div>
+        </div>
+        <p class="kpi-card-sub">{{ k.sub }}</p>
+      </article>
+    }
+  </section>
+
+  <section class="treemap-section">
+    <header class="treemap-head">
+      <nav class="kpt-tabs" role="tablist">
+        @for (t of kptTabDefs; track t.id) {
+          <button
+            type="button"
+            class="kpt-tab"
+            role="tab"
+            [class.is-active]="kptTab() === t.id"
+            (click)="kptTab.set(t.id); selectedTopic.set(null)"
+          >{{ t.label }}</button>
+        }
+      </nav>
+
+    </header>
+
+    <div class="treemap">
+      @for (row of activeTreemap(); track $index) {
+        <div class="tm-row" [style.flex]="rowFlex(row)">
+          @for (topic of row; track topic.id) {
+            <div
+              class="tm-cell"
+              [class.is-selected]="selectedTopic() === topic.id"
+              [style.flex]="topic.pct"
+              [style.background]="selectedTopic() === topic.id ? (topic.color + '44') : (topic.color + '22')"
+              [style.border-color]="topic.color + '55'"
+              (click)="selectTopic(topic.id)"
+            >
+              <span class="tm-cell-name">{{ topic.name }}</span>
+              <span class="tm-cell-count">{{ topic.count.toLocaleString() }} prompts</span>
+              @if (topic.trending) {
+                <span class="tm-trending-badge">Trending</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (topicDrawerOpen()) {
+    <div class="topic-drawer-backdrop" (click)="closeTopicDrawer()"></div>
+    <aside class="topic-drawer">
+      <header class="topic-drawer-hd">
+        <h2 class="topic-drawer-title">{{ selectedTopicLabel() }}</h2>
+        <button type="button" class="topic-drawer-close" (click)="closeTopicDrawer()" aria-label="Close">
+          <tabler-icon icon="x" [size]="16" />
+        </button>
+      </header>
+      <div class="topic-drawer-body">
+        @if (topicDrilldownRows().length) {
+          <table class="topic-drawer-table">
+            <thead>
+              <tr>
+                <th>Prompt</th>
+                <th>Answer</th>
+                <th>By</th>
+                <th>Dept</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of topicDrilldownRows(); track $index) {
+                <tr>
+                  <td class="td-prompt">{{ row.prompt }}</td>
+                  <td class="td-response">{{ row.response }}</td>
+                  <td class="td-user">{{ row.user }}</td>
+                  <td><span class="mod-module-badge">{{ row.dept }}</span></td>
+                  <td class="td-date">{{ row.date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="topic-drawer-empty">No sample prompts available for this category.</p>
+        }
+      </div>
+    </aside>
+  }
+}
+
+<!-- ============================= MODULES TAB ============================= -->
+@if (activeTab() === 'modules') {
+  <!-- Module summary: covers Frequently Used Modules + Most Accessed Service per Module -->
+  <section class="card modules-summary-section">
+    <h3 class="card-title">Module Summary</h3>
+    <table class="mod-table">
+      <thead>
+        <tr>
+          <th class="mod-th">Module</th>
+          <th class="mod-th mod-th--num">Clicks</th>
+          <th class="mod-th">Top service</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of moduleSummary; track m.module) {
+          <tr class="mod-tr">
+            <td class="mod-td"><span class="mod-module-badge">{{ m.module }}</span></td>
+            <td class="mod-td mod-td--num">{{ m.clicks | number }}</td>
+            <td class="mod-td">{{ m.topService }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="modules-row-2">
+    <article class="card modules-vol-panel">
+      <div class="vol-panel-head">
+        <h3 class="card-title">Top Services</h3>
+        <div class="vol-mode-toggle">
+          <button type="button" class="vol-mode-btn" [class.is-active]="servicesRankMode() === 'clicks'"  (click)="servicesRankMode.set('clicks')">By clicks</button>
+          <button type="button" class="vol-mode-btn" [class.is-active]="servicesRankMode() === 'unique'" (click)="servicesRankMode.set('unique')">By unique users</button>
+        </div>
+      </div>
+      <ul class="ranked-list">
+        @for (s of rankedTopServices(); track s.name) {
+          <li class="ranked-item">
+            <span class="ranked-num">{{ s.rank }}</span>
+            <div class="ranked-body">
+              <div class="ranked-head">
+                <div class="ranked-name-row">
+                  <span class="ranked-title">{{ s.name }}</span>
+                  @if (s.trending) {
+                    <span class="mod-trending-badge">
+                      <tabler-icon icon="trending-up" [size]="11" />
+                      Trending
+                    </span>
+                  }
+                  <span class="mod-module-badge">{{ s.module }}</span>
+                </div>
+                <div class="ranked-right">
+                  <span class="mod-trend-arrow" [class]="'mod-trend-arrow--' + s.trend">
+                    @if (s.trend === 'up')   { <tabler-icon icon="arrow-up"   [size]="13" /> }
+                    @else if (s.trend === 'down') { <tabler-icon icon="arrow-down" [size]="13" /> }
+                    @else                    { <tabler-icon icon="minus"      [size]="13" /> }
+                  </span>
+                  <span class="ranked-pct">{{ s.pct }}%</span>
+                </div>
+              </div>
+              <div class="ranked-bar">
+                <span class="ranked-bar-fill ranked-bar-fill--blue" [style.width.%]="s.pct"></span>
+              </div>
+              <div class="ranked-sub-row">
+                <span class="ranked-sub">{{ s.clicks | number }} clicks</span>
+                @if (s.uniqueUsers !== undefined) {
+                  <span class="ranked-sub-secondary">
+                    <tabler-icon icon="users" [size]="11" />
+                    {{ s.uniqueUsers | number }} unique users
+                  </span>
+                }
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
+
+    <div class="modules-right-col">
+      <article class="card modules-star-panel">
+        <h3 class="card-title">Most Starred Quick Access</h3>
+        <ul class="star-list">
+          @for (s of starredServices; track s.name) {
+            <li class="star-item">
+              <tabler-icon icon="star-filled" [size]="15" class="star-icon" />
+              <span class="star-name">{{ s.name }}</span>
+              <span class="star-count">{{ s.stars | number }}</span>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="card modules-low-panel">
+        <h3 class="card-title low-panel-title">
+          <tabler-icon icon="alert-triangle" [size]="16" class="warn-icon" />
+          Needs Attention
+        </h3>
+        <table class="mod-table">
+          <thead>
+            <tr>
+              <th class="mod-th">Service</th>
+              <th class="mod-th mod-th--num">Clicks</th>
+              <th class="mod-th">Last engaged</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of needsAttentionRows; track row.service) {
+              <tr class="mod-tr">
+                <td class="mod-td mod-td--service">{{ row.service }}</td>
+                <td class="mod-td mod-td--num">{{ row.clicks }}</td>
+                <td class="mod-td mod-td--date">{{ row.lastEngaged }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="card modules-chart-section">
+    <div class="chart-head">
+      <h3 class="card-title">Week-over-Week Click Trend — Top 3 Services</h3>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="background:#2c8aff"></span>IT Helpdesk Ticket</span>
+        <span class="legend-item"><span class="legend-line" style="background:#a855f7"></span>Expense Claim</span>
+        <span class="legend-item"><span class="legend-line" style="background:#22d3ee"></span>Policy Search</span>
+      </div>
+    </div>
+    <svg class="mod-chart-svg" [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" preserveAspectRatio="none" aria-hidden="true">
+      @for (t of yTicks(); track t.label) {
+        <line class="mod-grid-line" [attr.x1]="padL" [attr.x2]="chartW - padR" [attr.y1]="t.y" [attr.y2]="t.y" />
+        <text class="mod-y-label" [attr.x]="padL - 8" [attr.y]="t.y + 3.5" text-anchor="end">{{ t.label | number }}</text>
+      }
+      <path class="mod-trend-line" [attr.d]="line1Path()" stroke="#2c8aff" />
+      <path class="mod-trend-line" [attr.d]="line2Path()" stroke="#a855f7" />
+      <path class="mod-trend-line" [attr.d]="line3Path()" stroke="#22d3ee" />
+      @for (t of xTicks(); track t.label) {
+        <text class="mod-x-label" [attr.x]="t.x" [attr.y]="chartH - 8" text-anchor="middle">{{ t.label }}</text>
+      }
+    </svg>
+  </section>
+
+  <section class="card modules-table-section">
+    <h3 class="card-title">Service Last Engagement</h3>
+    <table class="mod-table">
+      <thead>
+        <tr>
+          <th class="mod-th">Service</th>
+          <th class="mod-th">Module</th>
+          <th class="mod-th">Last Accessed</th>
+          <th class="mod-th">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of engagementRows; track row.service) {
+          <tr class="mod-tr">
+            <td class="mod-td mod-td--service">{{ row.service }}</td>
+            <td class="mod-td"><span class="mod-module-badge">{{ row.module }}</span></td>
+            <td class="mod-td mod-td--date">{{ row.lastAccessed }}</td>
+            <td class="mod-td">
+              <span class="mod-status-badge" [class]="'mod-status-badge--' + row.status">{{ row.status }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- Services Usage Breakdown -->
+  <section class="card modules-breakdown-section">
+    <h3 class="card-title">Services Usage Breakdown</h3>
+    <p class="card-sub">Percentage share of total click volume across services this period</p>
+    <div class="breakdown-bar-list">
+      @for (s of servicesBreakdown; track s.name) {
+        <div class="breakdown-row">
+          <span class="breakdown-label">{{ s.name }}</span>
+          <div class="breakdown-track">
+            <span class="breakdown-fill" [style.width.%]="s.sharePct * 3" [style.background]="s.color"></span>
+          </div>
+          <span class="breakdown-pct">{{ s.sharePct }}%</span>
+        </div>
+      }
+    </div>
+  </section>
+}

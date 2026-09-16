@@ -1,0 +1,381 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="page-title">Platform</h1>
+    <p class="page-subtitle">Service health, API feeds, and infrastructure cost</p>
+  </div>
+  <div class="page-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<nav class="page-tabs" role="tablist">
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'properties'" (click)="activeTab.set('properties')">Properties</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'apis'"       (click)="activeTab.set('apis')">APIs &amp; Feeds</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'health'"     (click)="activeTab.set('health')">Health</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'cost'"       (click)="activeTab.set('cost')">Cost</button>
+</nav>
+
+<!-- ============================= HEALTH TAB ============================= -->
+@if (activeTab() === 'health') {
+  <div class="signal-strip">
+    @for (s of healthSignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Active incidents -->
+  @if (incidents.length > 0) {
+    <section class="card section" style="margin-bottom:16px">
+      <h2 class="card-title" style="margin-bottom:14px">Incidents</h2>
+      <table class="data-table" style="width:100%">
+        <thead>
+          <tr>
+            <th class="data-th">ID</th>
+            <th class="data-th">Severity</th>
+            <th class="data-th">Title</th>
+            <th class="data-th">Service</th>
+            <th class="data-th">Started</th>
+            <th class="data-th">Duration</th>
+            <th class="data-th">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inc of incidents; track inc.id) {
+            <tr class="data-tr">
+              <td class="data-td data-td--muted" style="font-family:monospace;font-size:12px;white-space:nowrap;">{{ inc.id }}</td>
+              <td class="data-td" style="white-space:nowrap;"><span [class]="severityBadgeClass(inc.severity)">{{ inc.severity }}</span></td>
+              <td class="data-td" style="min-width:200px;">{{ inc.title }}</td>
+              <td class="data-td data-td--muted" style="white-space:nowrap;">{{ inc.service }}</td>
+              <td class="data-td data-td--muted" style="white-space:nowrap;">{{ inc.started }}</td>
+              <td class="data-td data-td--muted" style="white-space:nowrap;">{{ inc.duration }}</td>
+              <td class="data-td" style="white-space:nowrap;"><span class="badge badge--info" style="text-transform:uppercase;font-size:10px;">{{ inc.status }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <div class="col-3-2">
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:14px">Service Health</h2>
+      <table class="data-table" style="width:100%">
+        <thead>
+          <tr>
+            <th class="data-th">Service</th>
+            <th class="data-th data-th--num">Availability</th>
+            <th class="data-th data-th--num">P95</th>
+            <th class="data-th data-th--num">Incidents</th>
+            <th class="data-th">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of serviceHealth; track row.service) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong">{{ row.service }}</td>
+              <td class="data-td data-td--num">{{ row.availability }}%</td>
+              <td class="data-td data-td--num">{{ row.p95 }}</td>
+              <td class="data-td data-td--num">
+                @if (row.incidents > 0) {
+                  <span class="badge badge--medium">{{ row.incidents }}</span>
+                } @else {
+                  <span class="data-td--muted">—</span>
+                }
+              </td>
+              <td class="data-td">
+                <span [class]="statusDotClass(row.status)"></span>
+                {{ row.status }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:6px">Uptime — Last 30 Days</h2>
+      <p style="font-size:12px;color:var(--color-neutral-solid-50);margin:0 0 4px">Green = up, orange = incident</p>
+      <div class="uptime-row">
+        @for (day of uptimeHistory; track $index) {
+          <div class="uptime-block" [class.uptime-block--incident]="!day"></div>
+        }
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-solid-50);margin-top:4px">
+        <span>30 days ago</span>
+        <span>Today</span>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:13px;font-weight:500;margin:0 0 10px;color:var(--color-neutral-solid-70)">Summary</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">Total uptime days</span>
+            <span style="font-weight:500">29 / 30</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">Incident days</span>
+            <span style="font-weight:500;color:#fb923c">1</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">30-day availability</span>
+            <span style="font-weight:500">99.94%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+}
+
+<!-- ============================= APIs TAB ============================= -->
+@if (activeTab() === 'apis') {
+  <div class="signal-strip">
+    @for (s of apisSignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <section class="card section">
+    <h2 class="card-title" style="margin-bottom:16px">Endpoints &amp; Data Feeds</h2>
+    <table class="data-table" style="width:100%">
+      <thead>
+        <tr>
+          <th class="data-th">Endpoint</th>
+          <th class="data-th">Type</th>
+          <th class="data-th">Traffic</th>
+          <th class="data-th data-th--num">Error Rate</th>
+          <th class="data-th data-th--num">P95</th>
+          <th class="data-th data-th--num">Freshness</th>
+          <th class="data-th">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ep of endpointRows; track ep.name) {
+          <tr class="data-tr">
+            <td class="data-td data-td--strong">{{ ep.name }}</td>
+            <td class="data-td data-td--muted">{{ ep.type }}</td>
+            <td class="data-td">{{ ep.traffic }}</td>
+            <td class="data-td data-td--num" [style.color]="ep.errorRate > 1.5 ? '#dc2626' : 'inherit'">
+              {{ ep.errorRate }}%
+            </td>
+            <td class="data-td data-td--num">{{ ep.p95 }}</td>
+            <td class="data-td data-td--num" [style.color]="isFreshnessStal(ep.freshness) ? '#dc2626' : 'inherit'">
+              {{ ep.freshness }}
+              @if (isFreshnessStal(ep.freshness)) {
+                <span class="badge badge--high" style="margin-left:4px">stale</span>
+              }
+            </td>
+            <td class="data-td">
+              <span [class]="endpointStatusDotClass(ep.status)"></span>
+              {{ ep.status }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}
+
+<!-- ========================= PROPERTIES TAB ========================== -->
+@if (activeTab() === 'properties') {
+  <div class="signal-strip signal-strip--5">
+    @for (s of propertySignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <p style="font-size:13px;color:var(--color-neutral-solid-50);margin:0 0 16px">
+    Digital properties actively monitored by the Control Tower, including main domain, country sub-sites, and microsite applications. Two new properties added this month: ADB Ventures sub-site and the ERDI Intelligence Hub.
+  </p>
+
+  <div class="col-3-2">
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:16px">Detail Breakdown</h2>
+      <table class="data-table" style="width:100%">
+        <thead>
+          <tr>
+            <th class="data-th">Property</th>
+            <th class="data-th">Type</th>
+            <th class="data-th data-th--num">Sessions / Mo</th>
+            <th class="data-th">Status</th>
+            <th class="data-th">Last Checked</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of propertyRows; track row.property) {
+            <tr class="data-tr">
+              <td class="data-td data-td--strong" style="font-family:monospace;font-size:12px">{{ row.property }}</td>
+              <td class="data-td data-td--muted">{{ row.type }}</td>
+              <td class="data-td data-td--num">{{ row.sessions }}</td>
+              <td class="data-td" style="white-space:nowrap">
+                <span [class]="propertyStatusDotClass(row.status)"></span>
+                {{ propertyStatusLabel(row.status) }}
+              </td>
+              <td class="data-td data-td--muted" style="white-space:nowrap">{{ row.lastChecked }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:16px">Breakdown</h2>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        @for (item of propertyBreakdown; track item.label) {
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span style="color:var(--color-neutral-solid-70)">{{ item.label }}</span>
+              <span style="font-weight:500">{{ item.pct }}%</span>
+            </div>
+            <div style="height:8px;background:var(--color-neutral-solid-05,#f0f0f0);border-radius:4px;overflow:hidden">
+              <div [class]="'inline-bar-fill ' + item.colorClass" [style.width.%]="item.pct" style="height:100%;border-radius:4px;"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div style="margin-top:28px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
+        <h3 style="font-size:13px;font-weight:500;margin:0 0 12px;color:var(--color-neutral-solid-70)">By type</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">Main domain</span>
+            <span style="font-weight:500">1</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">Microsites</span>
+            <span style="font-weight:500">11</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">Country sites</span>
+            <span style="font-weight:500">8</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="color:var(--color-neutral-solid-60)">API endpoints</span>
+            <span style="font-weight:500">3</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+}
+
+<!-- ============================= COST TAB ============================= -->
+@if (activeTab() === 'cost') {
+  <div class="signal-strip">
+    @for (s of costSignals; track s.label) {
+      <div class="signal-item" [class.signal-item--alert]="s.alert">
+        <span class="signal-label">{{ s.label }}</span>
+        <span class="signal-value">{{ s.value }}</span>
+        <span class="signal-sub">@if ($any(s).dir === 'up') {<tabler-icon icon="arrow-up" [size]="12" style="color:#16a34a;flex-shrink:0;"/>} @else if ($any(s).dir === 'down') {<tabler-icon icon="arrow-down" [size]="12" style="color:#dc2626;flex-shrink:0;"/>}{{ s.sub }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Projected spend callout -->
+  <div class="projected-callout">
+    <tabler-icon icon="alert-triangle" [size]="15" style="color:#f59e0b;flex-shrink:0" />
+    <span><strong>Projected:</strong> $2,180 this month — 99% of $2,200 monthly budget. Approaching budget ceiling.</span>
+  </div>
+
+  <!-- Efficiency callout -->
+  <div class="efficiency-callout">
+    <div class="efficiency-stat">
+      <span class="efficiency-stat-label">AI Spend</span>
+      <span class="efficiency-stat-value">+18%</span>
+      <span class="efficiency-stat-trend efficiency-stat-trend--neg">Higher usage volume</span>
+    </div>
+    <div class="efficiency-stat">
+      <span class="efficiency-stat-label">AI Interactions</span>
+      <span class="efficiency-stat-value">+41%</span>
+      <span class="efficiency-stat-trend efficiency-stat-trend--pos">Strong adoption growth</span>
+    </div>
+    <div class="efficiency-stat">
+      <span class="efficiency-stat-label">Cost per Interaction</span>
+      <span class="efficiency-stat-value">−16%</span>
+      <span class="efficiency-stat-trend efficiency-stat-trend--pos">Efficiency improving</span>
+    </div>
+  </div>
+
+  <div class="col-3-2">
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:16px">Monthly Cost Trend</h2>
+      <svg viewBox="0 0 800 160" preserveAspectRatio="none" class="cost-bar-chart">
+        @for (bar of costBarData(); track bar.label) {
+          <rect
+            [attr.x]="bar.x"
+            [attr.y]="bar.y"
+            [attr.width]="bar.w"
+            [attr.height]="bar.h"
+            rx="3"
+            [attr.fill]="bar.isCurrent ? '#1d6fc4' : '#449DF7'"
+            [attr.opacity]="bar.isCurrent ? '1' : '0.75'"
+          />
+          <text
+            [attr.x]="bar.cx"
+            [attr.y]="bar.valueLabelY"
+            text-anchor="middle"
+            font-size="8.5"
+            [attr.fill]="bar.isCurrent ? '#1d6fc4' : '#999'"
+            [attr.font-weight]="bar.isCurrent ? '600' : '400'"
+          >{{ bar.valueLabel }}</text>
+          <text
+            [attr.x]="bar.labelX"
+            [attr.y]="bar.labelY"
+            text-anchor="middle"
+            font-size="9"
+            fill="#aaa"
+          >{{ bar.label }}</text>
+        }
+      </svg>
+    </section>
+
+    <section class="card section">
+      <h2 class="card-title" style="margin-bottom:14px">Cost by Category</h2>
+      <ul class="ref-list">
+        @for (item of costBreakdown; track item.category) {
+          <li class="ref-item">
+            <span class="ref-item-label">{{ item.category }}</span>
+            <div class="ref-item-bar">
+              <div class="inline-bar" style="width:100%;display:block;height:6px;background:var(--color-neutral-solid-05,#f0f0f0);border-radius:3px;overflow:hidden">
+                <div class="inline-bar-fill inline-bar-fill--green" [style.width.%]="item.pct" style="height:100%"></div>
+              </div>
+            </div>
+            <span class="ref-item-val">${{ item.amount }} ({{ item.pct }}%)</span>
+            <span class="ref-item-rank trend trend--pos" style="margin-left:8px;font-size:11px">{{ item.trend }}</span>
+          </li>
+        }
+      </ul>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+          <span style="color:var(--color-neutral-solid-60)">Total spend</span>
+          <span style="font-weight:600">$1,840</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+          <span style="color:var(--color-neutral-solid-60)">Monthly budget</span>
+          <span style="font-weight:500">$2,200</span>
+        </div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-solid-50);margin-bottom:4px">
+            <span>Budget utilisation</span>
+            <span>84%</span>
+          </div>
+          <div style="height:8px;background:var(--color-neutral-solid-05,#f0f0f0);border-radius:4px;overflow:hidden">
+            <div style="width:84%;height:100%;background:#449DF7;border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+}

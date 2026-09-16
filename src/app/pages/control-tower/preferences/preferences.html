@@ -1,0 +1,129 @@
+<header class="page-header">
+  <div class="page-header-title">
+    <h1 class="title">Preferences</h1>
+    <p class="page-subtitle">Track how users personalise the platform — adoption of preference tags, top selections, and emerging topics.</p>
+  </div>
+
+  <div class="pref-filter-bar">
+    <app-date-range-filter />
+  </div>
+</header>
+
+<!-- KPI row — 4 cards -->
+<section class="kpi-grid kpi-grid--4">
+  <article class="kpi-card">
+    <h3 class="kpi-card-title">Preference Tags Available</h3>
+    <div class="kpi-metrics">
+      <div class="kpi-metric">
+        <span class="kpi-metric-value">{{ totalTagsAvailable.value }}</span>
+      </div>
+    </div>
+    <p class="kpi-card-sub">{{ totalTagsAvailable.sub }}</p>
+  </article>
+
+  <article class="kpi-card">
+    <h3 class="kpi-card-title">Avg. Selected Per User</h3>
+    <div class="kpi-metrics">
+      <div class="kpi-metric">
+        <span class="kpi-metric-value">{{ avgPreferencesPerUser.value }}</span>
+        <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!avgPreferencesPerUser.deltaGood">{{ avgPreferencesPerUser.delta }}</span>
+      </div>
+    </div>
+    <p class="kpi-card-sub">{{ avgPreferencesPerUser.sub }}</p>
+  </article>
+
+  <article class="kpi-card">
+    <h3 class="kpi-card-title">Preference Adoption Rate</h3>
+    <div class="kpi-metrics">
+      <div class="kpi-metric">
+        <span class="kpi-metric-value">{{ adoptionRate.value }}</span>
+        <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!adoptionRate.deltaGood">{{ adoptionRate.delta }}</span>
+      </div>
+    </div>
+    <p class="kpi-card-sub">{{ adoptionRate.sub }}</p>
+  </article>
+
+  <article class="kpi-card">
+    <h3 class="kpi-card-title">Preference Change Frequency</h3>
+    <div class="kpi-metrics">
+      <div class="kpi-metric">
+        <span class="kpi-metric-value">{{ changeFrequency.value }}</span>
+        <span class="kpi-metric-delta" [class.kpi-metric-delta--neg]="!changeFrequency.deltaGood">{{ changeFrequency.delta }}</span>
+      </div>
+    </div>
+    <p class="kpi-card-sub">{{ changeFrequency.sub }}</p>
+  </article>
+</section>
+
+<!-- Word-cloud cards row -->
+<section class="pref-charts-row">
+
+  <!-- 1. Trending Preferences -->
+  <article class="card pref-card">
+    <div class="pref-card-head">
+      <div>
+        <h3 class="card-title">Trending Preferences</h3>
+        <p class="card-sub">Tags selected by the highest number of users.</p>
+      </div>
+      <span class="ref-col-hdr">Users</span>
+    </div>
+    <ul class="ref-list">
+      @for (p of visiblePreferences(); track p.name; let i = $index) {
+        <li class="ref-item">
+          <div class="ref-item-bar" [style.width.%]="p.pct"></div>
+          <span class="ref-item-rank">{{ i + 1 }}</span>
+          <span class="ref-item-label">{{ p.name }}</span>
+          @if (p.trending) {
+            <span class="pref-trend-badge">
+              <tabler-icon icon="trending-up" [size]="11" /> Rising
+            </span>
+          }
+          <span class="ref-item-val">{{ p.userCount | number }}</span>
+        </li>
+      }
+    </ul>
+    <button class="pref-see-more" type="button" (click)="showAllPreferences.set(!showAllPreferences())">
+      {{ showAllPreferences() ? 'Show less' : 'Show all ' + topPreferences.length }}
+      <tabler-icon class="pref-see-more-icon" [class.pref-see-more-icon--open]="showAllPreferences()" icon="chevron-down" [size]="14" />
+    </button>
+  </article>
+
+  <!-- 2. Least Popular Preferences -->
+  <article class="card pref-card">
+    <div class="pref-card-head">
+      <div>
+        <h3 class="card-title">Least Popular Preferences</h3>
+        <p class="card-sub">Tags with the lowest selection rates across users.</p>
+      </div>
+      <span class="ref-col-hdr">Rate</span>
+    </div>
+    <ul class="ref-list">
+      @for (t of unselectedTags; track t.name; let i = $index) {
+        <li class="ref-item">
+          <div class="ref-item-bar pref-bar--low-bg" [style.width.%]="t.selectionPct * 100"></div>
+          <span class="ref-item-rank">{{ i + 1 }}</span>
+          <span class="ref-item-label">{{ t.name }}</span>
+          <span class="ref-item-val">{{ (t.selectionPct * 100).toFixed(0) }}%</span>
+        </li>
+      }
+    </ul>
+  </article>
+
+  <!-- 3. New Preferences Added -->
+  <article class="card pref-card">
+    <div>
+      <h3 class="card-title">New Preferences Added</h3>
+      <p class="card-sub">Tags typed manually — signals content gaps and taxonomy opportunities.</p>
+    </div>
+    <div class="pref-cloud">
+      @for (t of emergingTopics; track t.name; let i = $index) {
+        <span class="pref-cloud-chip" [class]="'pref-cloud-chip ' + cloudColorClass(i)"
+              [style.font-size.px]="cloudFontSize(t.userCount, maxEmergingCount)"
+              [style.padding]="cloudPadding(t.userCount, maxEmergingCount)">
+          {{ t.name }}
+        </span>
+      }
+    </div>
+  </article>
+
+</section>

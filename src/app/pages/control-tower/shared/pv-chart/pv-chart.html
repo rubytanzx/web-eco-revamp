@@ -1,0 +1,45 @@
+<svg class="pv-svg"
+     [attr.viewBox]="'0 0 ' + pvW() + ' ' + pvH"
+     (mousemove)="onPvMouseMove($event)"
+     (mouseleave)="onPvMouseLeave()">
+  <defs>
+    <linearGradient id="pv-trend-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#449DF7" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#449DF7" stop-opacity="0.01" />
+    </linearGradient>
+  </defs>
+  @for (tick of pvYTicks; track tick.label) {
+    <line class="pv-grid"
+          [attr.x1]="pvPadL" [attr.x2]="pvW() - pvPadR"
+          [attr.y1]="tick.y"  [attr.y2]="tick.y" />
+    <text class="pv-y-label" [attr.x]="pvPadL - 6" [attr.y]="tick.y + 4.5">{{ tick.label }}</text>
+  }
+  @for (pt of pvTrendPts(); track $index; let i = $index) {
+    @if (i % 4 === 0) {
+      <text class="pv-x-label" [attr.x]="pt.x" [attr.y]="pvH - 10">{{ pt.period }}</text>
+    }
+  }
+  <path class="pv-area" [attr.d]="pvAreaPath()" />
+  <path class="pv-line" [attr.d]="pvLinePath()" />
+  @if (hoveredPvPt(); as hp) {
+    <line class="pv-hover-vline"
+          [attr.x1]="hp.x" [attr.x2]="hp.x"
+          [attr.y1]="pvPadT" [attr.y2]="pvBottom" />
+    <circle class="pv-hover-dot" [attr.cx]="hp.x" [attr.cy]="hp.y" r="4" />
+    <g>
+      <rect class="pv-tooltip-bg"
+            [attr.x]="pvTooltipX()" [attr.y]="pvTooltipY()"
+            width="170" height="64" rx="6" />
+      <text class="pv-tooltip-period"
+            [attr.x]="pvTooltipX() + 10" [attr.y]="pvTooltipY() + 17">{{ hp.period }}</text>
+      <text class="pv-tooltip-value"
+            [attr.x]="pvTooltipX() + 10" [attr.y]="pvTooltipY() + 35">{{ hp.value.toLocaleString() }} prompts</text>
+      @if (hoveredPvPctLabel()) {
+        <text class="pv-tooltip-pct"
+              [class.pv-tooltip-pct--up]="hoveredPvPctPositive()"
+              [class.pv-tooltip-pct--dn]="!hoveredPvPctPositive()"
+              [attr.x]="pvTooltipX() + 10" [attr.y]="pvTooltipY() + 52">{{ hoveredPvPctLabel() }}</text>
+      }
+    </g>
+  }
+</svg>
