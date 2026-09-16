@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy, Component, computed,
-  inject, input, output
+  inject, input, output, signal
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MapData } from '../../models/region.model';
+import { MapData, UserLocationData } from '../../models/region.model';
 import { AdbMapMarkerComponent } from './adb-map-marker/adb-map-marker.component';
 
 @Component({
@@ -65,6 +65,22 @@ export class AdbMapComponent {
 
   hoveredId = input<string>('');
   regionHover = output<string>();
+
+  userLocation = input<UserLocationData | null>(null);
+  userLocationSelect = output<void>();
+
+  readonly userLocPopoverOpen = signal(false);
+
+  onUserLocMarkerClick(e: Event) {
+    e.stopPropagation();
+    this.userLocPopoverOpen.update(v => !v);
+  }
+
+  onExploreClick(e: Event) {
+    e.stopPropagation();
+    this.userLocPopoverOpen.set(false);
+    this.userLocationSelect.emit();
+  }
 
   countryClass(regionId: string | null): string {
     const active = this.selectedId();

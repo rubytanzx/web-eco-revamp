@@ -262,12 +262,22 @@ export class DragScrollDirective implements OnInit, OnDestroy {
     const ids = this.regionIds();
     if (!ids.length) return;
 
-    // Prefer an explicitly set override (from flickToAdjacentCard or
-    // scrollToRegion) over position inference. This handles the common case
-    // where the last card(s) can't scroll all the way to offsetLeft 0, so
-    // the nearest-card heuristic would pick the wrong card.
-    const id = this.settleOverride ?? this.detectSettledCard(ids);
-    this.settleOverride = null;
+    // If an explicit override is set (from scrollToRegion / flickToAdjacentCard),
+    // always use it — it knows exactly which card the scroll will land on.
+    if (this.settleOverride) {
+      const id = this.settleOverride;
+      this.settleOverride = null;
+      this.regionSettle.emit(id);
+      return;
+    }
+
+    // Position-based detection is only reliable when the user actually dragged
+    // the carousel. Carousel container resizes (e.g. GSAP panel-open animation)
+    // fire spurious scroll events where scrollLeft no longer maps to the correct
+    // card — emitting in that case produces the wrong region.
+    if (!this.justDragged) return;
+
+    const id = this.detectSettledCard(ids);
     if (id) this.regionSettle.emit(id);
   }
 

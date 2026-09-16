@@ -120,3 +120,215 @@
   max-width: clamp(60px, 9cqw, 88px);
   line-height: 1.3;
 }
+
+// ── User Location Marker ──────────────────────────────────────────────────────
+
+// Entrance: gentle fade up (fires once, no backward-fill hidden phase)
+@keyframes ulm-drop-in {
+  0%   { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+// Idle: long rest → two soft bobs → long rest, repeats
+// First hold (0–15%) covers the entrance duration so there's no delay gap
+@keyframes ulm-idle-bounce {
+  0%, 15%  { transform: translateY(0); }
+  20%      { transform: translateY(-3px); }
+  26%      { transform: translateY(0); }
+  30%      { transform: translateY(-2px); }
+  35%      { transform: translateY(0); }
+  35%, 100% { transform: translateY(0); }
+}
+
+// Single expanding pulse ring (fires once as bounce settles)
+@keyframes ulm-pulse {
+  0%   { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(3.8); opacity: 0; }
+}
+
+// Outer anchor — GSAP animates this wrapper's x so the CSS transform on the inner
+// marker element is never touched and its centering/animation remain intact.
+.ulm-gsap-anchor {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.user-location-marker {
+  cursor: pointer;
+  outline: none;
+  pointer-events: all;
+  // Start hidden via CSS so no backward-fill flash; forwards fill keeps it visible after entry
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: ulm-drop-in 0.55s ease-out 0.25s forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+// Inner wrapper — idle bounce runs from t=0, with an initial hold that covers the entrance
+.ulm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: ulm-idle-bounce 8s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+
+// "You" navy pill badge
+.ulm-label-you {
+  background: #002569;
+  color: #fff;
+  font-size: clamp(5.5px, 0.65cqw, 7px);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: clamp(1.5px, 0.2cqw, 2.5px) clamp(4px, 0.55cqw, 6px);
+  border-radius: 3px;
+  line-height: 1;
+  white-space: nowrap;
+  margin-bottom: clamp(2px, 0.3cqw, 4px);
+}
+
+// Marker ring container
+.ulm-dot-wrap {
+  position: relative;
+  width: clamp(14px, 1.7cqw, 20px);
+  height: clamp(14px, 1.7cqw, 20px);
+  flex-shrink: 0;
+}
+
+// Expanding pulse ring — fires once as entrance bounce settles
+.ulm-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 37, 105, 0.5);
+  animation: ulm-pulse 0.65s cubic-bezier(0.2, 0, 0.6, 1) 1.05s both;
+
+  @media (prefers-reduced-motion: reduce) { animation: none; opacity: 0; }
+}
+
+// White halo disc
+.ulm-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #fff;
+  border: clamp(1px, 0.15cqw, 1.5px) solid rgba(0, 37, 105, 0.22);
+  box-shadow:
+    0 1px 5px rgba(0, 37, 105, 0.18),
+    0 0 0 clamp(1px, 0.15cqw, 2px) rgba(255, 255, 255, 0.9);
+  z-index: 1;
+}
+
+// Solid navy centre dot
+.ulm-dot {
+  position: absolute;
+  inset: 27%;
+  border-radius: 50%;
+  background: #002569;
+  z-index: 2;
+}
+
+// Pin stem — tapers from dot to point below
+.ulm-stem {
+  width: clamp(1.5px, 0.18cqw, 2px);
+  height: clamp(7px, 0.9cqw, 12px);
+  background: linear-gradient(to bottom, #002569 0%, rgba(0, 37, 105, 0.3) 100%);
+  border-radius: 0 0 1px 1px;
+  margin-top: -1px;
+}
+
+.ulm-label-country {
+  font-size: clamp(6px, 0.7cqw, 7.5px);
+  font-weight: 400;
+  color: #6a8499;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  line-height: 1;
+  margin-top: clamp(2px, 0.3cqw, 4px);
+}
+
+// ── Popover ───────────────────────────────────────────────────────────────────
+
+.ulm-popover {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  width: clamp(180px, 20cqw, 230px);
+  background: #fff;
+  border: 1px solid #dce8f0;
+  border-radius: 8px;
+  padding: 12px 14px 10px;
+  box-shadow: 0 4px 20px rgba(0, 37, 105, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 20;
+
+  // Show on desktop hover/focus
+  @media (hover: hover) {
+    .user-location-marker:hover &,
+    .user-location-marker:focus-within & {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  // Show on mobile tap (toggled via .is-popover-open)
+  .user-location-marker.is-popover-open & {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.ulm-popover__country {
+  font-size: 13px;
+  font-weight: 500;
+  color: #002569;
+  margin: 0 0 1px;
+  line-height: 1.3;
+}
+
+.ulm-popover__sub {
+  font-size: 11px;
+  color: #7a92a8;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.ulm-popover__desc {
+  font-size: 12px;
+  color: #3a4a5a;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+
+.ulm-popover__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: #002569;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-family: 'Source Sans Pro', 'Source Sans 3', sans-serif;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover { background: #003494; }
+}

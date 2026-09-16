@@ -89,51 +89,19 @@
 
 @media (max-width: 960px) {
   .carousel__track {
-    padding: 0 8px;
-    gap: 0;
+    padding: 10px 12px 14px;
+    gap: 8px;
     justify-content: flex-start;
   }
 
   .carousel__card {
-    flex: 0 0 auto;
-    border-radius: 0;
-    border: none;
-    border-bottom: 3px solid transparent;
-    background: transparent;
-    box-shadow: none;
-    transition: border-color 0.2s ease;
-
-    &::after { display: none; }
-
-    &:hover {
-      transform: none;
-      box-shadow: none;
-      border-bottom-color: var(--region-color);
-    }
-
-    &--active {
-      transform: none;
-      box-shadow: none;
-      border-bottom-color: var(--region-color);
-    }
+    flex: 0 0 clamp(140px, calc(40vw - 16px), 200px);
   }
 
   .card__body {
     min-height: 0;
-    padding: 10px 12px;
-    gap: 0;
+    padding: 10px 14px 12px;
   }
 
-  .card__name { font-size: 0; }
-
-  .card__short {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #1a2a3a;
-    text-transform: uppercase;
-  }
-
-  .card__stat { display: none; }
+  .card__short { display: none; }
 }

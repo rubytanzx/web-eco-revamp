@@ -63,6 +63,45 @@
         </div>
       }
     }
+
+    @if (userLocation(); as loc) {
+      <div
+        class="ulm-gsap-anchor"
+        [style.left.%]="markerLeftPct(loc.markerX)"
+        [style.top.%]="markerTopPct(loc.markerY)"
+      >
+      <div
+        class="user-location-marker"
+        [class.is-popover-open]="userLocPopoverOpen()"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Your location: ' + loc.countryName + '. Click to explore ADB\'s work here.'"
+        (click)="onUserLocMarkerClick($event)"
+        (keydown.enter)="onUserLocMarkerClick($event)"
+        (keydown.space)="$event.preventDefault(); onUserLocMarkerClick($event)"
+      >
+        <div class="ulm-content" aria-hidden="true">
+          <span class="ulm-label-you">You</span>
+          <div class="ulm-dot-wrap">
+            <div class="ulm-pulse-ring"></div>
+            <div class="ulm-halo"></div>
+            <div class="ulm-dot"></div>
+          </div>
+          <div class="ulm-stem"></div>
+          <span class="ulm-label-country">{{ loc.countryName }}</span>
+        </div>
+
+        <div class="ulm-popover" role="tooltip">
+          <p class="ulm-popover__country">{{ loc.countryName }}</p>
+          <p class="ulm-popover__sub">Your location · {{ loc.regionName }}</p>
+          <p class="ulm-popover__desc">Explore ADB's work and impact in the {{ loc.countryName }}.</p>
+          <button class="ulm-popover__btn" type="button" (click)="onExploreClick($event)">
+            Explore {{ loc.countryName }} &raquo;
+          </button>
+        </div>
+      </div>
+      </div>
+    }
   </div>
 } @else {
   <div class="map-wrap map-wrap--loading">

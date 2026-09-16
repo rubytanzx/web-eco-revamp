@@ -1,7 +1,8 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
   width: 100%;
-  min-height: 100%;
   background: #fff;
   font-family: 'Source Sans Pro', 'Source Sans 3', sans-serif;
 }
@@ -1670,6 +1671,11 @@
 @keyframes sk-shimmer {
   0%   { background-position: -600px 0; }
   100% { background-position:  600px 0; }
+}
+
+.search-page {
+  flex: 1 1 auto;
+  background: #fff;
 }
 
 .search-page--hidden {

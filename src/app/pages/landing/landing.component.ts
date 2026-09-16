@@ -1,15 +1,24 @@
 import {
   AfterViewInit, ChangeDetectionStrategy, Component,
-  ElementRef, ViewChild, computed, effect, inject, signal
+  ElementRef, OnDestroy, ViewChild, computed, effect, inject, signal
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { AdbMapComponent } from '../../components/adb-map/adb-map.component';
 import { AdbRegionCarouselComponent } from '../../components/adb-region-carousel/adb-region-carousel.component';
 import { AiChatPanelComponent } from '../../components/ai-chat-panel/ai-chat-panel.component';
 import { SiteHeaderComponent } from '../../components/site-header/site-header.component';
-import { RegionEntry } from '../../models/region.model';
+import { RegionEntry, UserLocationData } from '../../models/region.model';
 import { RouterLink } from '@angular/router';
 import { REGION_PANEL_CONTENT, ImpactStoryItem, RegionPanelContent } from '../../data/region-panel-content';
+
+const DETECTED_LOCATION: UserLocationData = {
+  countryCode: 'PH',
+  countryName: 'Philippines',
+  regionCode: 'SERD',
+  regionName: 'Southeast Asia',
+  markerX: 83.8,
+  markerY: 53.7,
+};
 
 @Component({
   selector: 'app-landing',
@@ -19,7 +28,7 @@ import { REGION_PANEL_CONTENT, ImpactStoryItem, RegionPanelContent } from '../..
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
-export class LandingComponent implements AfterViewInit {
+export class LandingComponent implements AfterViewInit, OnDestroy {
   private el = inject(ElementRef);
 
   @ViewChild(AdbRegionCarouselComponent) carouselRef!: AdbRegionCarouselComponent;
@@ -28,6 +37,8 @@ export class LandingComponent implements AfterViewInit {
   @ViewChild('wwworkCarousel') wwworkCarouselRef!: ElementRef<HTMLElement>;
   @ViewChild('carouselFadeR') carouselFadeRRef!: ElementRef<HTMLElement>;
 
+  readonly detectedLocation: UserLocationData = DETECTED_LOCATION;
+
   headerHeight = signal(0);
   selectedRegionId = signal<string>('cwrd');
   hoveredRegionId = signal<string>('');
@@ -35,6 +46,10 @@ export class LandingComponent implements AfterViewInit {
   mapViewBoxOffsetX = signal<number>(380);
   chatOpen = signal(false);
   storyIndex = signal<number>(0);
+
+  /** 'country' when the panel was opened via the user-location marker */
+  panelMode = signal<'region' | 'country'>('region');
+  countryFocus = signal<UserLocationData | null>(null);
 
   regionContent = computed<RegionPanelContent | null>(() => {
     const id = this.expandedRegion()?.id;
@@ -100,6 +115,80 @@ export class LandingComponent implements AfterViewInit {
 
   private activeTl: gsap.core.Timeline | null = null;
   private currentVbX = 380;
+  private parallaxCleanup: (() => void) | null = null;
+  private resizeCleanup: (() => void) | null = null;
+
+  ngOnDestroy(): void {
+    this.parallaxCleanup?.();
+    this.resizeCleanup?.();
+  }
+
+  private setupBreakpointReset(): void {
+    let wasMobile = this.isMobile();
+    const onResize = () => {
+      const isMobileNow = this.isMobile();
+      if (wasMobile === isMobileNow) return;
+      wasMobile = isMobileNow;
+      // Reset all panel + GSAP state when crossing the 960px breakpoint
+      this.activeTl?.kill();
+      this.activeTl = null;
+      this.expandedRegion.set(null);
+      this.panelMode.set('region');
+      this.countryFocus.set(null);
+      const panel = this.wwworkPanelRef?.nativeElement;
+      const hero = this.wwworkHeroRef?.nativeElement;
+      const carousel = this.wwworkCarouselRef?.nativeElement;
+      const fadeR = this.carouselFadeRRef?.nativeElement;
+      if (panel) gsap.set(panel, { clearProps: 'all' });
+      if (carousel) gsap.set(carousel, { clearProps: 'all' });
+      if (fadeR) gsap.set(fadeR, { clearProps: 'all' });
+      if (!isMobileNow) {
+        // Re-apply desktop hidden state for panel
+        if (panel) gsap.set(panel, { opacity: 0, x: 24, pointerEvents: 'none' });
+        if (hero) gsap.set(hero, { clearProps: 'all' });
+      }
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+    this.resizeCleanup = () => window.removeEventListener('resize', onResize);
+  }
+
+  private setupParallax(): void {
+    const section = this.el.nativeElement.querySelector('.wwwork-map-area') as HTMLElement;
+    const hero = this.wwworkHeroRef?.nativeElement;
+    if (!section || !hero) return;
+
+    // Track the scroll position at the moment the section enters the viewport
+    let entryScrollY: number | null = null;
+    let raf: number | null = null;
+
+    const onScroll = () => {
+      if (raf !== null) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const rect = section.getBoundingClientRect();
+        const viewH = window.innerHeight;
+
+        if (rect.top > viewH || rect.bottom < 0) {
+          entryScrollY = null;
+          return;
+        }
+
+        if (entryScrollY === null) entryScrollY = window.scrollY;
+
+        // The section container scrolls up with the page at 100%.
+        // Pushing the hero DOWN (+Y) by 30% of that distance makes it
+        // move at only 70% of page scroll speed → visible floating depth.
+        const delta = window.scrollY - entryScrollY;
+        gsap.set(hero, { y: delta * 0.3 });
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    this.parallaxCleanup = () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }
 
   private syncEffect = effect(() => {
     const id = this.selectedRegionId();
@@ -110,10 +199,40 @@ export class LandingComponent implements AfterViewInit {
     if (this.wwworkPanelRef && !this.isMobile()) {
       gsap.set(this.wwworkPanelRef.nativeElement, { opacity: 0, x: 24, pointerEvents: 'none' });
     }
-    // Mobile: initial hide is CSS-driven (display: none in @media), no GSAP setup needed
+
+    if (!this.isMobile()) {
+      this.setupParallax();
+    }
+
+    this.setupBreakpointReset();
+
+    // Animate "Advancing Economies, Elevating Lives" in when scrolled into view
+    const hero = this.wwworkHeroRef?.nativeElement;
+    if (hero) {
+      const title = hero.querySelector('.wwwork-title');
+      const strong = hero.querySelector('.wwwork-title strong');
+      const sub = hero.querySelector('.wwwork-sub');
+      gsap.set([title, strong, sub], { opacity: 0, y: 22 });
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          observer.disconnect();
+          gsap.to(title, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+          gsap.to(strong, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 });
+          gsap.to(sub,    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.38 });
+        },
+        { threshold: 0.25 },
+      );
+      observer.observe(hero);
+    }
   }
 
-  onRegionSelect(id: string) {
+  onRegionSelect(id: string, fromUserLocation = false) {
+    if (!fromUserLocation) {
+      this.panelMode.set('region');
+      this.countryFocus.set(null);
+    }
     this.selectedRegionId.set(id);
     const region = this.carouselRef?.regions().find(r => r.id === id) ?? null;
     if (!region) return;
@@ -135,11 +254,23 @@ export class LandingComponent implements AfterViewInit {
   }
 
   closePanel() {
+    this.panelMode.set('region');
+    this.countryFocus.set(null);
     this.animateClose();
   }
 
+  onUserLocationSelect() {
+    this.panelMode.set('country');
+    this.countryFocus.set(this.detectedLocation);
+    this.onRegionSelect(this.detectedLocation.regionCode.toLowerCase(), true);
+  }
+
   private markers(): HTMLElement[] {
-    return Array.from(this.el.nativeElement.querySelectorAll('app-adb-map-marker'));
+    const el = this.el.nativeElement;
+    return [
+      ...Array.from(el.querySelectorAll('app-adb-map-marker')),
+      ...Array.from(el.querySelectorAll('.ulm-gsap-anchor')),
+    ] as HTMLElement[];
   }
 
   private liaisonMarkers(): HTMLElement[] {

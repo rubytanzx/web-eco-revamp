@@ -348,7 +348,7 @@
 }
 
 .acp__detail-intro-main {
-  flex: 1 1 300px;
+  flex: 2 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -363,7 +363,8 @@
 }
 
 .acp__detail-intro-aside {
-  flex: 1 0 240px;
+  flex: 1 0 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1468,6 +1469,46 @@
   color: #212121;
   line-height: 1.65;
   margin: 0;
+}
+
+// ── Chart data source line ────────────────────────────────────────────────────
+
+.acp__chart-data-source {
+  font-size: 11px;
+  color: #aab8c4;
+  text-align: right;
+  margin: 2px 0 6px;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    &:hover { color: #007DB7; }
+  }
+}
+
+// ── Data attribution chip ────────────────────────────────────────────────────
+
+.acp__chart-cite-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 0 4px;
+  padding: 4px 10px;
+  border: 1px solid #dce8f0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #007DB7;
+  text-decoration: none;
+  background: #f5fafd;
+  transition: background 0.15s, border-color 0.15s;
+
+  svg { flex-shrink: 0; }
+
+  &:hover {
+    background: #e8f4fb;
+    border-color: #007DB7;
+  }
 }
 
 // ── Chart sources ─────────────────────────────────────────────────────────────

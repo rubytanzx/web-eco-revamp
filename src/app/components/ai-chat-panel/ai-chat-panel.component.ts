@@ -121,7 +121,7 @@ const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       { label: 'Approval Date', value: 'Mar 2022' },
       { label: 'Expected Closing', value: 'Dec 2028' },
     ],
-    photo: '/adb-home/search/674261-role-insurance-financing-climate-risk.jpg',
+    photo: '/adb-home/search/vid-thumb-philippines-wind-farm_6.jpg',
     relatedDocs: [
       { label: 'Project Data Sheet', url: 'https://www.adb.org/projects/48413-002/main' },
       { label: 'Initial Poverty & Social Analysis', url: 'https://www.adb.org/projects/48413-002/main' },

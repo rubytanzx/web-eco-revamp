@@ -32,6 +32,17 @@ export interface LiaisonOffice {
   markerY: number | null;
 }
 
+export interface UserLocationData {
+  countryCode: string;
+  countryName: string;
+  regionCode: string;
+  regionName: string;
+  /** Percentage (0–100) of the full SVG map width */
+  markerX: number;
+  /** Percentage (0–100) of the full SVG map height */
+  markerY: number;
+}
+
 export interface MapData {
   viewBox: string;
   width: number;

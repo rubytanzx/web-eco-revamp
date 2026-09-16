@@ -73,15 +73,25 @@
         [selectedId]="selectedRegionId()"
         [hoveredId]="hoveredRegionId()"
         [viewBoxOffsetX]="mapViewBoxOffsetX()"
+        [userLocation]="detectedLocation"
         (regionSelect)="onRegionSelect($event)"
         (regionHover)="onRegionHover($event)"
+        (userLocationSelect)="onUserLocationSelect()"
       />
       <div class="wwwork-panel" #wwworkPanel>
         <div class="wwwork-panel__header">
-          <span class="panel-label">Region</span>
-          <h3 class="wwwork-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h3>
-          @if (regionContent(); as content) {
-            <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+          @if (panelMode() === 'country' && countryFocus(); as loc) {
+            <!-- Country mode: opened via "You · Philippines" marker -->
+            <span class="panel-label">Country</span>
+            <h3 class="wwwork-panel__title">{{ loc.countryName }}</h3>
+            <p class="panel-countries panel-countries--region-link">{{ loc.regionName }} ({{ loc.regionCode }})</p>
+          } @else {
+            <!-- Region mode: opened via normal map region selection -->
+            <span class="panel-label">Region</span>
+            <h3 class="wwwork-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h3>
+            @if (regionContent(); as content) {
+              <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+            }
           }
           <button class="wwwork-panel__close" (click)="closePanel()" aria-label="Close panel">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -93,10 +103,16 @@
         @if (regionContent(); as content) {
           <div class="panel-body">
 
-            <!-- Region Pulse -->
+            <!-- Region Pulse / Latest from country -->
             <div class="panel-section">
               <div class="panel-section-label">
-                <span class="panel-section-text">Region Pulse</span>
+                <span class="panel-section-text">
+                  @if (panelMode() === 'country' && countryFocus(); as loc) {
+                    Latest from {{ loc.countryName }}
+                  } @else {
+                    Region Pulse
+                  }
+                </span>
               </div>
               <a class="pulse-card" [href]="content.regionPulse.href" target="_blank" rel="noopener noreferrer">
                 <div class="pulse-card__img">
@@ -179,10 +195,12 @@
               }
             </div>
 
-            <!-- Related Country News -->
+            <!-- Related Country News / Projects & Results -->
             <div class="panel-section">
               <div class="panel-section-label">
-                <span class="panel-section-text">Related Country News</span>
+                <span class="panel-section-text">
+                  @if (panelMode() === 'country') { Projects &amp; Results } @else { Related Country News }
+                </span>
               </div>
               <div class="from-region-cards">
                 @for (article of content.fromTheRegion; track article.title) {
@@ -198,10 +216,12 @@
               </div>
             </div>
 
-            <!-- Shorts -->
+            <!-- Shorts / Related News -->
             <div class="panel-section">
               <div class="panel-section-label">
-                <span class="panel-section-text">Shorts</span>
+                <span class="panel-section-text">
+                  @if (panelMode() === 'country') { Related News } @else { Shorts }
+                </span>
               </div>
               <div class="shorts-cards">
                 @for (short of content.shorts; track short.caption) {
