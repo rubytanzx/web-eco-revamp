@@ -569,6 +569,16 @@ function isMyanmarQuery(q: string): boolean {
   return q.toLowerCase().includes('myanmar');
 }
 
+const SEARCH_SOURCES = [
+  { label: 'ADB Documents',                 count: '50,000+ documents'           },
+  { label: 'ADB Project Database',           count: '12,400+ projects'            },
+  { label: 'ADB Publications Repository',    count: '8,200+ documents'            },
+  { label: 'ADB Key Indicators Data Portal', count: '2,800+ datasets'             },
+  { label: 'ADB Country Partnership Portal', count: '49 DMCs'                     },
+  { label: 'ADB Newsroom',                   count: '15,000+ articles'            },
+  { label: 'ADB Procurement Portal',         count: 'Tenders, works & consulting' },
+];
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -602,6 +612,11 @@ export class SearchComponent {
   chatOpen     = signal(false);
   filterOpen   = signal(false);
 
+  readonly searchLoading = signal(false);
+  readonly searchStep    = signal(0);
+  readonly searchSources = SEARCH_SOURCES;
+  private _overlayTimer: ReturnType<typeof setTimeout> | null = null;
+
   isMyanmarQuery = computed(() => isMyanmarQuery(this.query()));
 
   activeTotal = computed(() => {
@@ -621,11 +636,29 @@ export class SearchComponent {
     this.facets().flatMap(f => f.values.filter(v => v.checked).map(v => ({ facetKey: f.key, label: v.label })))
   );
 
+  private startSearchOverlay() {
+    if (this._overlayTimer) clearTimeout(this._overlayTimer);
+    this.searchLoading.set(true);
+    this.searchStep.set(0);
+    let step = 0;
+    const tick = () => {
+      step++;
+      this.searchStep.set(step);
+      if (step < SEARCH_SOURCES.length) {
+        this._overlayTimer = setTimeout(tick, 700);
+      } else {
+        this._overlayTimer = setTimeout(() => this.searchLoading.set(false), 1000);
+      }
+    };
+    this._overlayTimer = setTimeout(tick, 500);
+  }
+
   constructor() {
     inject(ActivatedRoute).queryParamMap.pipe(takeUntilDestroyed()).subscribe(params => {
       const q = params.get('keywords') ?? 'climate finance projects';
       this.query.set(q);
       this.loadDataForQuery(q);
+      this.startSearchOverlay();
     });
   }
 

@@ -1100,13 +1100,7 @@
   justify-content: center;
   flex-shrink: 0;
 }
-.search-result-icon--page::after {
-  content: '';
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--color-primary-70, #007DB7);
-  opacity: 0.6;
-}
+.search-result-icon--page { color: #6b7280; }
 
 .search-result-body {
   flex: 1;

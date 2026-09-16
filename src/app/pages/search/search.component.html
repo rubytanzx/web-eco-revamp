@@ -1,6 +1,150 @@
 <app-site-header></app-site-header>
 <app-ai-chat-panel [query]="query()" [open]="chatOpen()" (close)="chatOpen.set(false)"></app-ai-chat-panel>
-<div class="search-page">
+
+@if (searchLoading()) {
+  <div class="search-ai-overlay" aria-live="polite" role="status">
+    <div class="search-ai-card">
+
+      <!-- Ambient gradient orbs -->
+      <div class="search-ai-orb search-ai-orb--1" aria-hidden="true"></div>
+      <div class="search-ai-orb search-ai-orb--2" aria-hidden="true"></div>
+      <div class="search-ai-orb search-ai-orb--3" aria-hidden="true"></div>
+
+      <!-- Progress bar -->
+      <div class="search-ai-progress" aria-hidden="true">
+        <div class="search-ai-progress__fill"></div>
+      </div>
+
+      <div class="search-ai-body">
+
+      <!-- Sparkle constellation — exact Figma paths, 3 stars pulsing in sequence -->
+      <div class="search-ai-icon-wrap" aria-hidden="true">
+        <svg class="sai-stars" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" fill="none" overflow="visible">
+          <defs>
+            <linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+              <stop offset="0%"   stop-color="#48cde2"/>
+              <stop offset="45%"  stop-color="#a391ff"/>
+              <stop offset="100%" stop-color="#da99e6"/>
+            </linearGradient>
+          </defs>
+          <!-- Large star (primary) -->
+          <path class="sai-star sai-star--big" d="M84.0304 63.8411C84.2846 62.8341 85.7154 62.834 85.9696 63.841L86.4253 65.6465C87.7673 70.9629 92.1719 75.0216 97.5658 76.0071C98.6595 76.2069 98.6595 77.7931 97.5658 77.9929C92.1719 78.9784 87.7673 83.0371 86.4253 88.3535L85.9696 90.1589C85.7154 91.1659 84.2846 91.166 84.0304 90.159L83.5747 88.3535C82.2327 83.0371 77.8281 78.9784 72.4342 77.9929C71.3405 77.7931 71.3405 76.2069 72.4342 76.0071C77.8281 75.0216 82.2327 70.9629 83.5747 65.6465L84.0304 63.8411Z" fill="url(#sg1)"/>
+          <!-- Medium star -->
+          <path class="sai-star sai-star--med" d="M54.8237 51.7259C54.9987 51.0206 56.0013 51.0206 56.1763 51.7259L56.3362 52.3704C57.1736 55.7461 59.9326 58.3041 63.3619 58.8844C64.0555 59.0017 64.0555 59.9983 63.3619 60.1156C59.9326 60.6959 57.1736 63.2539 56.3362 66.6296L56.1763 67.2741C56.0013 67.9794 54.9987 67.9794 54.8237 67.2741L54.6639 66.6296C53.8264 63.2539 51.0674 60.6959 47.6381 60.1156C46.9445 59.9983 46.9445 59.0017 47.6381 58.8844C51.0674 58.3041 53.8264 55.7461 54.6639 52.3704L54.8237 51.7259Z" fill="url(#sg1)"/>
+          <!-- Small star -->
+          <path class="sai-star sai-star--sm" d="M75.3047 31.9804C75.4007 31.1548 76.5993 31.1548 76.6953 31.9804L76.8127 32.9898C77.172 36.08 79.5276 38.5622 82.5947 39.0827L83.9332 39.3099C84.7104 39.4418 84.7104 40.5582 83.9332 40.6901L82.5947 40.9173C79.5276 41.4378 77.172 43.92 76.8127 47.0102L76.6953 48.0196C76.5993 48.8452 75.4007 48.8452 75.3047 48.0196L75.1873 47.0102C74.828 43.92 72.4724 41.4378 69.4053 40.9173L68.0668 40.6901C67.2896 40.5582 67.2896 39.4418 68.0668 39.3099L69.4053 39.0827C72.4724 38.5622 74.828 36.08 75.1873 32.9898L75.3047 31.9804Z" fill="url(#sg1)"/>
+        </svg>
+        <div class="search-ai-icon-ring"></div>
+      </div>
+
+      <h2 class="search-ai-headline">Searching ADB knowledge base</h2>
+      <p class="search-ai-subline">for "<strong>{{ query() }}</strong>"</p>
+
+      <ul class="search-ai-sources" aria-label="Sources being searched">
+        @for (src of searchSources; track src.label; let i = $index) {
+          <li class="search-ai-source"
+              [class.search-ai-source--done]="searchStep() > i"
+              [class.search-ai-source--active]="searchStep() === i">
+            <span class="search-ai-source__dot" aria-hidden="true">
+              @if (searchStep() > i) {
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              } @else if (searchStep() === i) {
+                <span class="search-ai-source__pulse"></span>
+              } @else {
+                <span class="search-ai-source__empty"></span>
+              }
+            </span>
+            <span class="search-ai-source__label">{{ src.label }}</span>
+            <span class="search-ai-source__count">{{ src.count }}</span>
+          </li>
+        }
+      </ul>
+
+      <p class="search-ai-powered">Powered by ADB AI Intelligence</p>
+      </div><!-- /.search-ai-body -->
+    </div><!-- /.search-ai-card -->
+  </div><!-- /.search-ai-overlay -->
+}
+
+<!-- Skeleton page — visible through the frosted overlay -->
+@if (searchLoading()) {
+  <div class="search-page sk-page" aria-hidden="true">
+
+    <!-- Search bar skeleton -->
+    <div class="search-bar-section">
+      <div class="container">
+        <div class="sk-search-bar">
+          <div class="sk-block sk-search-input"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI overview skeleton -->
+    <div class="ai-overview-section">
+      <div class="container">
+        <div class="sk-ai-card">
+          <div class="sk-ai-head">
+            <div class="sk-block sk-circle"></div>
+            <div class="sk-block sk-ai-title"></div>
+          </div>
+          <div class="sk-block sk-line sk-line--full"></div>
+          <div class="sk-block sk-line sk-line--90"></div>
+          <div class="sk-block sk-line sk-line--75"></div>
+          <div class="sk-block sk-line sk-line--60" style="margin-top:14px"></div>
+          <div class="sk-block sk-line sk-line--80"></div>
+          <div class="sk-block sk-line sk-line--50"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs skeleton -->
+    <div class="search-tabs-section">
+      <ul class="search-tabs" style="pointer-events:none">
+        @for (_ of [1,2,3,4]; track $index) {
+          <li class="search-tab"><div class="sk-block sk-tab"></div></li>
+        }
+      </ul>
+    </div>
+
+    <!-- Results skeleton -->
+    <div class="container search-layout">
+      <div class="search-body">
+
+        <!-- Sidebar skeleton -->
+        <aside class="search-sidebar">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="sk-facet">
+              <div class="sk-block sk-facet-title"></div>
+              @for (__ of [1,2,3,4]; track $index) {
+                <div class="sk-block sk-facet-row"></div>
+              }
+            </div>
+          }
+        </aside>
+
+        <!-- Result rows skeleton -->
+        <main class="search-results">
+          <div class="sk-block sk-meta-bar"></div>
+          @for (_ of [1,2,3,4,5,6]; track $index) {
+            <div class="sk-result-item">
+              <div class="sk-block sk-thumb"></div>
+              <div class="sk-result-body">
+                <div class="sk-block sk-line sk-line--20"></div>
+                <div class="sk-block sk-line sk-line--70" style="height:18px;margin-bottom:8px"></div>
+                <div class="sk-block sk-line sk-line--full"></div>
+                <div class="sk-block sk-line sk-line--90"></div>
+                <div class="sk-block sk-line sk-line--60"></div>
+              </div>
+            </div>
+          }
+        </main>
+
+      </div>
+    </div>
+  </div>
+}
+
+<div class="search-page" [class.search-page--hidden]="searchLoading()">
 
   <!-- 1. Search bar -->
   <div class="search-bar-section">
