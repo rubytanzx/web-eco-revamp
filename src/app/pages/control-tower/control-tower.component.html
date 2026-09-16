@@ -198,11 +198,11 @@
     </div>
   }
 
-  <!-- AI edge tab (shown when panel is closed) -->
+  <!-- AI FAB (shown when panel is closed) -->
   @if (!aiOpen()) {
-    <button type="button" class="ai-edge-tab" (click)="openAi()" aria-label="Open AI panel">
-      <tabler-icon icon="sparkles" [size]="15" />
-      <span>Ask AI</span>
+    <button type="button" class="ai-fab" (click)="openAi()" aria-label="Open AI panel">
+      <tabler-icon icon="sparkles" [size]="18" />
+      <span class="ai-fab__label">Ask AI</span>
     </button>
   }
 
@@ -242,9 +242,11 @@
               <p class="ai-empty-title">Ask anything</p>
               <p class="ai-empty-sub">Get answers grounded in your platform metrics</p>
               <div class="ai-suggestions">
-                @for (s of aiSuggestions; track s) {
-                  <button type="button" class="ai-suggestion" (click)="useSuggestion(s); sendMessage()">{{ s }}</button>
-                }
+                <div class="ai-suggestions__list">
+                  @for (s of aiSuggestions; track s) {
+                    <button type="button" class="ai-suggestion" (click)="useSuggestion(s); sendMessage()">{{ s }}</button>
+                  }
+                </div>
               </div>
             </div>
           } @else {
