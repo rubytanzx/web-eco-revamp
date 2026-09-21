@@ -77,9 +77,63 @@
   <div class="section">
     <article class="card">
       <h2 class="card-title" style="margin-bottom: 16px;">Query Intent</h2>
-      <app-intent-treemap />
+      <app-intent-treemap
+        [selectedTopic]="selectedTopic()"
+        (topicClicked)="onTopicClicked($event)">
+      </app-intent-treemap>
     </article>
   </div>
+
+  @if (topicDrawerOpen()) {
+    <div class="topic-drawer-backdrop" (click)="closeTopicDrawer()"></div>
+    <aside class="topic-drawer" [style.width.px]="drawerWidth()">
+      <div class="topic-drawer-resizer" (mousedown)="onResizerMouseDown($event)"></div>
+      <header class="topic-drawer-hd">
+        <h2 class="topic-drawer-title">{{ selectedTopicLabel() }}</h2>
+        <button type="button" class="topic-drawer-close" (click)="closeTopicDrawer()" aria-label="Close">
+          <tabler-icon icon="x" [size]="16" />
+        </button>
+      </header>
+      <div class="topic-drawer-controls">
+        <span class="topic-drawer-count">{{ filteredDrilldownRows().length }} results</span>
+        <div class="topic-drawer-filters">
+          <select class="topic-drawer-dept-select"
+                  (change)="drawerDeptFilter.set($any($event.target).value)">
+            <option value="all">All departments</option>
+            @for (d of drawerDepts(); track d) {
+              <option [value]="d">{{ d }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="topic-drawer-body">
+        @if (filteredDrilldownRows().length) {
+          <table class="topic-drawer-table">
+            <thead>
+              <tr>
+                <th>Prompt</th>
+                <th>Response</th>
+                <th>Dept</th>
+                <th>Date Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredDrilldownRows(); track $index) {
+                <tr>
+                  <td class="td-prompt">{{ row.prompt }}</td>
+                  <td class="td-response">{{ row.response }}</td>
+                  <td><span class="mod-module-badge">{{ row.dept }}</span></td>
+                  <td class="td-date">{{ row.date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="topic-drawer-empty">No results match the current filter.</p>
+        }
+      </div>
+    </aside>
+  }
 
   <!-- Top queries table -->
   <div class="section">
@@ -137,10 +191,16 @@
   <div class="signal-strip">
     <div class="signal-item">
       <span class="signal-label">AI Visibility</span>
-      <span class="signal-value">40<span style="font-size: 16px; font-weight: 400;">/100</span></span>
-      <span class="signal-sub">
-        <span class="badge badge--medium" style="font-size: 11px;">Medium</span>
-      </span>
+      <div class="ai-vis-mini-gauge">
+        <svg viewBox="0 0 200 68" fill="none" class="ai-vis-mini-arc" aria-hidden="true">
+          <path d="M 44 63 A 56 56 0 0 1 156 63" stroke="#dde4ef" stroke-width="9" stroke-linecap="round"/>
+          <path d="M 44 63 A 56 56 0 0 1 83 10" stroke="#449DF7" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+        <div class="ai-vis-mini-score">
+          <span class="signal-value">40<span style="font-size:13px;font-weight:400;color:var(--color-neutral-solid-40);">/100</span></span>
+          <span class="badge badge--medium" style="font-size:9px;margin-top:2px;">Medium</span>
+        </div>
+      </div>
     </div>
     <div class="signal-item">
       <span class="signal-label">AI Retrievability</span>
@@ -198,28 +258,62 @@
       </table>
     </article>
 
-    <!-- AI visibility gauge callout -->
+    <!-- Audience growth & AI mentions combo chart -->
     <article class="card">
-      <h2 class="card-title" style="margin-bottom: 16px;">AI Visibility Score</h2>
-      <div class="ai-vis-gauge">
-        <div class="ai-vis-number">40</div>
-        <div class="ai-vis-denom">/100</div>
-        <div class="ai-vis-label">
-          <span class="badge badge--medium">Medium</span>
-        </div>
+      <h2 class="card-title" style="margin-bottom: 10px;">Audience Growth &amp; AI Mentions</h2>
+      <div style="display:flex; gap:16px; margin-bottom:12px;">
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-neutral-solid-60);">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#c084fc;flex-shrink:0;"></span>Audience
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-neutral-solid-60);">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#f59e0b;flex-shrink:0;"></span>Mentions
+        </span>
       </div>
-      <div class="ai-vis-bar-wrap">
-        <div class="ai-vis-bar">
-          <div class="ai-vis-bar-fill" style="width: 40%;"></div>
-          <div class="ai-vis-bar-marker" style="left: 40%;"></div>
-        </div>
-        <div class="ai-vis-scale">
-          <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
-        </div>
-      </div>
-      <p style="font-size: 12.5px; color: var(--color-neutral-solid-50); margin-top: 14px; line-height: 1.5;">
-        ADB.org content is moderately surfaced across AI platforms. Improving schema markup, freshness, and discoverability could push visibility into the High range (≥60).
-      </p>
+      <svg viewBox="0 0 800 200" style="width:100%;display:block;overflow:visible;" role="img" aria-label="Audience and mentions chart">
+        <defs>
+          <linearGradient id="aud-area-g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c084fc" stop-opacity="0.13"/>
+            <stop offset="100%" stop-color="#c084fc" stop-opacity="0.01"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        @for (t of aiComboChart.aTicks; track t.label) {
+          <line [attr.x1]="52" [attr.y1]="t.y" [attr.x2]="744" [attr.y2]="t.y"
+                stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
+        }
+        <!-- Bars (Mentions) -->
+        @for (b of aiComboChart.bars; track b.label) {
+          <rect [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.w" [attr.height]="b.h"
+                fill="#f59e0b" rx="3" opacity="0.85"/>
+        }
+        <!-- Area under audience line -->
+        <path [attr.d]="aiComboChart.areaPath" fill="url(#aud-area-g)"/>
+        <!-- Audience line -->
+        <path [attr.d]="aiComboChart.linePath" stroke="#c084fc" stroke-width="2.5" fill="none"
+              stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- Dots -->
+        @for (p of aiComboChart.pts; track p.x) {
+          <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" fill="#c084fc" stroke="white" stroke-width="2"/>
+        }
+        <!-- X baseline -->
+        <line x1="52" [attr.y1]="aiComboChart.chartBottom" x2="744" [attr.y2]="aiComboChart.chartBottom"
+              stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+        <!-- Left Y-axis labels (Audience) -->
+        @for (t of aiComboChart.aTicks; track t.label) {
+          <text [attr.x]="46" [attr.y]="t.y" text-anchor="end" dominant-baseline="middle"
+                font-size="11" font-family="inherit" fill="var(--color-neutral-solid-40)">{{ t.label }}</text>
+        }
+        <!-- Right Y-axis labels (Mentions) -->
+        @for (t of aiComboChart.mTicks; track t.label) {
+          <text [attr.x]="750" [attr.y]="t.y" text-anchor="start" dominant-baseline="middle"
+                font-size="11" font-family="inherit" fill="var(--color-neutral-solid-40)">{{ t.label }}</text>
+        }
+        <!-- X-axis labels -->
+        @for (b of aiComboChart.bars; track b.label) {
+          <text [attr.x]="b.cx" y="195" text-anchor="middle" font-size="11" font-family="inherit"
+                fill="var(--color-neutral-solid-50)">{{ b.label }}</text>
+        }
+      </svg>
     </article>
 
   </div>

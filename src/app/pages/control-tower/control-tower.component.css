@@ -328,6 +328,7 @@
   left: var(--sidebar-w);
   right: var(--ai-panel-w);
   bottom: 0;
+  z-index: 21;
   padding: 8px 12px 12px;
   background: transparent;
   box-sizing: border-box;

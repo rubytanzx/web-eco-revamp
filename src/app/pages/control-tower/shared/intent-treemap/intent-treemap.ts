@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 
-type KptTab = 'knowledge' | 'people' | 'unclassified';
+type KptTab = 'country' | 'sector' | 'content-type';
 
 interface TreemapTopic {
   id: string; name: string; pct: number; count: number; color: string; trending?: boolean;
@@ -18,38 +18,47 @@ export class IntentTreemap {
   readonly selectedTopic = input<string | null>(null);
   readonly topicClicked  = output<string | null>();
 
-  readonly activeTab = signal<KptTab>('knowledge');
+  readonly activeTab = signal<KptTab>('country');
 
   readonly kptTabDefs = [
-    { id: 'knowledge'    as KptTab, label: 'Knowledge' },
-    { id: 'people'       as KptTab, label: 'People' },
-    { id: 'unclassified' as KptTab, label: 'Unclassified' },
+    { id: 'country'      as KptTab, label: 'Country' },
+    { id: 'sector'       as KptTab, label: 'Sector' },
+    { id: 'content-type' as KptTab, label: 'Content Type' },
   ];
 
-  private readonly knowledgeTopics: TreemapTopic[] = [
-    { id: 'news',    name: 'News & Events',              pct: 18, count: 648, color: '#ef4444' },
-    { id: 'acro',    name: 'Acronyms',                   pct: 17, count: 609, color: '#06b6d4' },
-    { id: 'gen',     name: 'General Queries',            pct: 16, count: 583, color: '#6366f1' },
-    { id: 'sect',    name: 'ADB Sectoral Priorities',    pct: 15, count: 550, color: '#f97316', trending: true },
-    { id: 'admin',   name: 'Admin & Employee Support',   pct: 11, count: 382, color: '#14b8a6' },
-    { id: 'orginfo', name: 'Organisational Information', pct:  9, count: 310, color: '#3b82f6' },
-    { id: 'proj',    name: 'Projects & Initiatives',     pct:  7, count: 239, color: '#8b5cf6' },
-    { id: 'reg',     name: 'Regional Queries',           pct:  4, count: 141, color: '#ec4899' },
-    { id: 'tmpl',    name: 'Templates & Documents',      pct:  3, count:  97, color: '#f59e0b' },
-    { id: 'pol',     name: 'Policies & Guidelines',      pct:  2, count:  76, color: '#10b981' },
+  private readonly countryTopics: TreemapTopic[] = [
+    { id: 'country-pages', name: 'Country Pages',          pct: 22, count: 220, color: '#ef4444' },
+    { id: 'proj-ops',      name: 'Project Operations',     pct: 19, count: 190, color: '#06b6d4' },
+    { id: 'publications',  name: 'Publications & Research', pct: 15, count: 150, color: '#6366f1' },
+    { id: 'news-events',   name: 'News & Events',          pct: 12, count: 120, color: '#f97316' },
+    { id: 'sectors',       name: 'Sectors & Themes',       pct: 10, count: 100, color: '#14b8a6' },
+    { id: 'climate',       name: 'Climate & Environment',  pct:  8, count:  80, color: '#3b82f6' },
+    { id: 'private',       name: 'Private Sector',         pct:  6, count:  60, color: '#8b5cf6' },
+    { id: 'jobs',          name: 'Jobs & Procurement',     pct:  5, count:  50, color: '#ec4899' },
+    { id: 'other-c',       name: 'Other',                  pct:  3, count:  30, color: '#f59e0b' },
   ];
 
-  private readonly peopleTopics: TreemapTopic[] = [
-    { id: 'contact',  name: 'Contact Information',  pct: 57, count: 2573, color: '#3b82f6' },
-    { id: 'orgchart', name: 'Organisational Chart', pct: 22, count:  992, color: '#8b5cf6' },
-    { id: 'roles',    name: 'Roles & Expertise',    pct: 22, count:  948, color: '#f97316' },
+  private readonly sectorTopics: TreemapTopic[] = [
+    { id: 'energy',      name: 'Energy & Power',    pct: 24, count: 240, color: '#ef4444' },
+    { id: 'transport',   name: 'Transport',          pct: 18, count: 180, color: '#f97316' },
+    { id: 'water',       name: 'Water & Sanitation', pct: 14, count: 140, color: '#3b82f6' },
+    { id: 'agriculture', name: 'Agriculture',        pct: 11, count: 110, color: '#10b981' },
+    { id: 'finance',     name: 'Finance',            pct: 10, count: 100, color: '#6366f1' },
+    { id: 'urban',       name: 'Urban Dev.',         pct:  9, count:  90, color: '#14b8a6' },
+    { id: 'health',      name: 'Health',             pct:  7, count:  70, color: '#ec4899' },
+    { id: 'education',   name: 'Education',          pct:  5, count:  50, color: '#8b5cf6' },
+    { id: 'digital',     name: 'Digital',            pct:  2, count:  20, color: '#64748b' },
   ];
 
-  private readonly unclassifiedTopics: TreemapTopic[] = [
-    { id: 'no-answer', name: 'No Answer',        pct: 34, count: 222, color: '#64748b' },
-    { id: 'ambig',     name: 'Ambiguous Prompt', pct: 28, count: 183, color: '#94a3b8' },
-    { id: 'absent',    name: 'Absent Data',      pct: 24, count: 157, color: '#78716c' },
-    { id: 'ai-fail',   name: 'AI Failure',       pct: 14, count:  91, color: '#a8a29e' },
+  private readonly contentTypeTopics: TreemapTopic[] = [
+    { id: 'web-pages',     name: 'Web Pages',          pct: 28, count: 280, color: '#3b82f6' },
+    { id: 'pdf',           name: 'Publications (PDF)',  pct: 22, count: 220, color: '#6366f1' },
+    { id: 'data-stats',    name: 'Data / Statistics',  pct: 17, count: 170, color: '#14b8a6' },
+    { id: 'news-releases', name: 'News Releases',      pct: 13, count: 130, color: '#f97316' },
+    { id: 'proj-profiles', name: 'Project Profiles',   pct: 10, count: 100, color: '#10b981' },
+    { id: 'events',        name: 'Events',             pct:  5, count:  50, color: '#ec4899' },
+    { id: 'microsites',    name: 'Microsites',         pct:  3, count:  30, color: '#f59e0b' },
+    { id: 'other-ct',      name: 'Other',              pct:  2, count:  20, color: '#64748b' },
   ];
 
   readonly TM_W = 1000;
@@ -111,14 +120,14 @@ export class IntentTreemap {
 
   readonly treemapCells = computed((): TmCell[] => {
     const tab    = this.activeTab();
-    const topics = tab === 'knowledge' ? this.knowledgeTopics
-                 : tab === 'people'    ? this.peopleTopics
-                 : this.unclassifiedTopics;
+    const topics = tab === 'country'      ? this.countryTopics
+                 : tab === 'sector'       ? this.sectorTopics
+                 : this.contentTypeTopics;
     const sorted = [...topics].sort((a, b) => b.count - a.count);
     return this.squarify(sorted.map(t => ({ value: t.count, topic: t })), 0, 0, this.TM_W, this.TM_H);
   });
 
-  onTabClick(tab: KptTab) {
+  onTabClick(tab: KptTab): void {
     this.activeTab.set(tab);
     this.topicClicked.emit(null);
   }

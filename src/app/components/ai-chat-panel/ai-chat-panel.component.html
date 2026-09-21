@@ -436,7 +436,7 @@
           [value]="promptText()"
           (input)="promptText.set($any($event.target).value)"
           (keydown)="onPromptKey($event)"
-          (focus)="promptFocused.set(true)"
+          (focus)="onPromptFocus()"
           (blur)="promptFocused.set(false)"
           aria-label="Follow-up prompt"
         />

@@ -467,6 +467,14 @@ export class AiChatPanelComponent implements OnDestroy {
     }, 0);
   }
 
+  onPromptFocus() {
+    this.promptFocused.set(true);
+    if (window.innerWidth <= 768) {
+      if (this.selectedProject()) this.closeDetail();
+      else if (this.pdfPane()) this.closePdfPane();
+    }
+  }
+
   isUser(m: ChatMsg): m is { id: number; type: 'user'; text: string } { return m.type === 'user'; }
   isThinking(m: ChatMsg): m is { id: number; type: 'thinking' }        { return m.type === 'thinking'; }
   isAI(m: ChatMsg): m is { id: number; type: 'ai'; text: string; projects?: ProjectWidget[]; artifactProject?: string; chartConfig?: ChartConfig } { return m.type === 'ai'; }

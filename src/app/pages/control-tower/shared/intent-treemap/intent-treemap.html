@@ -27,7 +27,7 @@
       (click)="onCellClick(cell.topic.id)"
     >
       <span class="tm-cell-name">{{ cell.topic.name }}</span>
-      <span class="tm-cell-count">{{ cell.topic.count.toLocaleString() }} prompts</span>
+      <span class="tm-cell-count">{{ cell.topic.pct }}%</span>
       @if (cell.topic.trending) {
         <span class="tm-trending-badge">Trending</span>
       }

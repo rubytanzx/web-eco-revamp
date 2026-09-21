@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { TablerIconComponent } from '@tabler/icons-angular';
 import { AiChatService } from './shared/ai-chat.service';
+import { DrawerStateService } from './shared/drawer-state.service';
 
 interface NavChild {
   label: string;
@@ -203,8 +204,10 @@ export class ControlTowerComponent {
   }
 
   // ---- Ask AI side panel ----
-  private readonly chat = inject(AiChatService);
-  readonly aiOpen  = this.chat.isOpen;
+  private readonly chat        = inject(AiChatService);
+  private readonly drawerState = inject(DrawerStateService);
+  readonly aiOpen      = this.chat.isOpen;
+  readonly drawerOpen  = this.drawerState.isOpen;
   readonly aiInput = this.chat.input;
   readonly aiMessages = signal<AiMessage[]>([]);
   readonly aiThinking = signal(false);
