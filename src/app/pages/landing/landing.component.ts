@@ -45,6 +45,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   expandedRegion = signal<RegionEntry | null>(null);
   mapViewBoxOffsetX = signal<number>(380);
   chatOpen = signal(false);
+  hiwQuery = signal('');
   storyIndex = signal<number>(0);
 
   /** 'country' when the panel was opened via the user-location marker */

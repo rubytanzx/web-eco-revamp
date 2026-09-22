@@ -1,6 +1,6 @@
 <app-site-header (heightChange)="headerHeight.set($event)"></app-site-header>
 <app-ai-chat-panel
-  [query]="regionChatQuery()"
+  [query]="hiwQuery() || regionChatQuery()"
   [seedText]="regionChatSeed()"
   [relatedQueries]="regionChatRelated()"
   [open]="chatOpen()"
@@ -37,7 +37,7 @@
         </li>
         <li class="topbox-sub">
           <a href="https://www.adb.org/news/adb-responds-immediately-nepal-floods-5-million-grant" class="topbox-sub-link">
-            <img src="/adb-home/topbox-sub-black.jpg" alt="" />
+            <img src="/adb-home/blog-disasters-strike.jpg" alt="" />
             <div class="topbox-sub-overlay">
               <span class="item-meta">Crisis Response</span>
               <h2>ADB Responds Immediately to Nepal Floods with $5 Million Grant</h2>
@@ -376,6 +376,77 @@
           <a href="https://www.instagram.com/adb_hq" aria-label="Instagram" target="_blank" rel="noopener noreferrer">◎</a>
           <a href="https://www.linkedin.com/company/asian-development-bank" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">in</a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5b. How to Work with ADB — AI-guided discovery ───────────────────── -->
+  <section class="hiw-section">
+    <div class="container">
+
+      <!-- Editorial heading -->
+      <div class="hiw-hero">
+<h2 class="hiw-heading">Not sure how to<br>work with ADB?</h2>
+        <p class="hiw-subtext">Tell us who you are. Our AI surfaces the right funds, contacts and projects for you.</p>
+      </div>
+
+      <!-- Interaction card -->
+      <div class="hiw-card">
+
+        <!-- Card header -->
+        <div class="hiw-card-top">
+          <div class="hiw-card-meta">
+            <strong class="hiw-card-title">Tell us what you're looking for</strong>
+            <span class="hiw-card-sub">Ask a question in your own words. For example:</span>
+          </div>
+        </div>
+
+        <!-- Inline input + CTA -->
+        <div class="hiw-input-row">
+          <svg class="hiw-spark" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="hiw-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#68c5ea"/>
+                <stop offset="100%" stop-color="#ae5ded"/>
+              </linearGradient>
+            </defs>
+            <path stroke="url(#hiw-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+          </svg>
+          <input
+            class="hiw-query-input"
+            type="text"
+            placeholder="I'm an NGO focused on green energy in Nepal. What ADB funds can I tap into?"
+            [value]="hiwQuery()"
+            (input)="hiwQuery.set($any($event.target).value)"
+            (keydown.enter)="chatOpen.set(true)"
+            aria-label="Describe what you're looking for"
+          />
+          <button class="hiw-find-btn" type="button" (click)="chatOpen.set(true)">
+            Find relevant ADB support
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- Steps -->
+        <div class="hiw-steps">
+          <div class="hiw-step">
+            <span class="hiw-step-num">01</span>
+            <h4>Explore</h4>
+            <p>Browse ADB's regions, themes, and areas of work to orient yourself.</p>
+          </div>
+          <div class="hiw-step">
+            <span class="hiw-step-num">02</span>
+            <h4>Ask</h4>
+            <p>Describe what you need in your own words. We'll surface what's most relevant.</p>
+          </div>
+          <div class="hiw-step">
+            <span class="hiw-step-num">03</span>
+            <h4>Provide context</h4>
+            <p>Share your organization type, country, and focus area for tailored results.</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
