@@ -41,6 +41,13 @@
   stroke: rgba(120, 170, 200, 0.1);
 }
 
+// Default region strokes — distinct per region so boundaries are visible on load
+.country--cwrd { stroke: rgba(100, 155, 210, 0.55); stroke-width: 0.45; }
+.country--eard { stroke: rgba(120, 185, 100, 0.55); stroke-width: 0.45; }
+.country--sard { stroke: rgba(210, 175, 60,  0.55); stroke-width: 0.45; }
+.country--serd { stroke: rgba(60,  185, 210, 0.55); stroke-width: 0.45; }
+.country--pard { stroke: rgba(220, 130, 90,  0.55); stroke-width: 0.45; }
+
 // Active — very light washes + thin soft traced border
 .country--cwrd.country--active { fill: #dce8f4; stroke: #a8c8e0; }
 .country--eard.country--active { fill: #daeac4; stroke: #b0d080; }
@@ -50,7 +57,7 @@
 
 .country--active {
   opacity: 1;
-  stroke-width: 0.4;
+  stroke-width: 0.55;
   animation: trace-in 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -130,6 +137,58 @@
 }
 
 // Idle: long rest → two soft bobs → long rest, repeats
+// ── Sector project-count bubbles ─────────────────────────────────────────────
+
+@keyframes sector-bubble-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.sector-bubble {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 4.5cqw, 52px);
+  height: clamp(36px, 4.5cqw, 52px);
+  border-radius: 50%;
+  background: var(--bubble-color, #06b6d4);
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,0.85),
+    0 3px 14px rgba(0,0,0,0.22);
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 8;
+  animation: sector-bubble-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.12);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.95), 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  &__count {
+    font-family: 'Ideal Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(11px, 1.4cqw, 16px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  &__label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: clamp(5px, 0.65cqw, 7.5px);
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: 2px;
+  }
+}
+
 // First hold (0–15%) covers the entrance duration so there's no delay gap
 @keyframes ulm-idle-bounce {
   0%, 15%  { transform: translateY(0); }
@@ -179,21 +238,6 @@
   animation: ulm-idle-bounce 8s ease-in-out infinite;
 
   @media (prefers-reduced-motion: reduce) { animation: none; }
-}
-
-// "You" navy pill badge
-.ulm-label-you {
-  background: #002569;
-  color: #fff;
-  font-size: clamp(5.5px, 0.65cqw, 7px);
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  padding: clamp(1.5px, 0.2cqw, 2.5px) clamp(4px, 0.55cqw, 6px);
-  border-radius: 3px;
-  line-height: 1;
-  white-space: nowrap;
-  margin-bottom: clamp(2px, 0.3cqw, 4px);
 }
 
 // Marker ring container
@@ -271,7 +315,7 @@
   box-shadow: 0 4px 20px rgba(0, 37, 105, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.45s ease, transform 0.35s ease;
   z-index: 20;
 
   // Show on desktop hover/focus
@@ -311,7 +355,7 @@
   font-size: 12px;
   color: #3a4a5a;
   line-height: 1.45;
-  margin: 0 0 10px;
+  margin: 5px 0 10px;
 }
 
 .ulm-popover__btn {

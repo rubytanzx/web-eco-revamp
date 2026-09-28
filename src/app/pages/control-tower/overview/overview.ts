@@ -187,13 +187,13 @@ export class Overview {
   onChartLeave(): void { this.hoverIdx.set(null); }
 
   readonly attentionItems = [
-    { severity: 'high',   title: 'Zero-result search rate up 41% this week',        area: 'Search & AI',   metric: '12.4% zero-result',     time: '2 hrs ago'  },
-    { severity: 'high',   title: '64 high-value pages have poor AI retrievability',  area: 'Content',       metric: '64 pages',              time: '1 day ago'  },
-    { severity: 'high',   title: '1 P1 incident active — Aquia CMS latency',         area: 'Platform',      metric: 'INC-0041 open',         time: '30 min ago' },
-    { severity: 'medium', title: 'Expired/stale content above threshold — 11%',      area: 'Content',       metric: '1,630 pages',           time: '3 days ago' },
-    { severity: 'medium', title: 'Journey completion rate low at 14%',               area: 'Audience',      metric: '14% completion',        time: '1 week ago' },
-    { severity: 'medium', title: 'AI/API cost up 18% MoM — tracking above budget',  area: 'Platform',      metric: '$6.1K this month',      time: '1 day ago'  },
-    { severity: 'low',    title: '1 SSL certificate expiring in <30 days',           area: 'Platform',      metric: 'cloudflare.com cert',   time: '4 days ago' },
+    { severity: 'high',   title: 'Zero-result search rate up 41% this week',              area: 'Search & AI',      metric: '12.4% zero-result',       time: '2 hrs ago'  },
+    { severity: 'high',   title: '64 high-value pages have poor AI retrievability',        area: 'Content',          metric: '64 pages',                time: '1 day ago'  },
+    { severity: 'high',   title: '1 P1 incident active — Aquia CMS latency',               area: 'Platform',         metric: 'INC-0041 open',           time: '30 min ago' },
+    { severity: 'medium', title: 'Negative brand sentiment spike on X — 3× usual rate',    area: 'Brand Monitoring', metric: '142 negative mentions',   time: '4 hrs ago'  },
+    { severity: 'medium', title: 'AI/API cost up 18% MoM — tracking above budget',        area: 'Platform',         metric: '$6.1K this month',        time: '1 day ago'  },
+    { severity: 'medium', title: 'Competitor content outranking ADB on "climate finance"', area: 'Brand Monitoring', metric: 'SERP position #4 → #7',   time: '2 days ago' },
+    { severity: 'low',    title: 'Brand mention volume down 22% — below 30-day avg',      area: 'Brand Monitoring', metric: '1,240 mentions this week', time: '6 hrs ago'  },
   ];
 
   readonly insights = [

@@ -11,9 +11,11 @@ export interface SearchResult {
   thumbnail?: string;
   type: string;
   date: string;
+  lastUpdated?: string;
   title: string;
   titleHtml: string;
-  description: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface FacetValue {
@@ -38,6 +40,7 @@ export interface ProjectResult {
   country: string;
   sector: string;
   url: string;
+  description?: string;
 }
 
 export interface DocumentResult {
@@ -74,9 +77,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/climate-finance-2025-thumbnail.png',
     type: 'Infographic',
     date: '13 Apr 2026',
+    lastUpdated: '02 Sep 2026',
     title: 'Climate Finance in 2025',
     titleHtml: '<em>Climate</em> <em>Finance</em> in 2025',
     description: 'In 2025, ADB committed $14.8 billion in climate finance from investments, technical assistance, and direct charges, comprising $9.4 billion (64%) in climate mitigation finance, and $5.3 billion (36%) in climate adaptation finance.',
+    tags: ['Climate mitigation', 'Climate adaptation', 'Investment'],
   },
   {
     id: '2',
@@ -84,9 +89,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/adb-infographic-climate-finance-2018-thumb.png',
     type: 'Infographic',
     date: '20 Mar 2019',
+    lastUpdated: '14 Jun 2025',
     title: 'Climate Finance in 2018',
     titleHtml: '<em>Climate</em> <em>Finance</em> in 2018',
     description: 'ADB is committing $80 billion in climate finance cumulatively between 2019 and 2030, and is ensuring that at least 75% of its projects will address climate change mitigation and adaptation by 2030.',
+    tags: ['Climate change', 'Sustainable development'],
   },
   {
     id: '3',
@@ -94,9 +101,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/six-funding-innovations-climate-finance-photo.jpg',
     type: 'Article',
     date: '04 May 2023',
+    lastUpdated: '18 Jan 2026',
     title: 'Seven Funding Innovations to Boost Climate Finance',
     titleHtml: 'Seven Funding Innovations to Boost <em>Climate</em> <em>Finance</em>',
     description: 'Innovative Finance Facility for Climate in Asia and the Pacific (IF-CAP). Owned by ASEAN members and ADB, supported by development partners, and managed by ADB, the ACGF helps channel private investment into climate-smart projects.',
+    tags: ['Private investment', 'ASEAN', 'Innovative finance'],
   },
   {
     id: '4',
@@ -104,9 +113,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: undefined,
     type: 'Institutional Document',
     date: '28 Apr 2017',
+    lastUpdated: '05 Mar 2024',
     title: 'Establishment of Asia-Pacific Climate Finance Fund',
     titleHtml: 'Establishment of Asia-Pacific <em>Climate</em> <em>Finance</em> Fund',
     description: 'This paper provides information on the establishment of the Asia-Pacific Climate Finance Fund (ACliFF).',
+    tags: ['Asia-Pacific', 'Trust fund', 'Policy'],
   },
   {
     id: '5',
@@ -114,9 +125,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/vid-thumb-philippines-wind-farm_6.jpg',
     type: 'Event',
     date: '15 Feb 2024',
+    lastUpdated: '22 Aug 2025',
     title: 'Regional Workshop on Climate Finance: Role of Insurance in Financing Climate Risk',
     titleHtml: 'Regional Workshop on <em>Climate</em> <em>Finance</em>: Role of Insurance in <em>Financing</em> <em>Climate</em> Risk',
     description: 'This seminar will bring together insurers, public authorities, and related stakeholders to discuss how to tap and leverage the very promising technical expertise and financial strengths of the insurance industry.',
+    tags: ['Insurance', 'Climate risk', 'Regional cooperation'],
   },
   {
     id: '6',
@@ -124,9 +137,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/cover-gender-climate-finance.jpg',
     type: 'Publication',
     date: '01 Jul 2016',
+    lastUpdated: '30 Nov 2023',
     title: 'Building Gender into Climate Finance: ADB Experience with the Climate Investment Funds',
     titleHtml: 'Building Gender into <em>Climate</em> <em>Finance</em>: ADB Experience with the <em>Climate</em> Investment Funds',
     description: 'This publication confirms the shared commitment of ADB and the Climate Investment Funds (CIF) to mainstreaming gender equality in climate change and showcases how this priority is being integrated into the design of ADB\'s CIF projects.',
+    tags: ['Gender equality', 'Climate Investment Funds', 'Inclusion'],
   },
   {
     id: '7',
@@ -134,9 +149,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: undefined,
     type: 'Speech',
     date: '01 Sep 2026',
+    lastUpdated: '05 Sep 2026',
     title: 'Leaders Ascent Dialogue on Climate-Smart Investment - Masato Kanda',
     titleHtml: 'Leaders Ascent Dialogue on <em>Climate</em>-Smart Investment - Masato Kanda',
     description: 'Remarks by Masato Kanda, President, Asian Development Bank, at the Leaders Ascent Dialogue on Climate-Smart Investment, 1 September 2026, Koror, Palau.',
+    tags: ['Leadership', 'Pacific', 'Climate-smart'],
   },
   {
     id: '8',
@@ -144,9 +161,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/cover-unlocking-islamic-climate-finance.jpg',
     type: 'Publication',
     date: '09 Nov 2022',
+    lastUpdated: '17 Apr 2025',
     title: 'Unlocking Islamic Climate Finance',
     titleHtml: 'Unlocking Islamic <em>Climate</em> <em>Finance</em>',
     description: 'This report analyzes how Islamic finance can be scaled up to help build urgently-needed climate-resilient infrastructure in the Asia and Pacific region, and ensure its post-COVID-19 recovery is green, sustainable, and inclusive.',
+    tags: ['Islamic finance', 'Infrastructure', 'Green recovery'],
   },
   {
     id: '9',
@@ -154,9 +173,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/cover-nature-solutions-finance-hub-flyer-12sep.png',
     type: 'Publication',
     date: '11 Mar 2024',
+    lastUpdated: '29 Jul 2026',
     title: 'Nature Solutions Finance Hub for Climate and the Environment',
     titleHtml: 'Nature Solutions <em>Finance</em> Hub for <em>Climate</em> and the Environment',
     description: 'This flyer promotes the Nature Solutions Finance Hub—a platform with innovative finance approaches that can proactively amplify nature-based solutions projects for a measurable impact in conserving the region\'s biodiversity and ensuring climate resiliency.',
+    tags: ['Nature-based solutions', 'Biodiversity', 'Resilience'],
   },
   {
     id: '10',
@@ -164,9 +185,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/cover-30368.png',
     type: 'Publication',
     date: '01 Aug 2013',
+    lastUpdated: '10 Dec 2022',
     title: 'Finance For Climate Change Responses',
     titleHtml: '<em>Finance</em> For <em>Climate</em> Change Responses',
     description: 'Access to climate change funding among small Pacific developing member countries (DMCs) is constrained by their limited human and technical capacity to prepare funding proposals and manage programs.',
+    tags: ['Pacific DMCs', 'Capacity building', 'Funding access'],
   },
   {
     id: '11',
@@ -174,9 +197,11 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/vid-thumb-philippines-wind-farm_6.jpg',
     type: 'Video',
     date: '01 Jul 2015',
+    lastUpdated: '08 Feb 2024',
     title: 'Public and Private Climate Finance Required to Combat Climate Change',
     titleHtml: 'Public and Private <em>Climate</em> <em>Finance</em> Required to Combat <em>Climate</em> Change',
     description: 'In the Philippines, the private sector is joining with the government and ADB to co-fund a wind farm in the northern part of the country, showing how pooled resources can effectively finance climate-smart energy projects.',
+    tags: ['Public-private partnership', 'Energy', 'Philippines'],
   },
   {
     id: '12',
@@ -184,25 +209,27 @@ const ALL_RESULTS: SearchResult[] = [
     thumbnail: '/adb-home/search/cover-climate-finance-work-women-2.jpg',
     type: 'Publication',
     date: '12 Sep 2014',
+    lastUpdated: '25 May 2023',
     title: 'Making Climate Finance Work for Women',
     titleHtml: 'Making <em>Climate</em> <em>Finance</em> Work for Women',
     description: 'Until recently, initiatives to empower women as agents of change have remained woefully neglected in climate policy and finance circles. High transaction costs and gender biases have limited climate finance reach to women.',
+    tags: ['Women empowerment', 'Gender', 'Social inclusion'],
   },
 ];
 
 const ALL_PROJECTS: ProjectResult[] = [
-  { id:'p1', projectNumber:'56298-001', title:'Infrastructure Development for Green and Resilient New Satellite City in the Khushig Valley Area', status:'Proposed', approvalYear:2029, country:'Mongolia', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/56298-001/main' },
-  { id:'p2', projectNumber:'58333-001', title:'Hydropower Development for Energy Security and Grid Flexibility', status:'Proposed', approvalYear:2028, country:'Indonesia', sector:'Energy', url:'https://www.adb.org/projects/58333-001/main' },
-  { id:'p3', projectNumber:'57099-001', title:'Advancing Economic Stability and Sustainable Livelihoods Program (Subprogram 1)', status:'Proposed', approvalYear:2027, country:'Georgia', sector:'Public sector management', url:'https://www.adb.org/projects/57099-001/main' },
-  { id:'p4', projectNumber:'59027-001', title:'Solar Powered Irrigation Project', status:'Proposed', approvalYear:2028, country:'Philippines', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/59027-001/main' },
-  { id:'p5', projectNumber:'55073-001', title:'Climate-Resilient Transport Corridor Development Project', status:'Active', approvalYear:2026, country:'Bangladesh', sector:'Transport', url:'https://www.adb.org/projects/55073-001/main' },
-  { id:'p6', projectNumber:'54239-001', title:'Renewable Energy Transition and Grid Modernization Program', status:'Active', approvalYear:2025, country:'Vietnam', sector:'Energy', url:'https://www.adb.org/projects/54239-001/main' },
-  { id:'p7', projectNumber:'51242-003', title:'Green Finance Catalyzing Facility', status:'Active', approvalYear:2024, country:'India', sector:'Finance', url:'https://www.adb.org/projects/51242-003/main' },
-  { id:'p8', projectNumber:'52041-001', title:'Climate Smart Agriculture and Watershed Management Project', status:'Approved', approvalYear:2026, country:'Nepal', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/52041-001/main' },
-  { id:'p9', projectNumber:'49450-023', title:'Flood and Drought Risk Management and Mitigation Project', status:'Active', approvalYear:2023, country:'Cambodia', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/49450-023/main' },
-  { id:'p10', projectNumber:'43281-033', title:'Access to Clean Energy Project (Additional Financing)', status:'Closed', approvalYear:2019, country:'Pakistan', sector:'Energy', url:'https://www.adb.org/projects/43281-033/main' },
-  { id:'p11', projectNumber:'47174-001', title:'Blue Carbon and Coastal Resilience Technical Assistance', status:'Closed', approvalYear:2021, country:'Regional', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/47174-001/main' },
-  { id:'p12', projectNumber:'48290-002', title:'Urban Climate Change Resilience Trust Fund Project', status:'Archived', approvalYear:2018, country:'India', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/48290-002/main' },
+  { id:'p1', projectNumber:'56298-001', title:'Infrastructure Development for Green and Resilient New Satellite City in the Khushig Valley Area', status:'Proposed', approvalYear:2029, country:'Mongolia', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/56298-001/main', description:'Supports the development of a climate-resilient satellite city near Ulaanbaatar, integrating smart urban infrastructure and green building standards to reduce the capital\'s congestion.' },
+  { id:'p2', projectNumber:'58333-001', title:'Hydropower Development for Energy Security and Grid Flexibility', status:'Proposed', approvalYear:2028, country:'Indonesia', sector:'Energy', url:'https://www.adb.org/projects/58333-001/main', description:'Develops run-of-river hydropower capacity to strengthen Indonesia\'s energy security and provide flexible grid balancing to support the integration of variable renewable energy sources.' },
+  { id:'p3', projectNumber:'57099-001', title:'Advancing Economic Stability and Sustainable Livelihoods Program (Subprogram 1)', status:'Proposed', approvalYear:2027, country:'Georgia', sector:'Public sector management', url:'https://www.adb.org/projects/57099-001/main', description:'Strengthens fiscal management and social protection systems to bolster economic resilience, targeting vulnerable households and improving delivery of public services across Georgia.' },
+  { id:'p4', projectNumber:'59027-001', title:'Solar Powered Irrigation Project', status:'Proposed', approvalYear:2028, country:'Philippines', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/59027-001/main', description:'Replaces diesel-powered pumps with solar irrigation systems across smallholder farms, reducing costs for farmers and cutting carbon emissions while improving water-use efficiency.' },
+  { id:'p5', projectNumber:'55073-001', title:'Climate-Resilient Transport Corridor Development Project', status:'Active', approvalYear:2026, country:'Bangladesh', sector:'Transport', url:'https://www.adb.org/projects/55073-001/main', description:'Upgrades key road and bridge corridors to withstand climate-induced flooding and extreme weather, improving connectivity for communities in coastal and delta regions of Bangladesh.' },
+  { id:'p6', projectNumber:'54239-001', title:'Renewable Energy Transition and Grid Modernization Program', status:'Active', approvalYear:2025, country:'Vietnam', sector:'Energy', url:'https://www.adb.org/projects/54239-001/main', description:'Scales up solar and wind capacity while modernizing transmission infrastructure, supporting Vietnam\'s target of 50% renewable energy share and improving grid stability for industrial growth.' },
+  { id:'p7', projectNumber:'51242-003', title:'Green Finance Catalyzing Facility', status:'Active', approvalYear:2024, country:'India', sector:'Finance', url:'https://www.adb.org/projects/51242-003/main', description:'Establishes a blended finance facility to crowd in private capital for clean energy and sustainable infrastructure investments, targeting underserved states and emerging green sectors.' },
+  { id:'p8', projectNumber:'52041-001', title:'Climate Smart Agriculture and Watershed Management Project', status:'Approved', approvalYear:2026, country:'Nepal', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/52041-001/main', description:'Promotes climate-adaptive farming techniques and restores degraded watersheds to improve food security and water availability for rural communities in Nepal\'s hill and mountain regions.' },
+  { id:'p9', projectNumber:'49450-023', title:'Flood and Drought Risk Management and Mitigation Project', status:'Active', approvalYear:2023, country:'Cambodia', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/49450-023/main', description:'Builds flood control infrastructure and early warning systems to protect lives and livelihoods in Cambodia\'s most flood-prone provinces, while improving irrigation for dry-season agriculture.' },
+  { id:'p10', projectNumber:'43281-033', title:'Access to Clean Energy Project (Additional Financing)', status:'Closed', approvalYear:2019, country:'Pakistan', sector:'Energy', url:'https://www.adb.org/projects/43281-033/main', description:'Extended off-grid solar and clean cooking solutions to over 1 million rural households in Pakistan, reducing reliance on kerosene and biomass while creating local energy entrepreneur jobs.' },
+  { id:'p11', projectNumber:'47174-001', title:'Blue Carbon and Coastal Resilience Technical Assistance', status:'Closed', approvalYear:2021, country:'Regional', sector:'Agriculture, natural resources and rural development', url:'https://www.adb.org/projects/47174-001/main', description:'Developed methodologies for measuring blue carbon stocks in mangroves and seagrass across Southeast Asia, laying the groundwork for coastal ecosystem credits in carbon markets.' },
+  { id:'p12', projectNumber:'48290-002', title:'Urban Climate Change Resilience Trust Fund Project', status:'Archived', approvalYear:2018, country:'India', sector:'Water and other urban infrastructure and services', url:'https://www.adb.org/projects/48290-002/main', description:'Piloted climate-resilient urban planning tools in secondary cities, integrating flood risk mapping and nature-based drainage solutions into municipal development frameworks.' },
 ];
 
 const ALL_DOCUMENTS: DocumentResult[] = [
@@ -610,6 +637,7 @@ export class SearchComponent {
   sourcesOpen  = signal(false);
   viewMode     = signal<'list' | 'card'>('list');
   chatOpen     = signal(false);
+  chatQuery    = signal('');
   filterOpen   = signal(false);
 
   readonly searchLoading = signal(false);
@@ -685,6 +713,16 @@ export class SearchComponent {
       ? { general: MYANMAR_INITIAL_FACETS, projects: MYANMAR_PROJECTS_FACETS, documents: MYANMAR_DOCUMENTS_FACETS, tenders: MYANMAR_TENDERS_FACETS }
       : { general: INITIAL_FACETS, projects: PROJECTS_FACETS, documents: DOCUMENTS_FACETS, tenders: TENDERS_FACETS };
     this.facets.set(JSON.parse(JSON.stringify(map[tab])));
+  }
+
+  openIntelligence() {
+    const base = this.query();
+    const tab  = this.activeTab();
+    const q = tab === 'projects'
+      ? (base.toLowerCase().includes('project') ? base : `${base} projects`)
+      : base;
+    this.chatQuery.set(q);
+    this.chatOpen.set(true);
   }
 
   statusClass(status: string): string {

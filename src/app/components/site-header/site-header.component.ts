@@ -21,10 +21,13 @@ export class SiteHeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   scrollProgress = signal(0);
   activeMenu = signal<number | null>(null);
   activeRegion = signal<string>('central-west-asia');
+  searchState = signal<'idle' | 'hover' | 'focused'>('idle');
 
   private router = inject(Router);
   private scrollEl: HTMLElement | null = null;
   private menuTimer: ReturnType<typeof setTimeout> | null = null;
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  private isHovered = false;
 
   private onScroll = () => {
     const el = this.scrollEl!;
@@ -49,6 +52,35 @@ export class SiteHeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.scrollEl?.removeEventListener('scroll', this.onScroll);
     if (this.menuTimer) clearTimeout(this.menuTimer);
+    if (this.hoverTimer) clearTimeout(this.hoverTimer);
+  }
+
+  onSearchMouseEnter() {
+    this.isHovered = true;
+    if (this.hoverTimer) { clearTimeout(this.hoverTimer); this.hoverTimer = null; }
+    if (this.searchState() === 'idle') this.searchState.set('hover');
+  }
+
+  onSearchMouseLeave() {
+    this.isHovered = false;
+    if (this.searchState() === 'hover') {
+      this.hoverTimer = setTimeout(() => {
+        if (!this.isHovered) this.searchState.set('idle');
+      }, 2000);
+    }
+  }
+
+  onSearchFocus() {
+    if (this.hoverTimer) { clearTimeout(this.hoverTimer); this.hoverTimer = null; }
+    this.searchState.set('focused');
+  }
+
+  onSearchBlur() {
+    setTimeout(() => {
+      if (document.activeElement !== this.searchInputRef?.nativeElement) {
+        this.searchState.set(this.isHovered ? 'hover' : 'idle');
+      }
+    }, 150);
   }
 
   onSearch() {

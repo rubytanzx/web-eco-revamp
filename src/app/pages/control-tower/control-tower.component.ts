@@ -74,13 +74,11 @@ export class ControlTowerComponent {
       type: 'group', label: 'Usage', icon: 'chart-bar',
       children: [
         { label: 'Audience',    icon: 'users',            route: '/control-tower/audience'  },
-        { label: 'Feedback',    icon: 'messages',         route: '/control-tower/feedback'  },
         { label: 'Content',     icon: 'file-description', route: '/control-tower/content'   },
         { label: 'Search & AI', icon: 'search',           route: '/control-tower/search-ai' },
       ],
     },
-    { type: 'leaf', label: 'AI Operations', icon: 'cpu',    route: '/control-tower/ai-ops'   },
-    { type: 'leaf', label: 'Platform',      icon: 'server', route: '/control-tower/platform' },
+    { type: 'leaf', label: 'Platform', icon: 'server', route: '/control-tower/platform' },
   ];
 
   readonly footerLinks: NavLink[] = [];

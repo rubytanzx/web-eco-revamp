@@ -7,9 +7,22 @@ import { AdbMapComponent } from '../../components/adb-map/adb-map.component';
 import { AdbRegionCarouselComponent } from '../../components/adb-region-carousel/adb-region-carousel.component';
 import { AiChatPanelComponent } from '../../components/ai-chat-panel/ai-chat-panel.component';
 import { SiteHeaderComponent } from '../../components/site-header/site-header.component';
-import { RegionEntry, UserLocationData } from '../../models/region.model';
+import { RegionEntry, SectorMapMarker, UserLocationData } from '../../models/region.model';
 import { RouterLink } from '@angular/router';
 import { REGION_PANEL_CONTENT, ImpactStoryItem, RegionPanelContent } from '../../data/region-panel-content';
+import { ProjectWidget } from '../../components/ai-chat-panel/ai-chat-panel.component';
+
+const WATER_SECTOR_COLOR = '#06b6d4';
+
+const SECTOR_MAP_DATA: Record<string, SectorMapMarker[]> = {
+  water: [
+    { regionId: 'cwrd', count: 45, color: WATER_SECTOR_COLOR },
+    { regionId: 'eard', count: 18, color: WATER_SECTOR_COLOR },
+    { regionId: 'sard', count: 72, color: WATER_SECTOR_COLOR },
+    { regionId: 'serd', count: 58, color: WATER_SECTOR_COLOR },
+    { regionId: 'pard', count: 12, color: WATER_SECTOR_COLOR },
+  ],
+};
 
 const DETECTED_LOCATION: UserLocationData = {
   countryCode: 'PH',
@@ -40,13 +53,64 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   readonly detectedLocation: UserLocationData = DETECTED_LOCATION;
 
   headerHeight = signal(0);
-  selectedRegionId = signal<string>('cwrd');
+  selectedRegionId = signal<string>('');
   hoveredRegionId = signal<string>('');
   expandedRegion = signal<RegionEntry | null>(null);
   mapViewBoxOffsetX = signal<number>(380);
   chatOpen = signal(false);
+  chatExpandCompleted = signal(false);
   hiwQuery = signal('');
   storyIndex = signal<number>(0);
+  exploreTab = signal<'region' | 'sector'>('region');
+  selectedSector = signal<string>('');
+  sectorMapMarkers = computed<SectorMapMarker[]>(() => SECTOR_MAP_DATA[this.selectedSector()] ?? []);
+  expandedSector = signal<string>('');
+  aiPanelContext = signal<string>('');
+
+  // ── Inline panel chat ──────────────────────────────────────────────────────
+  panelChatPrompt = signal<string>('');
+
+  private resetPanelChatOnRegionChange = effect(() => {
+    this.expandedRegion(); // track
+    this.panelChatPrompt.set('');
+  });
+
+  onPanelPromptClick(prompt: string) {
+    this.panelChatPrompt.set(prompt);
+  }
+
+  exitPanelChat() {
+    this.panelChatPrompt.set('');
+  }
+
+  expandPanelChat() {
+    const prompt = this.panelChatPrompt();
+    if (prompt) this.hiwQuery.set(prompt);
+    this.chatExpandCompleted.set(true);
+    this.chatOpen.set(true);
+  }
+
+  onChatClose() {
+    this.chatOpen.set(false);
+    this.chatExpandCompleted.set(false);
+    this.aiPanelContext.set('');
+  }
+
+  readonly sectors = [
+    { id: 'agri',      name: 'Agriculture, Natural Resources & Rural Dev.', stat: '200+ projects', color: '#22c55e', image: '/sector/agriculture.jpg' },
+    { id: 'education', name: 'Education',                                    stat: '100+ projects', color: '#f97316', image: '/sector/education.jpg' },
+    { id: 'energy',    name: 'Energy',                                       stat: '380+ projects', color: '#f59e0b', image: '/sector/energy.jpg' },
+    { id: 'finance',   name: 'Finance',                                      stat: '180+ projects', color: '#8b5cf6', image: '/sector/finance.jpg' },
+    { id: 'health',    name: 'Health',                                       stat: '120+ projects', color: '#ef4444', image: '/sector/health.jpg' },
+    { id: 'healthsp',  name: 'Health & Social Protection',                   stat: 'Cross-cutting', color: '#ec4899', image: '/sector/healthsp.jpg' },
+    { id: 'industry',  name: 'Industry & Trade',                             stat: '90+ projects',  color: '#0ea5e9', image: '/sector/industry.jpg' },
+    { id: 'ict',       name: 'Information & Communication Technology',       stat: '80+ projects',  color: '#6366f1', image: '/sector/ict.jpg' },
+    { id: 'multi',     name: 'Multisector',                                  stat: '60+ projects',  color: '#64748b', image: '/sector/multi.jpg' },
+    { id: 'psm',       name: 'Public Sector Management',                     stat: '150+ projects', color: '#002569', image: '/sector/psm.jpg' },
+    { id: 'transport', name: 'Transport',                                    stat: '300+ projects', color: '#3b82f6', image: '/sector/transport.jpg' },
+    { id: 'transict',  name: 'Transport & ICT',                              stat: '40+ projects',  color: '#14b8a6', image: '/sector/transict.jpg' },
+    { id: 'water',     name: 'Water & Other Urban Infrastructure',           stat: '260+ projects', color: '#06b6d4', image: '/sector/water.jpg' },
+  ];
 
   /** 'country' when the panel was opened via the user-location marker */
   panelMode = signal<'region' | 'country'>('region');
@@ -92,6 +156,12 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     const s0 = c.impactStories[0];
     const stats = s0.stats.map(s => `${s.value} ${s.label}`).join(' · ');
     return `ADB's ${r.name} (${r.shortName}) covers ${c.memberCountries.length} member countries including ${topCountries}.\n\n${c.tagline}\n\nLatest: ${c.regionPulse.title}\n${c.regionPulse.description}\n\nImpact — ${s0.category}:\n${s0.quote}\n${s0.person}\n\nKey figures: ${stats}`;
+  });
+
+  regionChatProjects = computed<ProjectWidget[]>(() => {
+    const c = this.regionContent();
+    if (!c?.latestProjects) return [];
+    return c.latestProjects as ProjectWidget[];
   });
 
   regionChatRelated = computed<string[]>(() => {
@@ -234,6 +304,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       this.panelMode.set('region');
       this.countryFocus.set(null);
     }
+    this.selectedSector.set('');
     this.selectedRegionId.set(id);
     const region = this.carouselRef?.regions().find(r => r.id === id) ?? null;
     if (!region) return;
@@ -257,7 +328,25 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   closePanel() {
     this.panelMode.set('region');
     this.countryFocus.set(null);
+    this.selectedRegionId.set('');
+    this.expandedSector.set('');
+    this.exitPanelChat();
     this.animateClose();
+  }
+
+  onSectorBubbleClick() {
+    const sectorId = this.selectedSector();
+    if (!sectorId) return;
+    const wasOpen = this.expandedRegion() !== null || this.expandedSector() !== '';
+    this.expandedSector.set(sectorId);
+    this.expandedRegion.set(null);
+    this.panelMode.set('sector' as any);
+    setTimeout(() => this.animateOpen(wasOpen), 0);
+  }
+
+  openHiwChat() {
+    this.aiPanelContext.set('hiw');
+    this.chatOpen.set(true);
   }
 
   onUserLocationSelect() {

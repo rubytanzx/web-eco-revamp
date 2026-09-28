@@ -81,7 +81,6 @@
         (keydown.space)="$event.preventDefault(); onUserLocMarkerClick($event)"
       >
         <div class="ulm-content" aria-hidden="true">
-          <span class="ulm-label-you">You</span>
           <div class="ulm-dot-wrap">
             <div class="ulm-pulse-ring"></div>
             <div class="ulm-halo"></div>
@@ -92,15 +91,31 @@
         </div>
 
         <div class="ulm-popover" role="tooltip">
-          <p class="ulm-popover__country">{{ loc.countryName }}</p>
-          <p class="ulm-popover__sub">Your location · {{ loc.regionName }}</p>
-          <p class="ulm-popover__desc">Explore ADB's work and impact in the {{ loc.countryName }}.</p>
+          <p class="ulm-popover__country">You're in {{ loc.countryName }}</p>
+          <p class="ulm-popover__desc">Curious what ADB is doing in your country? See the projects and investments shaping {{ loc.countryName }}'s future.</p>
           <button class="ulm-popover__btn" type="button" (click)="onExploreClick($event)">
-            Explore {{ loc.countryName }} &raquo;
+            Show me &raquo;
           </button>
         </div>
       </div>
       </div>
+    }
+
+    @for (sm of sectorMarkers(); track sm.regionId; let i = $index) {
+      @let region = regionMap().get(sm.regionId);
+      @if (region && region.markerX) {
+        <div
+          class="sector-bubble"
+          [style.left.%]="markerLeftPct(region.markerX)"
+          [style.top.%]="markerTopPct(region.markerY)"
+          [style.--bubble-color]="sm.color"
+          [style.animation-delay.ms]="i * 60"
+          (click)="sectorBubbleClick.emit()"
+        >
+          <span class="sector-bubble__count">{{ sm.count }}</span>
+          <span class="sector-bubble__label">projects</span>
+        </div>
+      }
     }
   </div>
 } @else {

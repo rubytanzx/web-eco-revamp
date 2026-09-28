@@ -22,9 +22,17 @@
           [attr.aria-label]="region.name"
         >
           <div class="card__body">
-            <h3 class="card__name">{{ region.name }} <span class="card__code">({{ region.shortName }})</span><span class="card__short">{{ region.shortName }}</span></h3>
+            <h3 class="card__name">{{ region.name }} <span class="card__code">({{ region.shortName }})</span></h3>
             <p class="card__stat">{{ region.stat }}</p>
           </div>
+          @if (regionImages[region.id]) {
+            <div class="card__blind"
+                 [style.background-image]="'url(' + regionImages[region.id] + ')'">
+              <div class="card__blind-overlay">
+                <p class="card__blind-name">{{ region.name }}</p>
+              </div>
+            </div>
+          }
         </div>
         }
       }

@@ -4,7 +4,9 @@
   [seedText]="regionChatSeed()"
   [relatedQueries]="regionChatRelated()"
   [open]="chatOpen()"
-  (close)="chatOpen.set(false)"
+  [startCompleted]="chatExpandCompleted()"
+  [context]="aiPanelContext()"
+  (close)="onChatClose()"
 ></app-ai-chat-panel>
 <div [style.height.px]="headerHeight()"></div>
 
@@ -74,24 +76,47 @@
         [hoveredId]="hoveredRegionId()"
         [viewBoxOffsetX]="mapViewBoxOffsetX()"
         [userLocation]="detectedLocation"
+        [sectorMarkers]="sectorMapMarkers()"
         (regionSelect)="onRegionSelect($event)"
         (regionHover)="onRegionHover($event)"
         (userLocationSelect)="onUserLocationSelect()"
+        (sectorBubbleClick)="onSectorBubbleClick()"
       />
       <div class="wwwork-panel" #wwworkPanel>
         <div class="wwwork-panel__header">
-          @if (panelMode() === 'country' && countryFocus(); as loc) {
-            <!-- Country mode: opened via "You · Philippines" marker -->
-            <span class="panel-label">Country</span>
-            <h3 class="wwwork-panel__title">{{ loc.countryName }}</h3>
-            <p class="panel-countries panel-countries--region-link">{{ loc.regionName }} ({{ loc.regionCode }})</p>
-          } @else {
-            <!-- Region mode: opened via normal map region selection -->
-            <span class="panel-label">Region</span>
-            <h3 class="wwwork-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h3>
-            @if (regionContent(); as content) {
-              <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+          @if (!panelChatPrompt()) {
+            @if (expandedSector()) {
+              <!-- Sector mode: opened via sector bubble click -->
+              <span class="panel-label">Sector</span>
+              <h3 class="wwwork-panel__title">Water &amp; Urban Infrastructure</h3>
+              <p class="panel-countries">205 active projects · Asia-Pacific</p>
+            } @else if (panelMode() === 'country' && countryFocus(); as loc) {
+              <!-- Country mode: opened via "You · Philippines" marker -->
+              <span class="panel-label">Country</span>
+              <h3 class="wwwork-panel__title">{{ loc.countryName }}</h3>
+              <p class="panel-countries panel-countries--region-link">{{ loc.regionName }} ({{ loc.regionCode }})</p>
+            } @else {
+              <!-- Region mode: opened via normal map region selection -->
+              <span class="panel-label">Region</span>
+              <h3 class="wwwork-panel__title">{{ expandedRegion()?.name }} ({{ expandedRegion()?.shortName }})</h3>
+              @if (regionContent(); as content) {
+                <p class="panel-countries">{{ content.memberCountries.join(', ') }}</p>
+              }
             }
+          }
+          @if (panelChatPrompt()) {
+            <button class="wwwork-panel__back" type="button" (click)="exitPanelChat()" aria-label="Back to region">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M9 11L4 7l5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back
+            </button>
+            <button class="wwwork-panel__maximize" type="button" (click)="expandPanelChat()" aria-label="Open full conversation">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+            </button>
           }
           <button class="wwwork-panel__close" (click)="closePanel()" aria-label="Close panel">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -100,7 +125,104 @@
           </button>
         </div>
 
-        @if (regionContent(); as content) {
+        @if (panelChatPrompt()) {
+          <!-- ── Inline AI chat mode — real AI panel, embedded ──────────── -->
+          <app-ai-chat-panel
+            class="panel-embedded-chat"
+            [embedded]="true"
+            [query]="panelChatPrompt()"
+            [open]="!!panelChatPrompt()"
+            [seedText]="regionChatSeed()"
+            [seedProjects]="regionChatProjects()"
+            [relatedQueries]="regionChatRelated()"
+            (close)="exitPanelChat()"
+          />
+        }
+
+        @if (!panelChatPrompt() && expandedSector()) {
+          <!-- ── Sector Pane body ──────────────────────────────────────────── -->
+          <div class="panel-body">
+            <div class="panel-section">
+              <p class="sector-pane__desc">ADB is the largest multilateral financier of water and urban infrastructure in Asia and the Pacific — supporting clean water access, sanitation, and flood resilience for over 2 billion people.</p>
+              <div class="sector-pane__stats">
+                <div class="sector-pane__stat"><span class="sector-pane__stat-val">$4.2B</span><span class="sector-pane__stat-lbl">approved 2024</span></div>
+                <div class="sector-pane__stat"><span class="sector-pane__stat-val">205</span><span class="sector-pane__stat-lbl">active projects</span></div>
+                <div class="sector-pane__stat"><span class="sector-pane__stat-val">890M</span><span class="sector-pane__stat-lbl">people reached</span></div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <div class="panel-section-label"><span class="panel-section-text">Latest Projects</span></div>
+              <div class="sector-pane__projects">
+                <a class="sector-proj-card" href="https://www.adb.org/projects/54278-001/main" target="_blank" rel="noopener noreferrer">
+                  <div class="sector-proj-card__top">
+                    <span class="sector-proj-card__region serd">SERD</span>
+                    <span class="sector-proj-card__ext">adb.org <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                  </div>
+                  <h4 class="sector-proj-card__title">Metro Manila Flood Management Project</h4>
+                  <div class="sector-proj-card__footer">
+                    <span class="sector-proj-card__amount">$500M · 2024</span>
+                  </div>
+                </a>
+                <a class="sector-proj-card" href="https://www.adb.org/projects/54079-001/main" target="_blank" rel="noopener noreferrer">
+                  <div class="sector-proj-card__top">
+                    <span class="sector-proj-card__region sard">SARD</span>
+                    <span class="sector-proj-card__ext">adb.org <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                  </div>
+                  <h4 class="sector-proj-card__title">India Urban Water Supply &amp; Sanitation Project</h4>
+                  <div class="sector-proj-card__footer">
+                    <span class="sector-proj-card__amount">$300M · 2024</span>
+                  </div>
+                </a>
+                <a class="sector-proj-card" href="https://www.adb.org/projects/55073-001/main" target="_blank" rel="noopener noreferrer">
+                  <div class="sector-proj-card__top">
+                    <span class="sector-proj-card__region cwrd">CWRD</span>
+                    <span class="sector-proj-card__ext">adb.org <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                  </div>
+                  <h4 class="sector-proj-card__title">Central Asia Water &amp; Wastewater Sector Project</h4>
+                  <div class="sector-proj-card__footer">
+                    <span class="sector-proj-card__amount">$180M · 2023</span>
+                  </div>
+                </a>
+                <a class="sector-proj-card" href="https://www.adb.org/projects/53243-001/main" target="_blank" rel="noopener noreferrer">
+                  <div class="sector-proj-card__top">
+                    <span class="sector-proj-card__region pard">PARD</span>
+                    <span class="sector-proj-card__ext">adb.org <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                  </div>
+                  <h4 class="sector-proj-card__title">Pacific Water Security Investment Program</h4>
+                  <div class="sector-proj-card__footer">
+                    <span class="sector-proj-card__amount">$95M · 2023</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="ai-followup">
+              @for (prompt of ['Show water projects in South Asia', 'What ADB funds are available for urban sanitation?', 'How does ADB address transboundary water issues?']; track prompt) {
+                <button class="ai-followup__btn" type="button" (click)="onPanelPromptClick(prompt)">
+                  <span class="ai-followup__border" aria-hidden="true">
+                    <span class="ai-followup__blob"></span>
+                    <span class="ai-followup__blob ai-followup__blob--2"></span>
+                  </span>
+                  <span class="ai-followup__label">{{ prompt }}</span>
+                  <span class="ai-followup__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <defs>
+                        <linearGradient id="lp-ai-grad-s" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#68c5ea"/>
+                          <stop offset="100%" stop-color="#ae5ded"/>
+                        </linearGradient>
+                      </defs>
+                      <path stroke="url(#lp-ai-grad-s)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
+                    </svg>
+                  </span>
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (!panelChatPrompt() && !expandedSector() && regionContent(); as content) {
           <div class="panel-body">
 
             <!-- Region Pulse / Latest from country -->
@@ -227,6 +349,9 @@
                 @for (short of content.shorts; track short.caption) {
                   <a class="short-card" [href]="short.href" target="_blank" rel="noopener noreferrer">
                     <img [src]="short.image" alt="" class="short-card__img" />
+                    @if (short.source) {
+                      <img class="short-card__source-icon" [src]="'/social media/' + short.source + '.svg'" [alt]="short.source" />
+                    }
                     <div class="short-card__overlay">
                       <p class="short-card__caption">{{ short.caption }}</p>
                     </div>
@@ -238,9 +363,9 @@
             <!-- AI follow-up prompts -->
             <div class="ai-followup">
               @for (prompt of regionChatRelated(); track prompt) {
-                <button class="ai-followup__btn" type="button" (click)="chatOpen.set(true)">
+                <button class="ai-followup__btn" type="button" (click)="onPanelPromptClick(prompt)">
                   <span class="ai-followup__border" aria-hidden="true">
-                    <span class="ai-followup__blob ai-followup__blob--1"></span>
+                    <span class="ai-followup__blob"></span>
                     <span class="ai-followup__blob ai-followup__blob--2"></span>
                   </span>
                   <span class="ai-followup__label">{{ prompt }}</span>
@@ -264,11 +389,41 @@
       </div>
 
       <div class="wwwork-carousel" #wwworkCarousel>
-        <app-adb-region-carousel
-          [selectedId]="selectedRegionId()"
-          (regionSelect)="onRegionSelect($event)"
-          (regionHover)="onRegionHover($event)"
-        />
+
+        <!-- Tab bar: always rendered, always same position -->
+        <div class="explore-header">
+          <span class="explore-tabs__label">Explore by</span>
+          <button class="explore-tabs__btn" [class.explore-tabs__btn--active]="exploreTab() === 'region'" type="button" (click)="exploreTab.set('region')">Region</button>
+          <button class="explore-tabs__btn" [class.explore-tabs__btn--active]="exploreTab() === 'sector'" type="button" (click)="exploreTab.set('sector')">Sector</button>
+        </div>
+
+        @if (exploreTab() === 'region') {
+          <app-adb-region-carousel
+            class="explore-pane"
+            [selectedId]="selectedRegionId()"
+            (regionSelect)="onRegionSelect($event)"
+            (regionHover)="onRegionHover($event)"
+          />
+        } @else {
+          <div class="sector-carousel explore-pane">
+            @for (s of sectors; track s.id) {
+              <div class="sector-card"
+                   [style.--sector-color]="s.color"
+                   [class.sector-card--active]="selectedSector() === s.id"
+                   (click)="selectedSector.set(selectedSector() === s.id ? '' : s.id)">
+                <div class="sector-card__body">
+                  <h3 class="sector-card__name">{{ s.name }}</h3>
+                  <p class="sector-card__stat">{{ s.stat }}</p>
+                </div>
+                <div class="sector-card__blind" [style.background-image]="'url(' + s.image + ')'">
+                  <div class="sector-card__blind-overlay">
+                    <p class="sector-card__blind-name">{{ s.name }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
       <div class="carousel-fade-r" #carouselFadeR></div>
     </div>
@@ -419,10 +574,14 @@
             placeholder="I'm an NGO focused on green energy in Nepal. What ADB funds can I tap into?"
             [value]="hiwQuery()"
             (input)="hiwQuery.set($any($event.target).value)"
-            (keydown.enter)="chatOpen.set(true)"
+            (keydown.enter)="openHiwChat()"
             aria-label="Describe what you're looking for"
           />
-          <button class="hiw-find-btn" type="button" (click)="chatOpen.set(true)">
+          <button class="hiw-find-btn" type="button" (click)="openHiwChat()">
+            <span class="hiw-find-btn__border" aria-hidden="true">
+              <span class="hiw-find-btn__blob"></span>
+              <span class="hiw-find-btn__blob hiw-find-btn__blob--2"></span>
+            </span>
             Find relevant ADB support
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>

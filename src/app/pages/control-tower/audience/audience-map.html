@@ -1,0 +1,95 @@
+<article class="card aud-map-card">
+  <div class="aud-map-header">
+    <h2 class="card-title">Audience geography</h2>
+    <span class="aud-map-period">Last 30 days</span>
+  </div>
+
+  @if (isLoading()) {
+    <div class="aud-map-skeleton">
+      <div class="aud-map-skeleton-map"></div>
+    </div>
+  } @else {
+    <svg
+      [attr.viewBox]="'0 0 ' + W + ' ' + H"
+      class="aud-map-svg"
+      (mouseleave)="setHover(null)"
+      aria-label="World map showing ADB audience regions"
+      role="img"
+    >
+      <!-- Ocean -->
+      <rect width="100%" height="100%" fill="#dce8f5"/>
+
+      <!-- Country fills -->
+      @for (c of countryPaths; track c.id) {
+        @if (c.d) {
+          <path
+            [attr.d]="c.d"
+            [attr.fill]="regionColor(c.region)"
+            [attr.fill-opacity]="countryOpacity(c.region)"
+            stroke="#fff"
+            stroke-width="0.4"
+            stroke-linejoin="round"
+          />
+        }
+      }
+
+      <!-- Bubble markers per region -->
+      @for (b of bubbles; track b.name) {
+        <g
+          class="aud-bubble"
+          [attr.opacity]="bubbleOpacity(b.name)"
+          (mouseenter)="setHover(b.name)"
+          (mouseleave)="setHover(null)"
+          style="cursor: pointer;"
+          role="button"
+          [attr.aria-label]="b.name + ': ' + b.sessions + ' sessions'"
+        >
+          <circle
+            [attr.cx]="b.cx"
+            [attr.cy]="b.cy"
+            [attr.r]="b.r"
+            [attr.fill]="b.color"
+            fill-opacity="0.18"
+            [attr.stroke]="b.color"
+            stroke-width="1.5"
+          />
+          <text
+            [attr.x]="b.cx"
+            [attr.y]="b.cy - 2"
+            text-anchor="middle"
+            font-size="8"
+            font-weight="700"
+            fill="#1e293b"
+            letter-spacing="0"
+          >{{ shortName(b.name) }}</text>
+          <text
+            [attr.x]="b.cx"
+            [attr.y]="b.cy + 9"
+            text-anchor="middle"
+            font-size="7.5"
+            fill="#475569"
+          >{{ b.sessions }}</text>
+        </g>
+      }
+    </svg>
+
+    <!-- Region legend rows -->
+    <div class="aud-map-legend" (mouseleave)="setHover(null)">
+      @for (r of regions; track r.country) {
+        <div
+          class="aud-map-row"
+          [class.aud-map-row--active]="hoveredRegion() === r.country"
+          (mouseenter)="setHover(r.country)"
+        >
+          <span class="aud-map-dot" [style.background]="regionColor(r.country)"></span>
+          <span class="aud-map-name">{{ r.country }}</span>
+          <div class="aud-map-bar-wrap">
+            <div class="aud-map-bar" [style.width.%]="r.pct" [style.background]="regionColor(r.country)"></div>
+          </div>
+          <span class="aud-map-sessions">{{ r.sessions }}</span>
+          <span class="aud-map-trend" [class]="trendClass(r.trend)">{{ r.trend }}</span>
+        </div>
+      }
+    </div>
+  }
+</article>

@@ -1,5 +1,5 @@
 <app-site-header></app-site-header>
-<app-ai-chat-panel [query]="query()" [open]="chatOpen()" (close)="chatOpen.set(false)"></app-ai-chat-panel>
+<app-ai-chat-panel [query]="chatQuery()" [open]="chatOpen()" (close)="chatOpen.set(false)"></app-ai-chat-panel>
 
 @if (searchLoading()) {
   <div class="search-ai-overlay" aria-live="polite" role="status">
@@ -313,7 +313,7 @@
   <!-- Follow up with AI -->
   <div class="followup-bar">
     <div class="container">
-      <button type="button" class="followup-btn" (click)="chatOpen.set(true)">
+      <button type="button" class="followup-btn" (click)="openIntelligence()">
         <span class="followup-btn__border-glow" aria-hidden="true">
           <span class="followup-btn__blob followup-btn__blob--1"></span>
           <span class="followup-btn__blob followup-btn__blob--2"></span>
@@ -416,7 +416,7 @@
                 <option value="date">Most Recent</option>
               </select>
             </div>
-            @if (activeTab() === 'general') {
+            @if (activeTab() === 'general' || activeTab() === 'projects') {
               <div class="view-toggle">
                 <button type="button" class="view-toggle__btn" [class.view-toggle__btn--active]="viewMode() === 'list'" (click)="viewMode.set('list')" aria-label="List view">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -447,11 +447,28 @@
                     </div>
                   }
                   <div class="result-item__body" [class.result-item__body--no-thumb]="!r.thumbnail">
-                    <div class="result-item__meta">{{ r.date }} | {{ r.type }}</div>
+                    <div class="result-item__meta">
+                      {{ r.date }}
+                      @if (r.lastUpdated) {
+                        <span class="result-item__sep">|</span>
+                        <span class="result-item__updated">
+                          <svg class="result-item__refresh-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+                          Last Updated: {{ r.lastUpdated }}
+                        </span>
+                      }
+                      <span class="result-item__sep">|</span> {{ r.type }}
+                    </div>
                     <div class="result-item__title-wrap">
                       <a [href]="r.href" target="_blank" rel="noopener noreferrer" class="result-item__title" [innerHTML]="r.titleHtml"></a>
                     </div>
                     <p class="result-item__desc">{{ r.description }}</p>
+                    @if (r.tags?.length) {
+                      <div class="result-item__tags">
+                        @for (tag of r.tags!; track tag) {
+                          <span class="result-tag">{{ tag }}</span>
+                        }
+                      </div>
+                    }
                   </div>
                 </div>
               }
@@ -474,7 +491,23 @@
                     <span class="result-card__type">{{ r.type }}</span>
                     <h3 class="result-card__title" [innerHTML]="r.titleHtml"></h3>
                     <p class="result-card__desc">{{ r.description }}</p>
-                    <span class="result-card__date">{{ r.date }}</span>
+                    @if (r.tags?.length) {
+                      <div class="result-card__tags">
+                        @for (tag of r.tags!; track tag) {
+                          <span class="result-tag">{{ tag }}</span>
+                        }
+                      </div>
+                    }
+                    <span class="result-card__date">
+                      {{ r.date }}
+                      @if (r.lastUpdated) {
+                        <span class="result-item__sep">|</span>
+                        <span class="result-item__updated">
+                          <svg class="result-item__refresh-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+                          Last Updated: {{ r.lastUpdated }}
+                        </span>
+                      }
+                    </span>
                   </div>
                 </a>
               }
@@ -484,29 +517,57 @@
 
         <!-- Projects tab -->
         @if (activeTab() === 'projects') {
-          <div class="proj-list">
-            @for (p of projects(); track p.id) {
-              <a class="proj-row" [href]="p.url" target="_blank" rel="noopener">
-                <div class="proj-row__meta">
-                  <span class="status-badge status-badge--{{ statusClass(p.status) }}">{{ p.status }}</span>
-                  <span class="proj-row__year">{{ p.approvalYear }}</span>
-                </div>
-                <div class="proj-row__title">
-                  <span class="proj-row__num">{{ p.projectNumber }}</span>: {{ p.title }}
-                </div>
-                <div class="proj-row__attrs">
-                  <span class="proj-row__attr">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
-                    {{ p.country }}
-                  </span>
-                  <span class="proj-row__attr">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
-                    {{ p.sector }}
-                  </span>
-                </div>
-              </a>
-            }
-          </div>
+          @if (viewMode() === 'list') {
+            <div class="proj-list">
+              @for (p of projects(); track p.id) {
+                <a class="proj-row" [href]="p.url" target="_blank" rel="noopener">
+                  <div class="proj-row__meta">
+                    <span class="status-badge status-badge--{{ statusClass(p.status) }}">{{ p.status }}</span>
+                    <span class="proj-row__year">{{ p.approvalYear }}</span>
+                  </div>
+                  <div class="proj-row__title">
+                    <span class="proj-row__num">{{ p.projectNumber }}</span>: {{ p.title }}
+                  </div>
+                  <p class="proj-row__desc">{{ p.description }}</p>
+                  <div class="proj-row__attrs">
+                    <span class="proj-row__attr">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                      {{ p.country }}
+                    </span>
+                    <span class="proj-row__attr">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                      {{ p.sector }}
+                    </span>
+                  </div>
+                </a>
+              }
+            </div>
+          }
+          @if (viewMode() === 'card') {
+            <div class="proj-grid">
+              @for (p of projects(); track p.id) {
+                <a class="proj-card" [href]="p.url" target="_blank" rel="noopener">
+                  <div class="proj-card__top">
+                    <span class="status-badge status-badge--{{ statusClass(p.status) }}">{{ p.status }}</span>
+                    <span class="proj-card__year">{{ p.approvalYear }}</span>
+                  </div>
+                  <div class="proj-card__num">{{ p.projectNumber }}</div>
+                  <h3 class="proj-card__title">{{ p.title }}</h3>
+                  <p class="proj-card__desc">{{ p.description }}</p>
+                  <div class="proj-card__attrs">
+                    <span class="proj-row__attr">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                      {{ p.country }}
+                    </span>
+                    <span class="proj-row__attr">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                      {{ p.sector }}
+                    </span>
+                  </div>
+                </a>
+              }
+            </div>
+          }
         }
 
         <!-- Project Documents tab -->

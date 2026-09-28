@@ -1,12 +1,23 @@
 <header class="page-header">
   <div class="page-header-title">
     <h1 class="title">Audience</h1>
-    <p class="page-subtitle">Visitor activity, geographic breakdown, and engagement depth for ADB.org.</p>
+    <p class="page-subtitle">Visitor activity, geographic breakdown, engagement depth, and user feedback for ADB.org.</p>
   </div>
   <app-date-range-filter />
 </header>
 
-<!-- ═══ OVERVIEW ═══════════════════════════════════════════════════════════ -->
+<nav class="page-tabs">
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'engagement'" (click)="activeTab.set('engagement')">Engagement</button>
+  <button type="button" class="page-tab" [class.is-active]="activeTab() === 'feedback'"   (click)="activeTab.set('feedback')">Feedback</button>
+</nav>
+
+@if (activeTab() === 'feedback') {
+  <app-feedback />
+}
+
+@if (activeTab() === 'engagement') {
+
+<!-- ═══ ENGAGEMENT ══════════════════════════════════════════════════════════ -->
 
   <div class="signal-strip">
     @for (s of overviewSignals; track s.label) {
@@ -55,34 +66,8 @@
   <!-- Geography + visitor type -->
   <div class="col-3-2 section">
 
-    <!-- Top geographies -->
-    <article class="card">
-      <h2 class="card-title" style="margin-bottom:16px;">Top geographies</h2>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="data-th">Country</th>
-            <th class="data-th data-th--num">Sessions</th>
-            <th class="data-th data-th--num">Share</th>
-            <th class="data-th data-th--num">Trend</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of geoRows; track row.country) {
-            <tr class="data-tr">
-              <td class="data-td data-td--strong">
-                <span style="font-size:12px; color:var(--color-neutral-solid-40); margin-right:6px;">{{ row.code }}</span>{{ row.country }}
-              </td>
-              <td class="data-td data-td--num">{{ row.sessions }}</td>
-              <td class="data-td data-td--num data-td--muted">{{ row.pct }}%</td>
-              <td class="data-td data-td--num">
-                <span [class]="geoTrendClass(row.trend)" style="font-size:12px;">{{ row.trend }}</span>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </article>
+    <!-- Audience geography map -->
+    <app-audience-map [regions]="geoRows" />
 
     <!-- Visitor type + engagement -->
     <article class="card">
@@ -145,3 +130,4 @@
     </article>
   </div>
 
+} <!-- /@if engagement -->

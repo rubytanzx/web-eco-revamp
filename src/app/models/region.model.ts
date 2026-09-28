@@ -43,6 +43,12 @@ export interface UserLocationData {
   markerY: number;
 }
 
+export interface SectorMapMarker {
+  regionId: string;
+  count: number;
+  color: string;
+}
+
 export interface MapData {
   viewBox: string;
   width: number;

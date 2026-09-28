@@ -35,6 +35,19 @@ export interface RegionShortItem {
   image: string;
   caption: string;
   href: string;
+  source?: 'ig' | 'yt' | 'fb' | 'li';
+}
+
+export interface RegionProject {
+  projectNumber: string;
+  title: string;
+  status: string;
+  country: string;
+  sector: string;
+  url: string;
+  linkDomain: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface RegionPanelContent {
@@ -45,6 +58,7 @@ export interface RegionPanelContent {
   fromTheRegion: RegionArticle[];
   shorts: RegionShortItem[];
   exploreHref: string;
+  latestProjects?: RegionProject[];
 }
 
 export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
@@ -137,10 +151,10 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'ADB\'s $400M CAREC border facility is transforming trade across Central Asia — shorter wait times, lower costs.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Clean water for 1.2M people in Uzbekistan\'s Fergana Valley: inside ADB\'s irrigation modernization program.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/topbox-sub-black.jpg', caption: 'From mountain glaciers to Caspian shores — how climate change is reshaping water security in CWRD.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'Kazakhstan\'s renewable energy transition: ADB-backed wind and solar projects power a greener future.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'ADB\'s $400M CAREC border facility is transforming trade across Central Asia — shorter wait times, lower costs.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Clean water for 1.2M people in Uzbekistan\'s Fergana Valley: inside ADB\'s irrigation modernization program.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/topbox-sub-black.jpg', caption: 'From mountain glaciers to Caspian shores — how climate change is reshaping water security in CWRD.', href: 'https://blogs.adb.org/', source: 'fb' },
+      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'Kazakhstan\'s renewable energy transition: ADB-backed wind and solar projects power a greener future.', href: 'https://blogs.adb.org/', source: 'li' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/central-west-asia',
   },
@@ -234,12 +248,20 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'From school to work in Mongolia — ADB\'s TVET program is bridging the gap between education and employment.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Digital transformation in East Asia: how ADB is helping PRC cities build smarter, greener urban futures.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Mongolia\'s rangelands are under pressure. ADB is working with herder communities on sustainable grazing.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/topbox-sub-black.jpg', caption: 'Korea\'s green innovation hub: ADB-backed research centers driving low-carbon solutions across East Asia.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'From school to work in Mongolia — ADB\'s TVET program is bridging the gap between education and employment.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Digital transformation in East Asia: how ADB is helping PRC cities build smarter, greener urban futures.', href: 'https://blogs.adb.org/', source: 'li' },
+      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Mongolia\'s rangelands are under pressure. ADB is working with herder communities on sustainable grazing.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/topbox-sub-black.jpg', caption: 'Korea\'s green innovation hub: ADB-backed research centers driving low-carbon solutions across East Asia.', href: 'https://blogs.adb.org/', source: 'fb' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/east-asia',
+    latestProjects: [
+      { projectNumber: '55070-001', title: 'Mongolia TVET Skills Development Project', status: 'Active', country: 'Mongolia', sector: 'Education', url: 'https://www.adb.org/projects/55070-001/main', linkDomain: 'adb.org', description: 'Expanding technical and vocational education to improve employment outcomes for youth across Mongolia\'s aimags.', tags: ['Youth employment', 'Skills'] },
+      { projectNumber: '54041-001', title: 'PRC Groundwater Management and Sustainable Agriculture', status: 'Active', country: "China, People's Republic of", sector: 'Agriculture', url: 'https://www.adb.org/projects/54041-001/main', linkDomain: 'data.adb.org', description: 'Protecting 3 million hectares of farmland by reducing over-extraction of aquifers in Hebei and Henan provinces.', tags: ['Water security', 'Food systems'] },
+      { projectNumber: '53218-001', title: 'Ulaanbaatar Urban Services and Ger Area Development', status: 'Active', country: 'Mongolia', sector: 'Water & Urban', url: 'https://www.adb.org/projects/53218-001/main', linkDomain: 'development.asia', description: 'Delivering piped water, sanitation, and district heating to 180,000 ger district residents in Ulaanbaatar.', tags: ['Urban resilience', 'WASH'] },
+      { projectNumber: '57049-001', title: 'Korea Green Innovation and Clean Energy Co-Financing', status: 'Proposed', country: 'Korea, Republic of', sector: 'Energy', url: 'https://www.adb.org/projects/57049-001/main', linkDomain: 'evaluation.adb.org', description: 'Mobilizing $2 billion in ADB co-financing to accelerate Korea\'s offshore wind and green hydrogen targets.', tags: ['Green innovation', 'Clean energy'] },
+      { projectNumber: '56233-001', title: 'Mongolia Rangeland and Natural Resource Management', status: 'Active', country: 'Mongolia', sector: 'Agriculture', url: 'https://www.adb.org/projects/56233-001/main', linkDomain: 'adbi.adb.org', description: 'Supporting sustainable herder livelihoods and rangeland restoration across Mongolia\'s fragile steppe ecosystems.', tags: ['Environment', 'Livelihoods'] },
+      { projectNumber: '54289-001', title: 'PRC Yangtze River Economic Belt Green Development', status: 'Active', country: "China, People's Republic of", sector: 'Environment', url: 'https://www.adb.org/projects/54289-001/main', linkDomain: 'blogs.adb.org', description: 'Restoring riverine ecosystems and reducing industrial pollution along the Yangtze River basin.', tags: ['Environment', 'Climate resilience'] },
+    ],
   },
   sard: {
     tagline: 'ADB helps South Asia build infrastructure, tackle poverty, and adapt to climate change across its most populous region.',
@@ -330,10 +352,10 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'When disasters strike, mental health matters. ADB is embedding psychosocial support in South Asia\'s health systems.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'Women-led cooperatives in Bangladesh are preparing communities for climate shocks — one season at a time.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'Earthquake-proof classrooms in Nepal: ADB is helping rebuild schools that can withstand the next disaster.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Tripura\'s solar roadmap: how India\'s northeast is charting a clean energy path with ADB support.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'When disasters strike, mental health matters. ADB is embedding psychosocial support in South Asia\'s health systems.', href: 'https://blogs.adb.org/', source: 'fb' },
+      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'Women-led cooperatives in Bangladesh are preparing communities for climate shocks — one season at a time.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: 'Earthquake-proof classrooms in Nepal: ADB is helping rebuild schools that can withstand the next disaster.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Tripura\'s solar roadmap: how India\'s northeast is charting a clean energy path with ADB support.', href: 'https://blogs.adb.org/', source: 'li' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/south-asia',
   },
@@ -426,10 +448,10 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Viet Nam\'s $42.76M irrigation upgrade is bringing modern, climate-resilient farming to the Mekong Delta.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/topbox-sub-palau-president-mission.jpg', caption: 'Digital twins of Manila\'s Pasig River are helping city planners tackle plastic pollution at its source.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Indonesia\'s geothermal potential is vast. ADB is backing clean energy projects to tap this renewable source.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'ASEAN connectivity in a new era: ADB is helping Southeast Asia build resilient infrastructure networks.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'Viet Nam\'s $42.76M irrigation upgrade is bringing modern, climate-resilient farming to the Mekong Delta.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/topbox-sub-palau-president-mission.jpg', caption: 'Digital twins of Manila\'s Pasig River are helping city planners tackle plastic pollution at its source.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'Indonesia\'s geothermal potential is vast. ADB is backing clean energy projects to tap this renewable source.', href: 'https://blogs.adb.org/', source: 'fb' },
+      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'ASEAN connectivity in a new era: ADB is helping Southeast Asia build resilient infrastructure networks.', href: 'https://blogs.adb.org/', source: 'li' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/southeast-asia',
   },
@@ -522,10 +544,10 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/topbox-sub-palau-president-mission.jpg', caption: 'Coral gardening, heat-resistant strains, 3D-printed reefs — ADB is backing Palau\'s cutting-edge reef restoration.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/topbox-sub-van-3rdo-me-conflict-v2.jpg', caption: 'After December\'s earthquake, ADB mobilized rapid support for Vanuatu — food, shelter, and rebuilding.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'PNG\'s resource wealth is growing. ADB is working to ensure it reaches communities through better governance.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'The Pacific is on the frontline of climate change. ADB\'s resilience programs are helping island nations adapt.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/topbox-sub-palau-president-mission.jpg', caption: 'Coral gardening, heat-resistant strains, 3D-printed reefs — ADB is backing Palau\'s cutting-edge reef restoration.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/topbox-sub-van-3rdo-me-conflict-v2.jpg', caption: 'After December\'s earthquake, ADB mobilized rapid support for Vanuatu — food, shelter, and rebuilding.', href: 'https://blogs.adb.org/', source: 'fb' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'PNG\'s resource wealth is growing. ADB is working to ensure it reaches communities through better governance.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/blog-disasters-strike.jpg', caption: 'The Pacific is on the frontline of climate change. ADB\'s resilience programs are helping island nations adapt.', href: 'https://blogs.adb.org/', source: 'li' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/pacific',
   },
@@ -605,10 +627,10 @@ export const REGION_PANEL_CONTENT: Record<string, RegionPanelContent> = {
       },
     ],
     shorts: [
-      { image: '/adb-home/topbox-main-president-kanda-reelection-v1.jpg', caption: 'Masato Kanda reelected ADB President for a second term — unanimous Board of Governors support.', href: 'https://www.adb.org/news/masato-kanda-reelected-adb-president-5-year-term' },
-      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'ADB and European partners align on climate finance: €2B in co-financing for green infrastructure in Asia.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'US–ADB development finance partnership opens new channels for private sector investment in the Indo-Pacific.', href: 'https://blogs.adb.org/' },
-      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: '60 years of ADB–Japan partnership: from post-war reconstruction to climate action and digital development.', href: 'https://blogs.adb.org/' },
+      { image: '/adb-home/topbox-main-president-kanda-reelection-v1.jpg', caption: 'Masato Kanda reelected ADB President for a second term — unanimous Board of Governors support.', href: 'https://www.adb.org/news/masato-kanda-reelected-adb-president-5-year-term', source: 'li' },
+      { image: '/adb-home/img-homepage-me-conflict.jpg', caption: 'ADB and European partners align on climate finance: €2B in co-financing for green infrastructure in Asia.', href: 'https://blogs.adb.org/', source: 'yt' },
+      { image: '/adb-home/blog-digital-transformation.jpg', caption: 'US–ADB development finance partnership opens new channels for private sector investment in the Indo-Pacific.', href: 'https://blogs.adb.org/', source: 'ig' },
+      { image: '/adb-home/blog-mongolia-rangelands.jpg', caption: '60 years of ADB–Japan partnership: from post-war reconstruction to climate action and digital development.', href: 'https://blogs.adb.org/', source: 'fb' },
     ],
     exploreHref: 'https://www.adb.org/where-we-work/regional-offices',
   },

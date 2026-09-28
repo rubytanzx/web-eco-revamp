@@ -302,3 +302,8 @@
 .feedback-search::placeholder {
   color: var(--color-neutral-solid-30);
 }
+
+/* ── Embedded feedback: hide inner page header ───────────────────────────── */
+:host ::ng-deep app-feedback .page-header {
+  display: none;
+}

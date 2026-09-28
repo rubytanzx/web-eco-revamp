@@ -1,17 +1,21 @@
-<!-- Backdrop -->
-@if (open()) {
+<!-- Backdrop (full-screen mode only) -->
+@if (open() && !embedded()) {
   <div class="acp-backdrop" (click)="onClose()"></div>
 }
 
-<!-- Drawer -->
-<div class="acp" [class.acp--open]="open()" [class.acp--split]="selectedProject() || pdfPane()">
+<!-- Drawer / Embedded panel -->
+<div class="acp"
+     [class.acp--open]="open() || embedded()"
+     [class.acp--embedded]="embedded()"
+     [class.acp--split]="!embedded() && (selectedProject() || pdfPane())">
 
   <!-- Chat pane (always left) -->
   <div class="acp__chat"
        [style.flex]="(selectedProject() || pdfPane()) ? '0 0 ' + chatWidth() + 'px' : '1 1 auto'"
        [style.width]="(selectedProject() || pdfPane()) ? chatWidth() + 'px' : null">
 
-    <!-- Header -->
+    <!-- Header (full-screen mode only) -->
+    @if (!embedded()) {
     <div class="acp__header">
       <div class="acp__header-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="url(#acp-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -31,6 +35,7 @@
         </svg>
       </button>
     </div>
+    }
 
     <!-- Thread -->
     <div class="acp__thread" #thread>
@@ -81,28 +86,45 @@
                   <div class="acp__project-card"
                        [class.acp__project-card--selected]="selectedProject()?.projectNumber === p.projectNumber"
                        (click)="onProjectClick($event, p.projectNumber)" role="button" tabindex="0">
-                    <div class="acp__project-card__header">
-                      <span class="acp__project-card__title">{{ p.title }}</span>
+                    <div class="acp__project-card__top">
                       <span class="acp__project-card__status acp__project-card__status--{{ statusClass(p.status) }}">{{ p.status }}</span>
-                      <svg class="acp__project-card__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                    </div>
-                    <div class="acp__project-card__meta">{{ p.projectNumber }} · {{ p.sector }} · {{ p.country }}</div>
-                    @if (p.description && aiSeedProjects().length === 1) {
-                      <p class="acp__project-card__desc">{{ p.description }}</p>
-                    }
-                    <div class="acp__project-card__actions">
-                      <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p.projectNumber)">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <defs><linearGradient id="sl-grad-a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
-                          <path stroke="url(#sl-grad-a)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
-                        </svg>
-                        <span class="acp__project-card__summary-text">View Summary</span>
-                      </button>
-                      <span class="acp__project-card__sep">·</span>
-                      <a class="acp__project-card__link" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
-                        ADB.org
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      <span class="acp__project-card__num">{{ p.projectNumber }}</span>
+                      <a class="acp__project-card__ext" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                        {{ p.linkDomain || 'adb.org' }}
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                       </a>
+                    </div>
+                    <h3 class="acp__project-card__title">{{ p.title }}</h3>
+                    <p class="acp__project-card__desc">{{ p.description || ('Transport, water, and sanitation project supporting sustainable development in ' + p.country + '.') }}</p>
+                    <div class="acp__project-card__footer">
+                      <div class="acp__project-card__meta">
+                        <div class="acp__project-card__attrs">
+                          <span class="acp__project-card__attr">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                            {{ p.country }}
+                          </span>
+                          <span class="acp__project-card__attr">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                            {{ p.sector }}
+                          </span>
+                        </div>
+                        @if (p.tags?.length) {
+                          <div class="acp__project-card__tags">
+                            @for (tag of p.tags!; track tag) {
+                              <span class="acp__project-card__tag">{{ tag }}</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <div class="acp__project-card__actions">
+                        <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <defs><linearGradient id="sl-grad-a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                            <path stroke="url(#sl-grad-a)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                          </svg>
+                          <span class="acp__project-card__summary-text">View Summary</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 }
@@ -273,7 +295,7 @@
                     <span class="acp__chart-legend-unit">{{ cfg.yUnit }}</span>
                   </div>
                   <!-- Data source -->
-                  <p class="acp__chart-data-source">Powered by <a href="https://data.adb.org" target="_blank" rel="noopener noreferrer">data.adb.org</a></p>
+                  <p class="acp__chart-data-source">Source: <a href="https://data.adb.org" target="_blank" rel="noopener noreferrer">data.adb.org</a></p>
                   <!-- Content blocks -->
                   @if (cfg.contentBlocks?.length) {
                     <div class="acp__chart-content">
@@ -339,7 +361,7 @@
                   </div>
                   <div class="acp__artifact__body">
                     <span class="acp__artifact__label">Project Summary</span>
-                    <span class="acp__artifact__title">{{ projectTitle(msg.artifactProject) }}</span>
+                    <span class="acp__artifact__title">{{ msg.artifactProjectTitle || projectTitle(msg.artifactProject) }}</span>
                   </div>
                   <svg class="acp__artifact__open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
@@ -350,25 +372,45 @@
                     <div class="acp__project-card"
                          [class.acp__project-card--selected]="selectedProject()?.projectNumber === p.projectNumber"
                          (click)="onProjectClick($event, p.projectNumber)" role="button" tabindex="0">
-                      <div class="acp__project-card__header">
-                        <span class="acp__project-card__title">{{ p.title }}</span>
+                      <div class="acp__project-card__top">
                         <span class="acp__project-card__status acp__project-card__status--{{ statusClass(p.status) }}">{{ p.status }}</span>
-                        <svg class="acp__project-card__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                      </div>
-                      <div class="acp__project-card__meta">{{ p.projectNumber }} · {{ p.sector }} · {{ p.country }}</div>
-                      @if (p.description && msg.projects!.length === 1) {
-                        <p class="acp__project-card__desc">{{ p.description }}</p>
-                      }
-                      <div class="acp__project-card__actions">
-                        <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p.projectNumber)">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/></svg>
-                          View Summary
-                        </button>
-                        <span class="acp__project-card__sep">·</span>
-                        <a class="acp__project-card__link" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
-                          ADB.org
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        <span class="acp__project-card__num">{{ p.projectNumber }}</span>
+                        <a class="acp__project-card__ext" [href]="p.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                          {{ p.linkDomain || 'adb.org' }}
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                         </a>
+                      </div>
+                      <h3 class="acp__project-card__title">{{ p.title }}</h3>
+                      <p class="acp__project-card__desc">{{ p.description || ('Transport, water, and sanitation project supporting sustainable development in ' + p.country + '.') }}</p>
+                      <div class="acp__project-card__footer">
+                        <div class="acp__project-card__meta">
+                          <div class="acp__project-card__attrs">
+                            <span class="acp__project-card__attr">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                              {{ p.country }}
+                            </span>
+                            <span class="acp__project-card__attr">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.3.3 0 0 1 .574.1l3.726 6.846A.7.7 0 0 1 14.97 10z"/><rect x="14" y="14" width="6" height="6" rx="1"/><circle cx="6" cy="17" r="3"/></svg>
+                              {{ p.sector }}
+                            </span>
+                          </div>
+                          @if (p.tags?.length) {
+                            <div class="acp__project-card__tags">
+                              @for (tag of p.tags!; track tag) {
+                                <span class="acp__project-card__tag">{{ tag }}</span>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="acp__project-card__actions">
+                          <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <defs><linearGradient id="sl-grad-b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                              <path stroke="url(#sl-grad-b)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                            </svg>
+                            <span class="acp__project-card__summary-text">View Summary</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   }
@@ -428,7 +470,16 @@
 
     <!-- Prompt bar -->
     <div class="acp__prompt-wrap">
-      <div class="acp__prompt">
+      <div class="acp__prompt" [class.acp__prompt--has-reply]="replyContext()">
+        @if (replyContext()) {
+          <div class="acp__reply-ctx">
+            <div class="acp__reply-ctx__bar"></div>
+            <span class="acp__reply-ctx__text">{{ replyContext() }}</span>
+            <button class="acp__reply-ctx__close" type="button" aria-label="Remove context" (click)="replyContext.set('')">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        }
         <input
           class="acp__prompt-field"
           type="text"
@@ -458,15 +509,15 @@
 
   </div><!-- /.acp__chat -->
 
-  <!-- Resize handle (only in split mode) -->
-  @if (selectedProject() || pdfPane()) {
+  <!-- Resize handle (only in split mode, full-screen only) -->
+  @if (!embedded() && (selectedProject() || pdfPane())) {
     <div class="acp__resizer" [class.acp__resizer--active]="resizing()" (mousedown)="onResizerMouseDown($event)">
       <div class="acp__resizer-bar"></div>
     </div>
   }
 
-  <!-- Project detail pane (slides in from right) -->
-  @if (selectedProject(); as proj) {
+  <!-- Project detail pane (slides in from right, full-screen only) -->
+  @if (!embedded() && selectedProject(); as proj) {
     <div class="acp__detail">
       <div class="acp__detail-topbar">
         <div class="acp__detail-breadcrumb">
@@ -536,7 +587,15 @@
           </div>
         </div>
       } @else {
-      <div class="acp__detail-body">
+      <!-- Explain with AI selection button -->
+      @if (selectionText()) {
+        <div class="acp__explain-btn" [style.top.px]="selectionBtnTop()" [style.left.px]="selectionBtnLeft()" (mousedown)="$event.preventDefault()" (click)="explainSelection()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10l-5.8 1.9L12.2 18l-1.9-5.8L4 11l5.8-1.9z"/><path d="M5 3l.9 2.8L8 6.6l-2.7.9L4.2 10l-.9-2.7L1 6.6l2.7-.9z" opacity=".5"/></svg>
+          <span>Explain with AI</span>
+        </div>
+      }
+
+      <div class="acp__detail-body" (mouseup)="onDetailMouseUp($event)">
 
         <!-- Full-width title + geo + overview -->
         <div class="acp__detail-header">
@@ -634,8 +693,8 @@
     </div>
   }
 
-  <!-- PDF source pane -->
-  @if (pdfPane(); as pdf) {
+  <!-- PDF source pane (full-screen only) -->
+  @if (!embedded() && pdfPane(); as pdf) {
     <div class="acp__detail acp__pdf-pane">
       <div class="acp__detail-topbar">
         <button class="acp__detail-back" type="button" aria-label="Back to chat" (click)="closePdfPane()">

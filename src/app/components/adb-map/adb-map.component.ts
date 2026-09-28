@@ -1,10 +1,11 @@
 import {
-  ChangeDetectionStrategy, Component, computed,
+  ChangeDetectionStrategy, Component, computed, effect, ElementRef,
   inject, input, output, signal
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MapData, UserLocationData } from '../../models/region.model';
+import { MapData, SectorMapMarker, UserLocationData } from '../../models/region.model';
 import { AdbMapMarkerComponent } from './adb-map-marker/adb-map-marker.component';
 
 @Component({
@@ -17,6 +18,8 @@ import { AdbMapMarkerComponent } from './adb-map-marker/adb-map-marker.component
 })
 export class AdbMapComponent {
   private http = inject(HttpClient);
+  private doc = inject(DOCUMENT);
+  private el = inject(ElementRef);
 
   selectedId = input<string>('');
   viewBoxOffsetX = input<number>(0);
@@ -66,10 +69,42 @@ export class AdbMapComponent {
   hoveredId = input<string>('');
   regionHover = output<string>();
 
+  sectorMarkers = input<SectorMapMarker[]>([]);
+  sectorBubbleClick = output<void>();
+  regionMap = computed(() => new Map(this.regions().map(r => [r.id, r])));
+
   userLocation = input<UserLocationData | null>(null);
   userLocationSelect = output<void>();
 
   readonly userLocPopoverOpen = signal(false);
+  private _autoOpenTimer: ReturnType<typeof setTimeout> | null = null;
+  private _autoOpenFired = false;
+
+  constructor() {
+    effect((onCleanup) => {
+      const loc = this.userLocation();
+      if (loc && !this._autoOpenFired) {
+        this._autoOpenFired = true;
+        // Drop-in: 0.8s. Idle bounce settles at ~2.8s. Auto-open at 2s.
+        this._autoOpenTimer = setTimeout(() => this.userLocPopoverOpen.set(true), 2000);
+        onCleanup(() => {
+          if (this._autoOpenTimer !== null) clearTimeout(this._autoOpenTimer);
+        });
+      }
+    });
+
+    // Close popover on outside click
+    effect((onCleanup) => {
+      if (!this.userLocPopoverOpen()) return;
+      const handler = (e: MouseEvent) => {
+        if (!this.el.nativeElement.contains(e.target as Node)) {
+          this.userLocPopoverOpen.set(false);
+        }
+      };
+      this.doc.addEventListener('click', handler, true);
+      onCleanup(() => this.doc.removeEventListener('click', handler, true));
+    });
+  }
 
   onUserLocMarkerClick(e: Event) {
     e.stopPropagation();

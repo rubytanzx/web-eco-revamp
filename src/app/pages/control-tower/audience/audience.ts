@@ -1,16 +1,20 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { DateRangeFilter } from '../shared/date-range-filter/date-range-filter';
 import { TablerIconComponent } from '@tabler/icons-angular';
+import { Feedback } from '../feedback/feedback';
+import { AudienceMap } from './audience-map';
 
 @Component({
   selector: 'app-audience',
-  imports: [DateRangeFilter, TablerIconComponent],
+  imports: [DateRangeFilter, TablerIconComponent, Feedback, AudienceMap],
   templateUrl: './audience.html',
   styleUrl: './audience.css',
 })
 export class Audience {
 
-  // ── Overview tab ──────────────────────────────────────────────────────────
+  readonly activeTab = signal<'engagement' | 'feedback'>('engagement');
+
+  // ── Engagement tab ────────────────────────────────────────────────────────
 
   readonly overviewSignals = [
     { label: 'Page views',         value: '4.8M',    sub: '6% vs prior period',  trendClass: 'trend--pos' },

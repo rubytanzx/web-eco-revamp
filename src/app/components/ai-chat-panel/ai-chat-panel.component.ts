@@ -7,6 +7,19 @@ import {
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfViewerComponent } from '../pdf-viewer/pdf-viewer.component';
 
+type ContactSuggestion = {
+  keyword: string;
+  contacts: Array<{
+    name: string;
+    title: string;
+    dept: string;
+    email: string;
+    skills: string[];
+    photo: string;
+  }>;
+};
+
+
 export interface ChartSeries { name: string; color: string; values: number[]; }
 export interface ChartCitation { label: string; text: string; type: 'live' | 'doc'; url?: string; pdfUrl?: string; }
 export interface ChartConfig {
@@ -68,6 +81,8 @@ export interface ProjectWidget {
   sector: string;
   url: string;
   description?: string;
+  linkDomain?: string;
+  tags?: string[];
 }
 
 export interface ProjectDetail {
@@ -146,11 +161,11 @@ const MYANMAR_AI_RESPONSES: Array<{ text: string; projects?: ProjectWidget[]; au
   {
     text: `ADB currently has 4 active projects in Myanmar across transport, water and sanitation, health, and financial inclusion — with a combined commitment of approximately $680 million. Here are the key active projects:`,
     projects: [
-      { projectNumber: '46390-001', title: 'Rural Roads Improvement Project', status: 'Active', country: 'Myanmar', sector: 'Transport', url: 'https://www.adb.org/projects/46390-001/main' },
-      { projectNumber: '52107-001', title: 'Water Supply and Sanitation Development in Dry Zone', status: 'Active', country: 'Myanmar', sector: 'Water & Urban', url: 'https://www.adb.org/projects/52107-001/main' },
-      { projectNumber: '51353-001', title: 'Financial Inclusion Program', status: 'Active', country: 'Myanmar', sector: 'Finance', url: 'https://www.adb.org/projects/51353-001/main' },
-      { projectNumber: '46390-002', title: 'Rural Primary Health Care and Sanitation Improvement', status: 'Active', country: 'Myanmar', sector: 'Health', url: 'https://www.adb.org/projects/46390-002/main' },
-      { projectNumber: '48413-002', title: 'Myanmar National Electrification Project (NEP)', status: 'Active', country: 'Myanmar', sector: 'Energy', url: 'https://www.adb.org/projects/48413-002/main' },
+      { projectNumber: '46390-001', title: 'Rural Roads Improvement Project', status: 'Active', country: 'Myanmar', sector: 'Transport', url: 'https://www.adb.org/projects/46390-001/main', linkDomain: 'adb.org', tags: ['Connectivity', 'Rural development'] },
+      { projectNumber: '52107-001', title: 'Water Supply and Sanitation Development in Dry Zone', status: 'Active', country: 'Myanmar', sector: 'Water & Urban', url: 'https://www.adb.org/projects/52107-001/main', linkDomain: 'data.adb.org', tags: ['WASH', 'Climate resilience'] },
+      { projectNumber: '51353-001', title: 'Financial Inclusion Program', status: 'Active', country: 'Myanmar', sector: 'Finance', url: 'https://www.adb.org/projects/51353-001/main', linkDomain: 'development.asia', tags: ['SME finance', 'Gender inclusion'] },
+      { projectNumber: '46390-002', title: 'Rural Primary Health Care and Sanitation Improvement', status: 'Active', country: 'Myanmar', sector: 'Health', url: 'https://www.adb.org/projects/46390-002/main', linkDomain: 'evaluation.adb.org', tags: ['Primary health', 'Sanitation'] },
+      { projectNumber: '48413-002', title: 'Myanmar National Electrification Project (NEP)', status: 'Active', country: 'Myanmar', sector: 'Energy', url: 'https://www.adb.org/projects/48413-002/main', linkDomain: 'adbi.adb.org', tags: ['Rural electrification', 'Clean energy'] },
     ],
   },
   {
@@ -242,10 +257,197 @@ const MYANMAR_RELATED = [
   `How does ADB support financial inclusion in Myanmar?`,
 ];
 
+const NEPAL_CONTACTS: ContactSuggestion = {
+  keyword: 'Nepal Energy',
+  contacts: [
+    { name: 'Anita Sharma', title: 'Senior Energy Specialist', dept: 'Nepal Resident Mission', email: 'asharma@adb.org', skills: ['Rural Electrification', 'Power Distribution', 'Energy Access'], photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=AnitaSharma&backgroundColor=b6e3f4' },
+    { name: 'Rajesh Patel', title: 'Energy Portfolio Manager', dept: 'South Asia Dept', email: 'rpatel@adb.org', skills: ['Clean Energy', 'Project Evaluation', 'Country Strategy'], photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=RajeshPatel&backgroundColor=ffd5dc' },
+    { name: 'Sarah Kim', title: 'Infrastructure Evaluation Specialist', dept: 'Independent Evaluation Dept', email: 'skim@adb.org', skills: ['Project Assessment', 'EIRR Analysis', 'Impact Evaluation'], photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=SarahKim&backgroundColor=c0aede' },
+  ],
+};
+
+const NEPAL_AI_RESPONSES: Array<{ text: string; projects?: ProjectWidget[]; autoOpenProject?: string; suggestions?: string[]; chartConfig?: ChartConfig; contactSuggestion?: ContactSuggestion }> = [
+  {
+    text: `ADB has 6 active projects in Nepal across transport, water and sanitation, health, and financial inclusion — with a combined commitment of approximately $920 million. Here are the key active projects:`,
+    projects: [
+      { projectNumber: '46390-001', title: 'Rural Roads Improvement Project', status: 'Active', country: 'Nepal', sector: 'Transport', url: 'https://www.adb.org/projects/46390-001/main', linkDomain: 'adb.org', tags: ['Connectivity', 'Rural development'] },
+      { projectNumber: '52107-001', title: 'Water Supply and Sanitation Development in Dry Zone', status: 'Active', country: 'Nepal', sector: 'Water & Urban', url: 'https://www.adb.org/projects/52107-001/main', linkDomain: 'data.adb.org', tags: ['WASH', 'Climate resilience'] },
+      { projectNumber: '51353-001', title: 'Financial Inclusion Program', status: 'Active', country: 'Nepal', sector: 'Finance', url: 'https://www.adb.org/projects/51353-001/main', linkDomain: 'development.asia', tags: ['SME finance', 'Gender inclusion'] },
+      { projectNumber: '46390-002', title: 'Rural Primary Health Care and Sanitation Improvement', status: 'Active', country: 'Nepal', sector: 'Health', url: 'https://www.adb.org/projects/46390-002/main', linkDomain: 'evaluation.adb.org', tags: ['Primary health', 'Sanitation'] },
+      { projectNumber: '52322-001', title: 'Flood and Landslide Risk Reduction Project', status: 'Proposed', country: 'Nepal', sector: 'Water & Urban', url: 'https://www.adb.org/projects/52322-001/main', linkDomain: 'adbi.adb.org', tags: ['Disaster resilience', 'Climate adaptation'] },
+      { projectNumber: '1011-NEP', title: 'Seventh Power Project', status: 'Closed', country: 'Nepal', sector: 'Energy', url: 'https://www.adb.org/documents/seventh-power-project-nepal-loan-1011-nepsf', linkDomain: 'evaluation.adb.org', description: 'A $65.8M investment rehabilitating urban distribution networks and connecting 200,000+ rural customers to electricity across Nepal.', tags: ['Rural electrification', 'Distribution'] },
+    ],
+    suggestions: [
+      `Tell me more about the Rural Roads Improvement Project`,
+      `What is ADB's total commitment in Nepal?`,
+      `How does ADB support climate resilience in Nepal?`,
+    ],
+  },
+  {
+    text: `The Seventh Power Project (Loan 1011-NEP[SF]) is one of ADB's most significant early energy investments in Nepal — rehabilitating electricity distribution in five major towns and extending rural electrification across the country. Approved in January 1990 with a $51 million ADF Special Funds loan, the project connected over 200,000 new customers and installed 2,500 km of high-voltage and 2,300 km of low-voltage lines. ADB's Operations Evaluation Department rated it Successful, with an urban EIRR of 24.6% and rural EIRR of 19.2% — both exceeding appraisal estimates — making it a landmark in Nepal's electrification history.`,
+    autoOpenProject: '1011-NEP',
+    suggestions: [
+      `How has electricity access in Nepal changed since 1990?`,
+      `How does ADB support climate resilience in Nepal?`,
+      `What pipeline projects are planned for Nepal?`,
+    ],
+    contactSuggestion: NEPAL_CONTACTS,
+  },
+  {
+    text: `Nepal's electricity access rate has climbed from approximately 7% in 1990 — the year ADB's Seventh Power Project was approved — to 93% nationally and 78% in rural areas by 2024, one of the fastest electrification trajectories in South Asia.`,
+    chartConfig: {
+      title: 'Electricity Access Rate — Nepal',
+      subtitle: 'National vs. rural population with access to electricity, 1990–2024',
+      yUnit: '%',
+      years: [1990,1995,2000,2005,2010,2015,2020,2024],
+      series: [
+        { name: 'National', color: '#007DB7', values: [7,12,18,30,42,65,85,93] },
+        { name: 'Rural',    color: '#8DC63F', values: [3,6,10,18,28,50,68,78] },
+      ],
+      contentBlocks: [
+        { heading: 'Overview', body: 'Nepal\'s national electrification rate surged from 7% in 1990 to 93% in 2024, while rural access grew from just 3% to 78% — one of the fastest electrification trajectories in South Asia, anchored by successive ADB energy investments.' },
+        { heading: 'Seventh Power Project legacy', body: 'The Seventh Power Project (1990–1999) laid the distribution foundation — connecting 200,000+ new customers and establishing NEA\'s operational capacity. Its urban EIRR of 24.6% and rural EIRR of 19.2% both exceeded appraisal estimates, setting a model for subsequent projects.' },
+        { heading: 'Path to universal access', body: 'Following the Seventh Power Project, successive ADB and government programmes extended the grid to hill and mountain communities. By 2024, Nepal\'s near-universal access ranks among the highest in the region for a landlocked least-developed country.' },
+      ],
+      citations: [
+        { label: 'ADB Project Performance Audit Report', text: 'Performance Audit Report — Seventh Power Project, Nepal (Loan 1011-NEP[SF]), ADB Operations Evaluation Department, June 2004.', type: 'doc', url: 'https://www.adb.org/documents/seventh-power-project-nepal-loan-1011-nepsf', pdfUrl: '/seventh-power-project-nepal.pdf' },
+        { label: 'ADB Project Database', text: 'Project monitoring and evaluation data, ADB Operations Portal.', type: 'live', url: 'https://www.adb.org/projects/1011-NEP/main' },
+      ],
+    },
+    suggestions: [
+      `How does ADB support climate resilience in Nepal?`,
+      `What pipeline projects are planned for Nepal?`,
+      `How does ADB measure project impact?`,
+    ],
+  },
+  {
+    text: `Nepal's rural road connectivity has expanded from 28% of rural communities with all-weather access in 2010 to an estimated 71% in 2024 — driven by ADB's transport investments and the Rural Roads Improvement Project.`,
+    chartConfig: {
+      title: 'Rural Road Connectivity — Nepal',
+      subtitle: 'Percentage of rural communities with all-weather road access, 2010–2024',
+      yUnit: '%',
+      years: [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
+      series: [
+        { name: 'Rural access',   color: '#007DB7', values: [28,31,34,36,39,43,47,51,54,58,61,63,66,69,71] },
+        { name: 'ADB-funded roads', color: '#8DC63F', values: [5,7,9,12,15,18,22,27,32,37,41,45,50,55,59] },
+      ],
+      contentBlocks: [
+        { heading: 'Overview', body: 'Nepal\'s rural road connectivity grew from 28% in 2010 to 71% in 2024, with ADB-funded roads making up a growing share of the all-weather network across hill and Terai regions.' },
+        { heading: 'Rural Roads Project impact', body: 'The Rural Roads Improvement Project (46390-001), approved in 2022, upgraded 1,200 km of roads to all-weather standards, directly improving market access for over 2.4 million people in rural townships and reducing average travel times by up to 60%.' },
+        { heading: 'Climate resilience', body: 'All upgraded roads incorporate flood-resistant design — improved drainage, slope stabilisation, and higher bridge decks — critical given Nepal\'s extreme vulnerability to monsoon flooding and landslides.' },
+      ],
+      citations: [
+        { label: 'ADB Project Database', text: 'Project monitoring data for Rural Roads Improvement Project (46390-001), ADB Operations Portal.', type: 'live', url: 'https://www.adb.org/projects/46390-001/main' },
+        { label: 'Asian Development Outlook', text: 'Asian Development Outlook April 2024 — ADB flagship economic publication covering growth and infrastructure across Asia.', type: 'doc', url: 'https://www.adb.org/publications/asian-development-outlook-april-2024', pdfUrl: '/ado-april-2024.pdf' },
+      ],
+    },
+    suggestions: [
+      `What is ADB's total transport investment in Nepal?`,
+      `How does ADB support climate resilience in Nepal?`,
+      `What pipeline projects are planned for Nepal?`,
+    ],
+  },
+  { text: `This is a prototype interface. In the full system I would query ADB's live knowledge base to give you a precise answer. Please refer to the initial summary above or visit adb.org for comprehensive information.` },
+];
+
+const NEPAL_RELATED = [
+  `Tell me more about Nepal's Seventh Power Project`,
+  `What pipeline projects does ADB have planned for Nepal?`,
+  `How does ADB support financial inclusion in Nepal?`,
+];
+
+const NEPAL_DATA_PROMPTS = [
+  `How has road connectivity in rural Nepal changed since 2010?`,
+  `What are the expected outcomes of the Rural Roads project?`,
+  `How does ADB support climate resilience in Nepal?`,
+];
+
 const MYANMAR_DATA_PROMPTS = [
   `How has electricity access in rural Myanmar changed since 2010?`,
   `Compare ADB energy investment across Southeast Asia`,
   `What's the economic impact of electrification on household income?`,
+];
+
+// ── HIW (How to Work with ADB) scripted responses ─────────────────────────────
+
+const HIW_CONTACT: ContactSuggestion = {
+  keyword: 'ADB Financing Partnerships',
+  contacts: [
+    { name: 'Maria Santos', title: 'Senior Financing Partnerships Specialist', dept: 'Office of Cofinancing Operations', email: 'msantos@adb.org', skills: ['Trust Funds', 'Cofinancing', 'NGO Partnerships'], photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=MariaSantos&backgroundColor=b6e3f4' },
+    { name: 'James Lim', title: 'Principal Investment Specialist', dept: 'Private Sector Operations Dept', email: 'jlim@adb.org', skills: ['Blended Finance', 'Private Capital', 'Guarantees'], photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=JamesLim&backgroundColor=c0aede' },
+  ],
+};
+
+const HIW_FUNDING_WIDGETS: ProjectWidget[] = [
+  {
+    projectNumber: 'WFPF',
+    title: 'Water Financing Partnership Facility',
+    status: 'Active',
+    country: 'Asia-Pacific',
+    sector: 'Water',
+    url: 'https://www.adb.org/what-we-do/funds/water-financing-partnership-facility',
+    linkDomain: 'adb.org',
+    description: 'Supports water security across Asia-Pacific — urban, rural, and transboundary. Grants available for capacity development and pilot projects.',
+    tags: ['Trust Fund', 'Grants', 'Water'],
+  },
+  {
+    projectNumber: 'ACliFF',
+    title: 'Asia Pacific Climate Finance Fund',
+    status: 'Active',
+    country: 'Asia-Pacific',
+    sector: 'Climate',
+    url: 'https://www.adb.org/what-we-do/funds/asia-pacific-climate-finance-fund',
+    linkDomain: 'adb.org',
+    description: 'Blended finance instrument to mobilize private capital for climate-resilient infrastructure at concessional rates.',
+    tags: ['Blended Finance', 'Climate', '$200M'],
+  },
+  {
+    projectNumber: 'UCCRTF',
+    title: 'Urban Climate Change Resilience Trust Fund',
+    status: 'Active',
+    country: 'Asia-Pacific',
+    sector: 'Urban',
+    url: 'https://www.adb.org/what-we-do/funds/urban-climate-change-resilience-trust-fund',
+    linkDomain: 'adb.org',
+    description: 'Focuses on climate adaptation for rapidly urbanizing cities — flood control, water supply, and sanitation for low-income populations.',
+    tags: ['Trust Fund', 'Urban', 'Resilience'],
+  },
+  {
+    projectNumber: 'JFPRAP',
+    title: 'Japan Fund for Prosperous and Resilient Asia and the Pacific',
+    status: 'Active',
+    country: 'Asia-Pacific',
+    sector: 'Multisector',
+    url: 'https://www.adb.org/what-we-do/funds/japan-fund-for-prosperous-and-resilient-asia-and-the-pacific',
+    linkDomain: 'adb.org',
+    description: 'ADB\'s largest bilateral trust fund. Supports high-quality infrastructure, human capital, and resilience across all sectors.',
+    tags: ['Trust Fund', 'Grants', '$500M+'],
+  },
+];
+
+const HIW_AI_RESPONSES: Array<{ text: string; projects?: ProjectWidget[]; contactSuggestion?: ContactSuggestion; suggestions?: string[] }> = [
+  {
+    text: `Based on your intent, here are four ADB financing vehicles that could be a strong fit. Each offers different entry points depending on your sector, geography, and organisation type:`,
+    projects: HIW_FUNDING_WIDGETS,
+  },
+  {
+    text: `Each fund has its own eligibility criteria and application process. I've flagged two ADB specialists who can walk you through the best pathway for your organisation:`,
+    contactSuggestion: HIW_CONTACT,
+  },
+  {
+    text: `ADB typically co-finances with governments, MDBs, and qualified private entities. To move forward, you'd need a government counterpart or an ADB-registered executing agency. Would you like help identifying the right entry point for your organisation type?`,
+    suggestions: [
+      'What is an executing agency and how do I find one?',
+      'Can NGOs apply for ADB trust funds directly?',
+      'Show me projects in my sector and region',
+    ],
+  },
+];
+
+const HIW_RELATED = [
+  'What types of organisations can access ADB funding?',
+  'How long does an ADB project approval take?',
+  'Show me active trust funds in Southeast Asia',
 ];
 
 @Component({
@@ -257,10 +459,14 @@ const MYANMAR_DATA_PROMPTS = [
   styleUrl: './ai-chat-panel.component.scss',
 })
 export class AiChatPanelComponent implements OnDestroy {
-  query          = input<string>('');
-  open           = input<boolean>(false);
-  seedText       = input<string>('');
-  relatedQueries = input<string[]>([]);
+  query            = input<string>('');
+  open             = input<boolean>(false);
+  seedText         = input<string>('');
+  seedProjects     = input<ProjectWidget[]>([]);
+  relatedQueries   = input<string[]>([]);
+  embedded         = input<boolean>(false);
+  startCompleted   = input<boolean>(false);
+  context          = input<string>('');
   close = output<void>();
 
   private cdr       = inject(ChangeDetectorRef);
@@ -279,6 +485,11 @@ export class AiChatPanelComponent implements OnDestroy {
   promptText        = signal('');
   promptFocused     = signal(false);
   showDataExplorer  = signal(false);
+
+  selectionText   = signal('');
+  selectionBtnTop = signal(0);
+  selectionBtnLeft = signal(0);
+  replyContext    = signal('');
   hoverIdx          = signal<number | null>(null);
   hoverMsgId        = signal<number | null>(null);
   sourcesOpen       = signal<Record<number, boolean>>({});
@@ -295,9 +506,29 @@ export class AiChatPanelComponent implements OnDestroy {
   ];
 
   isMyanmarCtx   = computed(() => this.query().toLowerCase().includes('myanmar'));
-  aiSeed         = computed(() => this.seedText() || (this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES[0].text : AI_RESPONSES[0].text));
-  aiSeedProjects = computed(() => this.isMyanmarCtx() && !this.seedText() ? (MYANMAR_AI_RESPONSES[0].projects ?? []) : []);
-  activeRelated  = computed(() => this.relatedQueries().length ? this.relatedQueries() : (this.isMyanmarCtx() ? MYANMAR_RELATED : RELATED));
+  isNepalCtx     = computed(() => this.query().toLowerCase().includes('nepal'));
+  isHiwCtx       = computed(() => this.context() === 'hiw');
+  aiSeed         = computed(() => {
+    if (this.seedText()) return this.seedText();
+    if (this.isMyanmarCtx()) return MYANMAR_AI_RESPONSES[0].text;
+    if (this.isNepalCtx())   return NEPAL_AI_RESPONSES[0].text;
+    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].text;
+    return AI_RESPONSES[0].text;
+  });
+  aiSeedProjects = computed(() => {
+    if (this.seedProjects().length) return this.seedProjects();
+    if (this.isMyanmarCtx()) return MYANMAR_AI_RESPONSES[0].projects ?? [];
+    if (this.isNepalCtx())   return NEPAL_AI_RESPONSES[0].projects ?? [];
+    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].projects ?? [];
+    return [];
+  });
+  activeRelated  = computed(() => {
+    if (this.relatedQueries().length) return this.relatedQueries();
+    if (this.isMyanmarCtx()) return MYANMAR_RELATED;
+    if (this.isNepalCtx())   return NEPAL_RELATED;
+    if (this.isHiwCtx())     return HIW_RELATED;
+    return RELATED;
+  });
 
   currentPhase  = computed(() => this.phases[this.phaseIdx() % this.phases.length]);
   currentThought = computed(() => this.thoughts[this.phaseIdx() % this.thoughts.length]);
@@ -313,25 +544,44 @@ export class AiChatPanelComponent implements OnDestroy {
   @ViewChild('thread') threadRef!: ElementRef<HTMLDivElement>;
 
   constructor() {
+    // Full-screen mode: open signal triggers session
     effect(() => {
       const isOpen = this.open();
-      if (isOpen) untracked(() => this.startSession());
+      const emb = this.embedded();
+      if (isOpen && !emb) untracked(() => this.startSession());
+    });
+    // Embedded mode: query change triggers/restarts session
+    effect(() => {
+      const q = this.query();
+      const emb = this.embedded();
+      if (q && emb) untracked(() => this.startSession());
     });
   }
 
   startSession() {
     this.clearAllTimers();
-    this.aiVisible.set(false);
-    this.relatedLoaded.set(false);
-    this.elapsed.set(0);
-    this.phaseIdx.set(0);
-    this.loaderCollapsed.set(false);
     this.messages.set([]);
     this.promptText.set('');
     this.showDataExplorer.set(false);
     this.sourcesOpen.set({});
     this.pdfPane.set(null);
     this.scriptIdx = 1;
+    this.loaderCollapsed.set(false);
+
+    // When expanding from an already-answered mini chat, skip the loading animation
+    if (this.startCompleted()) {
+      this.aiVisible.set(true);
+      this.relatedLoaded.set(true);
+      this.elapsed.set(0);
+      this.phaseIdx.set(0);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.aiVisible.set(false);
+    this.relatedLoaded.set(false);
+    this.elapsed.set(0);
+    this.phaseIdx.set(0);
 
     this.timerInterval = setInterval(() => {
       this.elapsed.update(v => v + 1);
@@ -362,9 +612,12 @@ export class AiChatPanelComponent implements OnDestroy {
   }
 
   sendFollowUp(text?: string) {
-    const t = (text ?? this.promptText()).trim();
-    if (!t) return;
+    const ctx = this.replyContext();
+    const raw = (text ?? this.promptText()).trim();
+    if (!raw) return;
+    const t = ctx ? `"${ctx}"\n\n${raw}` : raw;
     this.promptText.set('');
+    this.replyContext.set('');
     this.showDataExplorer.set(false);
 
     const uid = Date.now();
@@ -378,7 +631,7 @@ export class AiChatPanelComponent implements OnDestroy {
 
     const delay = 900 + Math.random() * 400;
     const t1 = setTimeout(() => {
-      const pool = this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES : AI_RESPONSES;
+      const pool = this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES : this.isNepalCtx() ? NEPAL_AI_RESPONSES : this.isHiwCtx() ? HIW_AI_RESPONSES : AI_RESPONSES;
       const entry = this.scriptIdx < pool.length ? pool[this.scriptIdx++] : GUARDRAIL;
 
       const autoOpen   = (entry as any).autoOpenProject as string | undefined;
@@ -461,10 +714,42 @@ export class AiChatPanelComponent implements OnDestroy {
 
   closeDetail() {
     this.selectedProject.set(null);
+    this.clearSelection();
     setTimeout(() => {
       const el = this.threadRef?.nativeElement;
       if (el) el.scrollTop = this.chatScrollPos;
     }, 0);
+  }
+
+  onDetailMouseUp(e: MouseEvent) {
+    const sel = window.getSelection();
+    const text = sel?.toString().trim() ?? '';
+    if (!text || text.length < 10) { this.clearSelection(); return; }
+    const range = sel!.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const pane = (e.currentTarget as HTMLElement).closest('.acp__detail') as HTMLElement;
+    const paneRect = pane.getBoundingClientRect();
+    this.selectionText.set(text);
+    this.selectionBtnTop.set(rect.top - paneRect.top - 40);
+    this.selectionBtnLeft.set(Math.min(rect.left - paneRect.left, paneRect.width - 180));
+    this.cdr.markForCheck();
+  }
+
+  clearSelection() {
+    this.selectionText.set('');
+    this.cdr.markForCheck();
+  }
+
+  explainSelection() {
+    const quoted = this.selectionText();
+    this.clearSelection();
+    window.getSelection()?.removeAllRanges();
+    this.replyContext.set(quoted);
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>('.acp__prompt-field');
+      input?.focus();
+    }, 50);
   }
 
   onPromptFocus() {
@@ -477,7 +762,7 @@ export class AiChatPanelComponent implements OnDestroy {
 
   isUser(m: ChatMsg): m is { id: number; type: 'user'; text: string } { return m.type === 'user'; }
   isThinking(m: ChatMsg): m is { id: number; type: 'thinking' }        { return m.type === 'thinking'; }
-  isAI(m: ChatMsg): m is { id: number; type: 'ai'; text: string; projects?: ProjectWidget[]; artifactProject?: string; chartConfig?: ChartConfig } { return m.type === 'ai'; }
+  isAI(m: ChatMsg): m is { id: number; type: 'ai'; text: string; projects?: ProjectWidget[]; artifactProject?: string; artifactProjectTitle?: string; chartConfig?: ChartConfig; suggestions?: string[]; contactSuggestion?: ContactSuggestion } { return m.type === 'ai'; }
 
   buildChart(config: ChartConfig): ComputedChart { return buildChartData(config); }
 
@@ -568,10 +853,28 @@ export class AiChatPanelComponent implements OnDestroy {
     } catch {}
   }
 
-  onViewSummary(e: Event, projectNumber: string) {
+  onViewSummary(e: Event, p: ProjectWidget) {
     e.stopPropagation();
-    const detail = PROJECT_DETAILS[projectNumber];
-    if (!detail) return;
+    const detail: ProjectDetail = PROJECT_DETAILS[p.projectNumber] ?? {
+      projectNumber: p.projectNumber,
+      title: p.title,
+      status: p.status,
+      date: '',
+      geographicScope: [p.country],
+      overview: p.description ?? `${p.title} is an ADB project in ${p.country} supporting development in the ${p.sector} sector.`,
+      keyActivities: [],
+      expectedOutcomes: [],
+      analysisSummary: '',
+      analysisStats: [],
+      keyFacts: [
+        { label: 'Country', value: p.country },
+        { label: 'Sector', value: p.sector },
+        { label: 'Project Number', value: p.projectNumber },
+        { label: 'Status', value: p.status },
+      ],
+      relatedDocs: [{ label: 'Project Data Sheet', url: p.url }],
+    };
+    const projectNumber = p.projectNumber;
 
     const uid = Date.now();
     this.messages.update(msgs => [
@@ -583,16 +886,21 @@ export class AiChatPanelComponent implements OnDestroy {
     this.scrollToBottom();
     this.openDetailWithLoading(detail);
 
+    const nepalSuggestions = this.isNepalCtx() ? NEPAL_DATA_PROMPTS : undefined;
+
     const t = setTimeout(() => {
       this.messages.update(msgs =>
         msgs.map(m => m.id === uid + 1
-          ? { id: uid + 1, type: 'ai' as const, text: `Here's the AI-generated project summary for ${detail.title}. You can reopen it anytime using the card below.`, artifactProject: projectNumber }
+          ? { id: uid + 1, type: 'ai' as const, text: `Here's the AI-generated project summary for ${detail.title}. You can reopen it anytime using the card below.`, artifactProject: projectNumber, artifactProjectTitle: detail.title, suggestions: nepalSuggestions }
           : m
         )
       );
       if (this.isMyanmarCtx()) {
         if (this.scriptIdx <= 1) this.scriptIdx = 2;
         this.showDataExplorer.set(true);
+      }
+      if (this.isNepalCtx()) {
+        if (this.scriptIdx <= 2) this.scriptIdx = 3;
       }
       this.cdr.markForCheck();
       this.scrollToLastResponse();

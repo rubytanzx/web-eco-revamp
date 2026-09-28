@@ -71,6 +71,14 @@ export class AdbRegionCarouselComponent {
     this.regionSelect.emit(id);
   }
 
+  readonly regionImages: Record<string, string> = {
+    cwrd: '/regions/CWRD.jpg',
+    eard: '/regions/EARD.jpg',
+    sard: '/regions/SARD.jpg',
+    serd: '/regions/SEA.jpg',
+    pard: '/regions/PARD.jpg',
+  };
+
   countryList(countries: string[]): string {
     return countries.slice(0, 5).join(', ') +
       (countries.length > 5 ? ` +${countries.length - 5} more` : '');

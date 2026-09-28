@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { DateRangeFilter } from '../shared/date-range-filter/date-range-filter';
 import { TablerIconComponent } from '@tabler/icons-angular';
 
-type ContentTab = 'performance' | 'health' | 'inventory' | 'knowledge';
+type ContentTab = 'performance' | 'knowledge';
 
 interface ContentTypeRow {
   type: string;
