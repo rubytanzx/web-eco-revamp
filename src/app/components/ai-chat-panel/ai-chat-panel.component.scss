@@ -1861,3 +1861,160 @@
 
   &:hover { color: #007DB7; }
 }
+
+// ── Contact suggestion cards ──────────────────────────────────────────────────
+
+.acp__contacts {
+  margin-top: 12px;
+}
+
+.acp__contacts-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #007DB7;
+  margin-bottom: 8px;
+}
+
+.acp__contacts-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.acp__contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e4edf5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 160px;
+  max-width: 200px;
+  flex: 1;
+}
+
+.acp__contact-card__org {
+  font-size: 10px;
+  font-weight: 600;
+  color: #007DB7;
+  background: #EBF5FB;
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-bottom: 4px;
+}
+
+.acp__contact-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 2px;
+}
+
+.acp__contact-card__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0d1b2e;
+  line-height: 1.3;
+}
+
+.acp__contact-card__title {
+  font-size: 11.5px;
+  color: #555;
+  line-height: 1.3;
+}
+
+.acp__contact-card__dept {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.acp__contact-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.acp__contact-card__skill {
+  font-size: 10px;
+  background: #f1f5f9;
+  color: #445;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.acp__contact-card__email {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #002569;
+  text-decoration: none;
+  border: 1.5px solid #002569;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: transparent;
+  margin-top: auto;
+  align-self: flex-end;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: #002569; color: #fff; }
+}
+
+// ── Project detail: Point of Contact ─────────────────────────────────────────
+
+.acp__detail-poc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 4px;
+}
+
+.acp__detail-poc__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #007DB7;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  object-fit: cover;
+
+  &--img { background: none; }
+}
+
+.acp__detail-poc__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.acp__detail-poc__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0d1b2e;
+}
+
+.acp__detail-poc__title {
+  font-size: 11.5px;
+  color: #666;
+}
+
+.acp__detail-poc__email {
+  font-size: 11.5px;
+  color: #007DB7;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}

@@ -99,6 +99,7 @@ export interface ProjectDetail {
   keyFacts: { label: string; value: string }[];
   photo?: string;
   relatedDocs: { label: string; url: string }[];
+  pointOfContact?: { name: string; title: string; email: string; photo?: string };
 }
 
 const PROJECT_DETAILS: Record<string, ProjectDetail> = {
@@ -144,12 +145,54 @@ const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       { label: 'Project Administration Manual', url: 'https://www.adb.org/projects/48413-002/main' },
     ],
   },
+  '1011-NEP': {
+    projectNumber: '1011-NEP',
+    title: 'Seventh Power Project',
+    status: 'Closed',
+    date: '11 Jan 1990',
+    geographicScope: ['Nepal', 'South Asia', 'Nationwide'],
+    overview: 'A $65.8 million investment to rehabilitate electricity distribution networks in five major urban centres — Hetauda, Birgunj, Butwal, Bhairahawa, and Dharan — and extend rural electrification to previously unelectrified communities across the country. The project connected almost 1,000 load centres and delivered electricity to more than 200,000 new customers, making it one of the largest rural electrification initiatives in Nepal at the time.',
+    keyActivities: [
+      'Rehabilitate distribution networks in five major towns: Hetauda, Birgunj, Butwal, Bhairahawa, and Dharan',
+      'Extend subtransmission and distribution networks to six unelectrified rural areas',
+      'Install 2,500 km of high-voltage and 2,300 km of low-voltage distribution lines',
+      'Construct concrete pole factory with daily capacity of 58 prestressed poles',
+      'Institutional capacity building and training for Nepal Electricity Authority (NEA)',
+    ],
+    expectedOutcomes: [
+      'More than 200,000 new rural customers connected to electricity',
+      '2,500 km high-voltage and 2,300 km low-voltage distribution lines installed',
+      'Quality and reliability of power supply improved across five major urban centres',
+      'EIRR of 24.6% (urban component) and 19.2% (rural component) achieved at completion',
+      '185 MVA of transformer capacity added to the distribution network',
+    ],
+    analysisSummary: "Rated overall successful by ADB's Operations Evaluation Department. The urban rehabilitation component achieved an EIRR of 24.6%, exceeding the appraisal estimate of 22.2%. The rural electrification EIRR reached 19.2% — significantly above the appraisal estimate of 13.5% — driven by a 2.4× increase in new connections versus target. Actual project cost of $65.8M exceeded the appraisal estimate of $56M due to scope expansion and construction of the concrete pole factory. The project established the foundation for NEA's long-term distribution network and remains a landmark in Nepal's electrification history.",
+    analysisStats: [
+      { label: 'Evaluation Rating', value: 'Successful' },
+      { label: 'Urban EIRR', value: '24.6% (est. 22.2%)' },
+      { label: 'Rural EIRR', value: '19.2% (est. 13.5%)' },
+      { label: 'SDG Mapping', value: 'SDG 7, 11' },
+    ],
+    keyFacts: [
+      { label: 'Borrower', value: 'Kingdom of Nepal' },
+      { label: 'Executing Agency', value: 'Nepal Electricity Authority' },
+      { label: 'Loan Amount', value: '$51M (ADF Special Funds)' },
+      { label: 'Total Project Cost', value: '$65.8M' },
+      { label: 'Approval Date', value: '11 Jan 1990' },
+      { label: 'Loan Closing', value: '9 Aug 1999' },
+    ],
+    relatedDocs: [
+      { label: 'Project Performance Audit Report', url: 'https://www.adb.org/documents/seventh-power-project-nepal-loan-1011-nepsf' },
+      { label: 'Project Data Sheet', url: 'https://www.adb.org/documents/seventh-power-project-nepal-loan-1011-nepsf' },
+    ],
+    pointOfContact: { name: 'Anita Sharma', title: 'Senior Energy Specialist', email: 'asharma@adb.org', photo: 'https://api.dicebear.com/9.x/lorelei/svg?seed=AnitaSharma&backgroundColor=b6e3f4' },
+  },
 };
 
 export type ChatMsg =
   | { id: number; type: 'user'; text: string }
   | { id: number; type: 'thinking' }
-  | { id: number; type: 'ai'; text: string; projects?: ProjectWidget[]; artifactProject?: string; chartConfig?: ChartConfig };
+  | { id: number; type: 'ai'; text: string; projects?: ProjectWidget[]; artifactProject?: string; chartConfig?: ChartConfig; contactSuggestion?: ContactSuggestion };
 
 const AI_RESPONSES: Array<{ text: string; projects?: ProjectWidget[] }> = [
   { text: `ADB has committed $100 billion in climate financing from 2019 to 2030. Projects span renewable energy, resilient infrastructure, clean transport, and nature-based solutions across 68 member countries. Priority areas include Pacific island nations facing sea-level rise and coal-dependent economies undergoing just energy transitions.` },
@@ -634,11 +677,12 @@ export class AiChatPanelComponent implements OnDestroy {
       const pool = this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES : this.isNepalCtx() ? NEPAL_AI_RESPONSES : this.isHiwCtx() ? HIW_AI_RESPONSES : AI_RESPONSES;
       const entry = this.scriptIdx < pool.length ? pool[this.scriptIdx++] : GUARDRAIL;
 
-      const autoOpen   = (entry as any).autoOpenProject as string | undefined;
-      const chartCfg   = (entry as any).chartConfig as ChartConfig | undefined;
+      const autoOpen        = (entry as any).autoOpenProject as string | undefined;
+      const chartCfg        = (entry as any).chartConfig as ChartConfig | undefined;
+      const contactSuggest  = (entry as any).contactSuggestion as ContactSuggestion | undefined;
       this.messages.update(msgs =>
         msgs.map(m => m.id === uid + 1
-          ? { id: uid + 1, type: 'ai' as const, text: entry.text, projects: (entry as any).projects, artifactProject: autoOpen, chartConfig: chartCfg }
+          ? { id: uid + 1, type: 'ai' as const, text: entry.text, projects: (entry as any).projects, artifactProject: autoOpen, chartConfig: chartCfg, contactSuggestion: contactSuggest }
           : m
         )
       );

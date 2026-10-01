@@ -27,7 +27,7 @@
           </defs>
           <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>
         </svg>
-        <span>AI Chat</span>
+        <span>ADB Intelligence</span>
       </div>
       <button class="acp__close" type="button" aria-label="Close" (click)="onClose()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
@@ -416,6 +416,32 @@
                   }
                 </div>
               }
+              @if (isAI(msg) && msg.contactSuggestion; as cs) {
+                <div class="acp__contacts">
+                  <div class="acp__contacts-label">People relevant to {{ cs.keyword }}</div>
+                  <div class="acp__contacts-list">
+                    @for (c of cs.contacts; track c.email) {
+                      <div class="acp__contact-card">
+                        <div class="acp__contact-card__org">{{ cs.keyword }}</div>
+                        <img class="acp__contact-card__avatar" [src]="c.photo" [alt]="c.name" />
+                        <div class="acp__contact-card__name">{{ c.name }}</div>
+                        <div class="acp__contact-card__title">{{ c.title }}</div>
+                        <div class="acp__contact-card__dept">{{ c.dept }}</div>
+                        <div class="acp__contact-card__skills">
+                          @for (skill of c.skills; track skill) {
+                            <span class="acp__contact-card__skill">{{ skill }}</span>
+                          }
+                        </div>
+                        <a class="acp__contact-card__email" [href]="'mailto:' + c.email">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                          Send email
+                        </a>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
               @if (!msg.artifactProject) {
               @let mk = msg.id.toString();
               <div class="acp__actions">
@@ -685,6 +711,27 @@
                 </a>
               }
             </div>
+
+            <!-- Point of Contact -->
+            @if (proj.pointOfContact; as poc) {
+              <div class="acp__detail-sidebar-section">
+                <div class="acp__detail-card-label">Point of Contact</div>
+                <div class="acp__detail-poc">
+                  @if (poc.photo) {
+                    <img class="acp__detail-poc__avatar acp__detail-poc__avatar--img" [src]="poc.photo" [alt]="poc.name" />
+                  } @else {
+                    <div class="acp__detail-poc__avatar">
+                      {{ poc.name.split(' ').map(n => n[0]).join('') }}
+                    </div>
+                  }
+                  <div class="acp__detail-poc__info">
+                    <div class="acp__detail-poc__name">{{ poc.name }}</div>
+                    <div class="acp__detail-poc__title">{{ poc.title }}</div>
+                    <a class="acp__detail-poc__email" [href]="'mailto:' + poc.email">{{ poc.email }}</a>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
         </section>
 

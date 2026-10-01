@@ -596,6 +596,10 @@ function isMyanmarQuery(q: string): boolean {
   return q.toLowerCase().includes('myanmar');
 }
 
+function isNepalQuery(q: string): boolean {
+  return q.toLowerCase().includes('nepal');
+}
+
 const SEARCH_SOURCES = [
   { label: 'ADB Documents',                 count: '50,000+ documents'           },
   { label: 'ADB Project Database',           count: '12,400+ projects'            },
@@ -646,6 +650,7 @@ export class SearchComponent {
   private _overlayTimer: ReturnType<typeof setTimeout> | null = null;
 
   isMyanmarQuery = computed(() => isMyanmarQuery(this.query()));
+  isNepalQuery   = computed(() => isNepalQuery(this.query()));
 
   activeTotal = computed(() => {
     switch (this.activeTab()) {

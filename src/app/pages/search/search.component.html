@@ -204,74 +204,6 @@
           }
         </div>
 
-        <div class="ai-overview__cit">
-          <button type="button" class="ai-overview__cit-trigger" [class.ai-overview__cit-trigger--open]="sourcesOpen()" (click)="sourcesOpen.update(v => !v)" aria-expanded="{{ sourcesOpen() }}">
-            <span class="ai-overview__cit-avatars" aria-hidden="true">
-              <span class="ai-overview__cit-avatar" style="left:0;z-index:3"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-              <span class="ai-overview__cit-avatar" style="left:10px;z-index:2"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-              <span class="ai-overview__cit-avatar" style="left:20px;z-index:1"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-            </span>
-            <span class="ai-overview__cit-label">3 Sources</span>
-            <svg class="ai-overview__cit-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-
-          @if (sourcesOpen()) {
-            <div class="ai-overview__cit-cards">
-              @if (isMyanmarQuery()) {
-                <a href="https://www.adb.org/countries/myanmar/main" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Myanmar Country Page</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <a href="https://www.adb.org/countries/myanmar/projects" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Myanmar Projects</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <a href="https://www.adb.org/countries/myanmar/overview" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Country Overview</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              } @else {
-                <a href="https://www.adb.org/what-we-do/topics/climate-change" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Climate Change</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <a href="https://www.adb.org/publications/adb-climate-finance" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Climate Finance Report</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <a href="https://www.adb.org/projects" target="_blank" rel="noopener" class="ai-overview__cit-card">
-                  <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
-                  <span class="ai-overview__cit-card-body">
-                    <span class="ai-overview__cit-domain">adb.org</span>
-                    <span class="ai-overview__cit-title">Projects</span>
-                  </span>
-                  <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              }
-            </div>
-          }
-        </div>
-
         @if (aiExpanded()) {
           <div class="ai-overview__extra">
             @if (isMyanmarQuery()) {
@@ -300,6 +232,99 @@
           </div>
         }
 
+        <div class="ai-overview__cit">
+            <button type="button" class="ai-overview__cit-trigger" [class.ai-overview__cit-trigger--open]="sourcesOpen()" (click)="sourcesOpen.update(v => !v)" aria-expanded="{{ sourcesOpen() }}">
+              <span class="ai-overview__cit-avatars" aria-hidden="true">
+                <span class="ai-overview__cit-avatar" style="left:0;z-index:3"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                <span class="ai-overview__cit-avatar" style="left:10px;z-index:2"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                <span class="ai-overview__cit-avatar" style="left:20px;z-index:1"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+              </span>
+              <span class="ai-overview__cit-label">3 Sources</span>
+              <svg class="ai-overview__cit-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+
+            @if (sourcesOpen()) {
+              <div class="ai-overview__cit-cards">
+                @if (isMyanmarQuery()) {
+                  <a href="https://www.adb.org/projects?country=MY" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Project Database</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://www.adb.org/countries/myanmar/main" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Country Partnership Portal</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://www.adb.org/documents?country=MY" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Documents</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                } @else if (isNepalQuery()) {
+                  <a href="https://www.adb.org/projects?country=NE" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Project Database</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://www.adb.org/documents?country=NE" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Documents</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://www.adb.org/publications?topic=energy" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Publications Repository</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                } @else {
+                  <a href="https://www.adb.org/publications/adb-climate-finance" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Publications Repository</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://data.adb.org" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">data.adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Key Indicators Data Portal</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a href="https://www.adb.org/documents?topic=climate-change" target="_blank" rel="noopener" class="ai-overview__cit-card">
+                    <span class="ai-overview__cit-favicon"><img src="/adb-home/adb-blue-block.png" alt="" /></span>
+                    <span class="ai-overview__cit-card-body">
+                      <span class="ai-overview__cit-domain">adb.org</span>
+                      <span class="ai-overview__cit-title">ADB Documents</span>
+                    </span>
+                    <svg class="ai-overview__cit-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                }
+              </div>
+            }
+          </div>
+
         <button class="ai-overview__show-more" [class.ai-overview__show-more--expanded]="aiExpanded()" (click)="aiExpanded.update(v => !v)" type="button">
           {{ aiExpanded() ? 'Show less' : 'Show more' }}
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -318,7 +343,7 @@
           <span class="followup-btn__blob followup-btn__blob--1"></span>
           <span class="followup-btn__blob followup-btn__blob--2"></span>
         </span>
-        <span class="followup-btn__label">Follow up with AI</span>
+        <span class="followup-btn__label">Explore with ADB Intelligence</span>
         <span class="followup-btn__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <defs>

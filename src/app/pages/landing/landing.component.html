@@ -225,6 +225,28 @@
         @if (!panelChatPrompt() && !expandedSector() && regionContent(); as content) {
           <div class="panel-body">
 
+            <!-- Shorts / Related News -->
+            <div class="panel-section">
+              <div class="panel-section-label">
+                <span class="panel-section-text">
+                  @if (panelMode() === 'country') { Related News } @else { Shorts }
+                </span>
+              </div>
+              <div class="shorts-cards">
+                @for (short of content.shorts; track short.caption) {
+                  <a class="short-card" [href]="short.href" target="_blank" rel="noopener noreferrer">
+                    <img [src]="short.image" alt="" class="short-card__img" />
+                    @if (short.source) {
+                      <img class="short-card__source-icon" [src]="'/social media/' + short.source + '.svg'" [alt]="short.source" />
+                    }
+                    <div class="short-card__overlay">
+                      <p class="short-card__caption">{{ short.caption }}</p>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+
             <!-- Region Pulse / Latest from country -->
             <div class="panel-section">
               <div class="panel-section-label">
@@ -332,28 +354,6 @@
                       <span class="from-card__country">{{ article.country }}</span>
                       <h5 class="from-card__title">{{ article.title }}</h5>
                       <p class="from-card__date">{{ article.date }}</p>
-                    </div>
-                  </a>
-                }
-              </div>
-            </div>
-
-            <!-- Shorts / Related News -->
-            <div class="panel-section">
-              <div class="panel-section-label">
-                <span class="panel-section-text">
-                  @if (panelMode() === 'country') { Related News } @else { Shorts }
-                </span>
-              </div>
-              <div class="shorts-cards">
-                @for (short of content.shorts; track short.caption) {
-                  <a class="short-card" [href]="short.href" target="_blank" rel="noopener noreferrer">
-                    <img [src]="short.image" alt="" class="short-card__img" />
-                    @if (short.source) {
-                      <img class="short-card__source-icon" [src]="'/social media/' + short.source + '.svg'" [alt]="short.source" />
-                    }
-                    <div class="short-card__overlay">
-                      <p class="short-card__caption">{{ short.caption }}</p>
                     </div>
                   </a>
                 }
