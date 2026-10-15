@@ -72,11 +72,11 @@ export class AdbRegionCarouselComponent {
   }
 
   readonly regionImages: Record<string, string> = {
-    cwrd: '/regions/CWRD.jpg',
-    eard: '/regions/EARD.jpg',
-    sard: '/regions/SARD.jpg',
-    serd: '/regions/SEA.jpg',
-    pard: '/regions/PARD.jpg',
+    cwrd: 'https://images.unsplash.com/photo-1681365512853-0a071c982e2c?auto=format&fit=crop&w=800&q=80',
+    eard: 'https://images.unsplash.com/photo-1764555846847-8d1c685b3b56?auto=format&fit=crop&w=800&q=80',
+    sard: 'https://images.unsplash.com/photo-1592731057019-57ed336948ed?auto=format&fit=crop&w=800&q=80',
+    serd: 'https://images.unsplash.com/photo-1784490667386-0d75f2541344?auto=format&fit=crop&w=800&q=80',
+    pard: 'https://images.unsplash.com/photo-1650509009946-32b00cb21a0a?auto=format&fit=crop&w=800&q=80',
   };
 
   countryList(countries: string[]): string {

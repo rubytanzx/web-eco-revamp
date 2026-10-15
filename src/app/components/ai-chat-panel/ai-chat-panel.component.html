@@ -116,16 +116,30 @@
                           </div>
                         }
                       </div>
-                      <div class="acp__project-card__actions">
-                        <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <defs><linearGradient id="sl-grad-a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
-                            <path stroke="url(#sl-grad-a)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
-                          </svg>
-                          <span class="acp__project-card__summary-text">View Summary</span>
-                        </button>
-                      </div>
+                      @if (!p.contact) {
+                        <div class="acp__project-card__actions">
+                          <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <defs><linearGradient id="sl-grad-a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                              <path stroke="url(#sl-grad-a)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                            </svg>
+                            <span class="acp__project-card__summary-text">View Summary</span>
+                          </button>
+                        </div>
+                      }
                     </div>
+                    @if (p.contact) {
+                      <div class="acp__project-card__contact">
+                        @if (p.contact.photo) {
+                          <img class="acp__project-card__contact-photo" [src]="p.contact.photo" [alt]="p.contact.name" />
+                        }
+                        <div class="acp__project-card__contact-info">
+                          <span class="acp__project-card__contact-name">{{ p.contact.name }}</span>
+                          <span class="acp__project-card__contact-title">{{ p.contact.title }}</span>
+                        </div>
+                        <a class="acp__project-card__contact-email" [href]="'mailto:' + p.contact.email" (click)="$event.stopPropagation()">{{ p.contact.email }}</a>
+                      </div>
+                    }
                   </div>
                 }
               </div>
@@ -402,16 +416,30 @@
                             </div>
                           }
                         </div>
-                        <div class="acp__project-card__actions">
-                          <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <defs><linearGradient id="sl-grad-b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
-                              <path stroke="url(#sl-grad-b)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
-                            </svg>
-                            <span class="acp__project-card__summary-text">View Summary</span>
-                          </button>
-                        </div>
+                        @if (!p.contact) {
+                          <div class="acp__project-card__actions">
+                            <button class="acp__project-card__summary-link" type="button" (click)="onViewSummary($event, p)">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <defs><linearGradient id="sl-grad-b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#68c5ea"/><stop offset="100%" stop-color="#ae5ded"/></linearGradient></defs>
+                                <path stroke="url(#sl-grad-b)" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/>
+                              </svg>
+                              <span class="acp__project-card__summary-text">View Summary</span>
+                            </button>
+                          </div>
+                        }
                       </div>
+                      @if (p.contact) {
+                        <div class="acp__project-card__contact">
+                          @if (p.contact.photo) {
+                            <img class="acp__project-card__contact-photo" [src]="p.contact.photo" [alt]="p.contact.name" />
+                          }
+                          <div class="acp__project-card__contact-info">
+                            <span class="acp__project-card__contact-name">{{ p.contact.name }}</span>
+                            <span class="acp__project-card__contact-title">{{ p.contact.title }}</span>
+                          </div>
+                          <a class="acp__project-card__contact-email" [href]="'mailto:' + p.contact.email" (click)="$event.stopPropagation()">{{ p.contact.email }}</a>
+                        </div>
+                      }
                     </div>
                   }
                 </div>

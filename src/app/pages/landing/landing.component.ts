@@ -97,19 +97,19 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   }
 
   readonly sectors = [
-    { id: 'agri',      name: 'Agriculture, Natural Resources & Rural Dev.', stat: '200+ projects', color: '#22c55e', image: '/sector/agriculture.jpg' },
-    { id: 'education', name: 'Education',                                    stat: '100+ projects', color: '#f97316', image: '/sector/education.jpg' },
-    { id: 'energy',    name: 'Energy',                                       stat: '380+ projects', color: '#f59e0b', image: '/sector/energy.jpg' },
-    { id: 'finance',   name: 'Finance',                                      stat: '180+ projects', color: '#8b5cf6', image: '/sector/finance.jpg' },
-    { id: 'health',    name: 'Health',                                       stat: '120+ projects', color: '#ef4444', image: '/sector/health.jpg' },
-    { id: 'healthsp',  name: 'Health & Social Protection',                   stat: 'Cross-cutting', color: '#ec4899', image: '/sector/healthsp.jpg' },
-    { id: 'industry',  name: 'Industry & Trade',                             stat: '90+ projects',  color: '#0ea5e9', image: '/sector/industry.jpg' },
-    { id: 'ict',       name: 'Information & Communication Technology',       stat: '80+ projects',  color: '#6366f1', image: '/sector/ict.jpg' },
-    { id: 'multi',     name: 'Multisector',                                  stat: '60+ projects',  color: '#64748b', image: '/sector/multi.jpg' },
-    { id: 'psm',       name: 'Public Sector Management',                     stat: '150+ projects', color: '#002569', image: '/sector/psm.jpg' },
-    { id: 'transport', name: 'Transport',                                    stat: '300+ projects', color: '#3b82f6', image: '/sector/transport.jpg' },
-    { id: 'transict',  name: 'Transport & ICT',                              stat: '40+ projects',  color: '#14b8a6', image: '/sector/transict.jpg' },
-    { id: 'water',     name: 'Water & Other Urban Infrastructure',           stat: '260+ projects', color: '#06b6d4', image: '/sector/water.jpg' },
+    { id: 'agri',      name: 'Agriculture, Natural Resources & Rural Dev.', stat: '200+ projects', color: '#22c55e', image: 'https://images.unsplash.com/photo-1559628233-eb1b1a45564b?auto=format&fit=crop&w=800&q=80' },
+    { id: 'education', name: 'Education',                                    stat: '100+ projects', color: '#f97316', image: 'https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=800&q=80' },
+    { id: 'energy',    name: 'Energy',                                       stat: '380+ projects', color: '#f59e0b', image: 'https://images.unsplash.com/photo-1677137264354-e8c011fe0413?auto=format&fit=crop&w=800&q=80' },
+    { id: 'finance',   name: 'Finance',                                      stat: '180+ projects', color: '#8b5cf6', image: 'https://images.unsplash.com/photo-1684679674829-fc7b436ec8e8?auto=format&fit=crop&w=800&q=80' },
+    { id: 'health',    name: 'Health',                                       stat: '120+ projects', color: '#ef4444', image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=800&q=80' },
+    { id: 'healthsp',  name: 'Health & Social Protection',                   stat: 'Cross-cutting', color: '#ec4899', image: 'https://images.unsplash.com/photo-1727208863988-ede35969f589?auto=format&fit=crop&w=800&q=80' },
+    { id: 'industry',  name: 'Industry & Trade',                             stat: '90+ projects',  color: '#0ea5e9', image: 'https://images.unsplash.com/photo-1765206810565-63f26023e1c9?auto=format&fit=crop&w=800&q=80' },
+    { id: 'ict',       name: 'Information & Communication Technology',       stat: '80+ projects',  color: '#6366f1', image: 'https://images.unsplash.com/photo-1683322499436-f4383dd59f5a?auto=format&fit=crop&w=800&q=80' },
+    { id: 'multi',     name: 'Multisector',                                  stat: '60+ projects',  color: '#64748b', image: 'https://images.unsplash.com/photo-1466803136990-7c174b34ff32?auto=format&fit=crop&w=800&q=80' },
+    { id: 'psm',       name: 'Public Sector Management',                     stat: '150+ projects', color: '#002569', image: 'https://images.unsplash.com/photo-1764147385045-cd671db53dd9?auto=format&fit=crop&w=800&q=80' },
+    { id: 'transport', name: 'Transport',                                    stat: '300+ projects', color: '#3b82f6', image: 'https://images.unsplash.com/photo-1719574778890-460807a74478?auto=format&fit=crop&w=800&q=80' },
+    { id: 'transict',  name: 'Transport & ICT',                              stat: '40+ projects',  color: '#14b8a6', image: 'https://images.unsplash.com/photo-1631981152698-bdee35111fd2?auto=format&fit=crop&w=800&q=80' },
+    { id: 'water',     name: 'Water & Other Urban Infrastructure',           stat: '260+ projects', color: '#06b6d4', image: 'https://images.unsplash.com/photo-1567046956024-197850696bba?auto=format&fit=crop&w=800&q=80' },
   ];
 
   /** 'country' when the panel was opened via the user-location marker */
@@ -345,6 +345,9 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   }
 
   openHiwChat() {
+    if (!this.hiwQuery()) {
+      this.hiwQuery.set("I'm an NGO focused on green energy in Nepal. What ADB funds can I tap into?");
+    }
     this.aiPanelContext.set('hiw');
     this.chatOpen.set(true);
   }

@@ -83,6 +83,7 @@ export interface ProjectWidget {
   description?: string;
   linkDomain?: string;
   tags?: string[];
+  contact?: { name: string; title: string; email: string; photo?: string };
 }
 
 export interface ProjectDetail {
@@ -432,6 +433,7 @@ const HIW_FUNDING_WIDGETS: ProjectWidget[] = [
     linkDomain: 'adb.org',
     description: 'Supports water security across Asia-Pacific — urban, rural, and transboundary. Grants available for capacity development and pilot projects.',
     tags: ['Trust Fund', 'Grants', 'Water'],
+    contact: { name: 'Maria Santos', title: 'Trust Fund Coordinator, WFPF', email: 'msantos@adb.org', photo: 'https://randomuser.me/api/portraits/women/44.jpg' },
   },
   {
     projectNumber: 'ACliFF',
@@ -443,6 +445,7 @@ const HIW_FUNDING_WIDGETS: ProjectWidget[] = [
     linkDomain: 'adb.org',
     description: 'Blended finance instrument to mobilize private capital for climate-resilient infrastructure at concessional rates.',
     tags: ['Blended Finance', 'Climate', '$200M'],
+    contact: { name: 'James Lim', title: 'Fund Manager, ACliFF', email: 'jlim@adb.org', photo: 'https://randomuser.me/api/portraits/men/32.jpg' },
   },
   {
     projectNumber: 'UCCRTF',
@@ -454,6 +457,7 @@ const HIW_FUNDING_WIDGETS: ProjectWidget[] = [
     linkDomain: 'adb.org',
     description: 'Focuses on climate adaptation for rapidly urbanizing cities — flood control, water supply, and sanitation for low-income populations.',
     tags: ['Trust Fund', 'Urban', 'Resilience'],
+    contact: { name: 'Priya Nair', title: 'Grants Administrator, UCCRTF', email: 'pnair@adb.org', photo: 'https://randomuser.me/api/portraits/women/68.jpg' },
   },
   {
     projectNumber: 'JFPRAP',
@@ -465,6 +469,7 @@ const HIW_FUNDING_WIDGETS: ProjectWidget[] = [
     linkDomain: 'adb.org',
     description: 'ADB\'s largest bilateral trust fund. Supports high-quality infrastructure, human capital, and resilience across all sectors.',
     tags: ['Trust Fund', 'Grants', '$500M+'],
+    contact: { name: 'Kenji Tanaka', title: 'Fund Coordinator, JFPRAP', email: 'ktanaka@adb.org', photo: 'https://randomuser.me/api/portraits/men/76.jpg' },
   },
 ];
 
@@ -553,23 +558,23 @@ export class AiChatPanelComponent implements OnDestroy {
   isHiwCtx       = computed(() => this.context() === 'hiw');
   aiSeed         = computed(() => {
     if (this.seedText()) return this.seedText();
+    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].text;
     if (this.isMyanmarCtx()) return MYANMAR_AI_RESPONSES[0].text;
     if (this.isNepalCtx())   return NEPAL_AI_RESPONSES[0].text;
-    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].text;
     return AI_RESPONSES[0].text;
   });
   aiSeedProjects = computed(() => {
     if (this.seedProjects().length) return this.seedProjects();
+    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].projects ?? [];
     if (this.isMyanmarCtx()) return MYANMAR_AI_RESPONSES[0].projects ?? [];
     if (this.isNepalCtx())   return NEPAL_AI_RESPONSES[0].projects ?? [];
-    if (this.isHiwCtx())     return HIW_AI_RESPONSES[0].projects ?? [];
     return [];
   });
   activeRelated  = computed(() => {
     if (this.relatedQueries().length) return this.relatedQueries();
+    if (this.isHiwCtx())     return HIW_RELATED;
     if (this.isMyanmarCtx()) return MYANMAR_RELATED;
     if (this.isNepalCtx())   return NEPAL_RELATED;
-    if (this.isHiwCtx())     return HIW_RELATED;
     return RELATED;
   });
 
@@ -674,7 +679,7 @@ export class AiChatPanelComponent implements OnDestroy {
 
     const delay = 900 + Math.random() * 400;
     const t1 = setTimeout(() => {
-      const pool = this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES : this.isNepalCtx() ? NEPAL_AI_RESPONSES : this.isHiwCtx() ? HIW_AI_RESPONSES : AI_RESPONSES;
+      const pool = this.isHiwCtx() ? HIW_AI_RESPONSES : this.isMyanmarCtx() ? MYANMAR_AI_RESPONSES : this.isNepalCtx() ? NEPAL_AI_RESPONSES : AI_RESPONSES;
       const entry = this.scriptIdx < pool.length ? pool[this.scriptIdx++] : GUARDRAIL;
 
       const autoOpen        = (entry as any).autoOpenProject as string | undefined;

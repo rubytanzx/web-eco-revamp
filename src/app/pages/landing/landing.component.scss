@@ -1369,10 +1369,10 @@ a { text-decoration: none; color: inherit; }
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    padding: 3px;
+    background: transparent;
+    padding: 0;
     box-sizing: border-box;
-    object-fit: contain;
+    object-fit: cover;
     pointer-events: none;
     z-index: 2;
   }
